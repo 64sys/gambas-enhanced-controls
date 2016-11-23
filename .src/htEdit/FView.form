@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,84,38)
+  Text = ("Vista Previa con Enlaces Activos.")
+  Arrangement = Arrange.Vertical
+  Margin = True
+  Padding = 5
+  { ToolBar1 ToolBar
+    MoveScaled(1,1,77,4)
+    Separator = True
+    { btnBack ToolButton
+      MoveScaled(0,0,4,4)
+      Picture = Picture["icon:/small/left"]
+    }
+    { btnForward ToolButton
+      MoveScaled(4,0,4,4)
+      Picture = Picture["icon:/small/right"]
+    }
+  }
+  { WebView1 WebView
+    MoveScaled(1,6,79,28)
+    Expand = True
+  }
+}

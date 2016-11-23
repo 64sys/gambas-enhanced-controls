@@ -1,0 +1,693 @@
+' Gambas class file
+
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+'
+' The above copyright notice and this permission notice shall be included in
+' all copies or substantial portions of the Software.
+'
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+' THE SOFTWARE.
+
+Export
+Inherits UserControl
+
+'constantes qui seront affichées dans l'IDE
+'constantes obligatoires
+Public Const _IsControl As Boolean = True 'pour que la classe exportee devienne un controle
+'liste des proprietes du controle
+Public Const _Properties As String = "*,Value,ValueBis,Border=True,ColorBar,ColorBarBis,Text,TextBis,Label=true,LabelBis,MaxValue=100,MaxValueBis=100,Middle,Motif,MinValue,MinValueBis,Picture,Reverse"
+'constantes facultatives (mais conseillées)
+Public Const _Group As String = "Form" 'le composant sera placé dans le groupe de composants (Form, View, Chooser, Container, Special, Deprecated ou celui que vous aurez créé)
+Public Const _DefaultEvent As String = "Enter" 'est une des procédures qui sera ouverte par défaut en mode edition
+Public Const _DefaultSize As String = "24,6" 'est la taille par defaut du composant affiché sur le Form lors de la conception
+
+'déclaration des objets
+Private $hpnl As New Panel(Me)
+Private $hDraArea As New DrawingArea($hpnl) As "DraArea"
+
+'variables interne privées
+Private $bBorder As Boolean 'disposition d'une bordure
+Private $bLabel As Boolean = True 'autorise l'affichage du texte
+Private $bLabelBis As Boolean 'autorise l'affichage du texte dans le progressbar interne
+Private $bMiddle As Boolean 'False = démarre à partir de la gauche du progressbartext, True = démarre à partir du milieu du progressbartext
+Private $bReverse As Boolean 'inverse le sens de défilement
+Private $iCouleurBar As Integer 'récupère la couleur à afficher dans $hDraArea
+Private $iCouleurBarBis As Integer 'récupère la couleur à afficher dans le progressbar interne
+Private $iMotif As Integer 'indique le motif qui sera affiché dans le progressbartext (par défaut 0 = pas de motif)
+Private $iVal As Integer 'valeur de $iVal
+Private $iValBis As Integer  'valeur de $iValBis
+Private $iValeurMax As Integer = 100 'valeur par défaut de $iValeurMax
+Private $iValeurMaxBis As Integer = 100 'valeur par défaut de $iValeurMaxBis
+Private $iValeurMin As Integer = 0 'valeur par défaut de $iValeurMin
+Private $iValeurMinBis As Integer = 0 'valeur par défaut de $iValeurMinBis
+Private $pPic As Picture 'image en deplacement
+Private $sText As String 'est le texte qui sera affiché dans le progressbartext
+Private $sTextBis As String 'est le texte qui sera affiché dans le progressbar interne
+
+'propriétés qui seront affichées dans l'IDE
+Property Border As Boolean ''Retourne ou définit si le composant aura une bordure.
+Property ColorBar As Integer ''Retourne ou définit la couleur de la barre de progression.
+Property ColorBarBis As Integer ''Retourne ou définit la couleur de la barre de progression du progressbar interne.
+Property Label As Boolean ''Indique si le progressbartext autorise l'affichage du texte.
+Property LabelBis As Boolean ''Indique si le progressbar interne autorise l'affichage du texte.
+Property MaxValue As Integer ''Retourne ou définit la valeur maximale du progressbartext.
+Property MaxValueBis As Integer ''Retourne ou définit la valeur maximale du progressbar interne.
+Property Middle As Boolean ''Définit l’affichage de la barre de progression et doit être utilisé conjointement avec la propriété Reverse.<br>Si Middle est True et Reverse False, l’affichage de la barre de progression se fera du centre vers les bords gauche et droit du composant.<br>Si Middle est True et Reverse est True la barre de progression s'affichera des bords gauche et droit vers le centre du composant.<br>Si Middle est false l'affichage de la barre de progression se fera de façon habituelle selon la valeur de Reverse.
+Property MinValue As Integer ''Retourne ou définit la valeur minimale du progressbartext.
+Property MinValueBis As Integer ''Retourne ou définit la valeur minimale du progressbar interne.
+Property Motif As Integer ''Retourne ou définit le motif (de 0 à 3) qui sera dessiné dans la barre de progression.<br>Motif doit avoir pour valeur 0 si vous voulez afficher du texte.<br> Liste des motifs :<br>0 = pas de motif<br>1 = Rectangle<br>2 = Cercle<br>3 = Picture
+Property Picture As Picture ''Représente l'image qui sera affichée dans le progressbartext.
+Property Reverse As Boolean ''Inverse le sens de défilement des progressbartext et progressbar interne. Par défaut le défilement se fait de la gauche vers la droite.
+Property Text As String ''Retourne ou définit le texte qui sera affiché dans la barre de progression.<br>La propriété Label doit avoir la valeur true pour que Text soit affiché.
+Property TextBis As String ''Retourne ou définit le texte qui sera affiché dans la barre de progression du progressbar interne.<br>La propriété LabelBis doit avoir la valeur true pour que TextBis soit affiché.
+Property Value As Integer ''Retourne ou définit la valeur d'affichage de la barre de progression. Cette valeur doit être comprise entre 0 et 100.
+Property ValueBis As Integer ''Retourne ou définit la valeur d'affichage de la barre de progression. Cette valeur doit être comprise entre 0 et 100.
+
+Public Sub _new() 'création et initialisation composants
+
+  With $hpnl
+    .Arrangement = 2
+    .Border = Border.plain
+    .Padding = 2
+    $hDraArea.Expand = True 'la barre de défilement
+  End With
+
+End
+
+Public Sub DraArea_Draw() 'on dessine la barre de défilement
+
+  Dim bVertical As Boolean 'détermine le sens de progressbartext
+  Dim i, iInverseValue As Integer
+  Dim hDim, hDimBis As RectF 'pour l'affichage du texte
+
+  iInverseValue = $iValeurMax - $iVal 'iInverseValue est l'inverse de la valeur d'entrée (si value = 10 alors iInverseValue = 90 (pour une valeurmax de 100))
+  If Me.Label Then 'récupère les paramètres du Label (barre principale)
+    Paint.Font = Me.Font
+    hDim = Paint.TextSize(Me.Text)
+  Endif
+  If Me.LabelBis Then 'récupère les paramètres du LabelBis (barre secondaire)
+    Paint.Font = Me.Font
+    hDimBis = Paint.TextSize(Me.TextBis)
+  Endif
+  If $iMotif > 0 Then ' si $iMotif est plus grand que 0 on dessine un motif dans ce cas pas de texte
+    $bLabel = False 'invalide la possibilité d'écrire du texte dans la barre principale
+    $bLabelBis = False 'invalide la possibilité d'écrire du texte dans la barre secondaire
+  Endif
+  If $hDraArea.H > $hDraArea.W Then bVertical = True 'si la hauteur du composant est supérieur à sa largeur alors le composant est vertical
+
+  If bVertical = False Then 'si le composant est horizontal (cas le plus courant)
+    Select $iMotif 'selon la valeur de Motif
+      Case 0 'par défaut aucun motif donc on affiche du texte dans des barres de progression pleine.
+        '--------------------------------------
+        'sens de défilement = gauche -> droite (ok)
+        '--------------------------------------
+        If $bReverse = False And $bMiddle = False Then 'sens de défilement des progressbar par defaut(de gauche à droite)
+          With Paint 'on dessine un rectangle qui commence en haut à gauche dans le conteneur
+            .FillRect(0, 0, $hDraArea.W / 100 * Me.Value, $hDraArea.H, $iCouleurBar) 'dessin de la barre principale
+            .FillRect(0, $hDraArea.H / 2 - $hDraArea.H / 4, ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, $hDraArea.H / 2, $iCouleurBarBis) 'dessin de la barre interne
+            'on dessine le texte label interne
+            If Me.LabelBis Then
+              'texte en blanc sur fond de couleur (ok)
+              .ClipRect = Rect(0, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), $hDraArea.W / 100 * Me.Value, hDimBis.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, 0, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent (ok)
+              .ClipRect = Rect(($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), $hDraArea.W, hDimBis.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, 0, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+            Endif
+            'on dessine le texte label principal
+            If Me.Label Then
+              'texte en blanc sur fond de couleur (ok)
+              .ClipRect = Rect(0, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W, hDim.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, 0, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), hDim.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent (ok)
+              .ClipRect = Rect($hDraArea.W / 100 * Me.Value, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W, hDim.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, 0, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), hDim.H + $hpnl.Padding)
+            Endif
+          End With
+        Endif
+        '--------------------------------------
+        'sens de défilement = gauche <- droite (ok)
+        '--------------------------------------
+        If $bReverse = True And $bMiddle = False Then 'inversé (de droite à gauche)
+          With Paint 'on dessine un rectangle qui commence en haut à droite dans le conteneur
+            .FillRect($hDraArea.W, 0, - $hDraArea.W / 100 * Me.Value, $hDraArea.H, $iCouleurBar) 'dessin de la barre principale
+            .FillRect($hDraArea.W, $hDraArea.H / 2 - $hDraArea.H / 4, - ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, $hDraArea.H / 2, $iCouleurBarBis) 'dessin de la barre interne
+            'on dessine le texte label interne
+            If Me.LabelBis Then
+              'texte en blanc sur fond de couleur (ok)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, $hDraArea.W - hDimBis.W, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect(- ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), $hDraArea.W, hDimBis.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, $hDraArea.W - hDimBis.W, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+            Endif
+            'on dessine le texte
+            If Me.Label Then
+              'texte en blanc sur fond de couleur (ok)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, $hDraArea.W - hDim.W, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W / 100 * Me.Value, hDim.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect(- $hDraArea.W / 100 * Me.Value, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W, hDim.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, $hDraArea.W - hDim.W, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W / 100 * Me.Value, hDim.H + $hpnl.Padding)
+            Endif
+          End With
+        Endif
+        '----------------------------------------
+        'sens de défilement = milieu -> exterieur (ok)
+        '----------------------------------------
+        If $bReverse = False And $bMiddle = True Then 'sens de défilement des progressbar par defaut(du centre vers les extérieurs)
+          With Paint 'on dessine un rectangle qui commence au milieu conteneur
+            .FillRect($hDraArea.W / 2 - $hDraArea.W / 100 * Me.Value / 2, 0, $hDraArea.W / 100 * Me.Value, $hDraArea.H, $iCouleurBar) 'dessin de la barre principale
+            .FillRect($hDraArea.W / 2 - ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, $hDraArea.H / 2 - $hDraArea.H / 4, ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, $hDraArea.H / 2, $iCouleurBarBis) 'dessin de la barre interne
+            'on dessine le texte label interne (ok)
+            If Me.LabelBis Then
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect($hDraArea.W / 2 - hDimBis.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), $hDraArea.W, hDimBis.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, $hDraArea.W / 2 - hDimBis.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+              'texte en blanc sur fond de couleur
+              .ClipRect = Rect($hDraArea.W / 2 - ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, hDimBis.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, $hDraArea.W / 2 - hDimBis.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+            Endif
+            'on dessine le texte label principal (ok)
+            If Me.Label Then
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect($hDraArea.W / 2 - hDim.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W, hDim.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, $hDraArea.W / 2 - hDim.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), hDim.H + $hpnl.Padding)
+              'texte en blanc sur fond de couleur milieu
+              .ClipRect = Rect($hDraArea.W / 2 - $hDraArea.W / 100 * Me.Value / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W / 100 * Me.Value, hDim.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, $hDraArea.W / 2 - hDim.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), hDim.H + $hpnl.Padding)
+            Endif
+          End With
+        Endif
+        '----------------------------------------
+        'sens de défilement = milieu <- exterieur (ok)
+        '----------------------------------------
+        If $bReverse = True And $bMiddle = True Then 'sens de défilement des progressbar par defaut(de l'extérieur vers le centre)
+          With Paint 'on dessine la barre de progression
+            'on dessine deux rectangles (1 qui commence à gauche et 1 qui commence à droite du conteneur) qui vont se rejoindre au milieu du conteneur
+            .FillRect(0, 0, $hDraArea.W / 100 * Me.Value / 2 + 1, $hDraArea.H, $iCouleurBar) 'dessin de la barre principale (segment gauche)
+            .FillRect($hDraArea.W, 0, - $hDraArea.W / 100 * Me.Value / 2, $hDraArea.H, $iCouleurBar) 'dessin de la barre principale(segment droite)
+            .FillRect(0, $hDraArea.H / 2 - $hDraArea.H / 4, ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, $hDraArea.H / 2, $iCouleurBarBis) 'dessin de la barre interne (segment gauche)
+            .FillRect($hDraArea.W, $hDraArea.H / 2 - $hDraArea.H / 4, - ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, $hDraArea.H / 2, $iCouleurBarBis) 'dessin de la barre interne (segment droite)
+            'on dessine le texte label interne (ok)
+            If Me.LabelBis Then
+              'texte en blanc sur fond de couleur extrémités
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, $hDraArea.W / 2 - hDimBis.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent milieu
+              .ClipRect = Rect(($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), $hDraArea.W - ($hDraArea.W / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, hDimBis.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, $hDraArea.W / 2 - hDimBis.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDimBis.H / 2), hDimBis.H + $hpnl.Padding)
+            Endif
+            'on dessine le texte label principal (ok)
+            If Me.Label Then
+              'texte en blanc sur fond de couleur extrémités
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, $hDraArea.W / 2 - hDim.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), hDim.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent milieu
+              .ClipRect = Rect($hDraArea.W / 100 * Me.Value / 2 + 1, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), $hDraArea.W - ($hDraArea.W / 100 * Me.Value), hDim.H + $hpnl.Padding)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, $hDraArea.W / 2 - hDim.W / 2, (($hDraArea.H + $hpnl.Padding) / 2) - (hDim.H / 2), hDim.H + $hpnl.Padding)
+            Endif
+          End With
+        Endif
+      Case 1 'on affiche le motif numéro 1 (rectangle) donc pas de texte car ce serait illisible
+        '--------------------------------------
+        'sens de défilement = gauche -> droite (ok)
+        'sens de défilement = gauche <- droite (ok)
+        'sens de défilement = milieu <- exterieur (ok)
+        'sens de défilement = milieu -> exterieur (ok)
+        '--------------------------------------
+        With Paint 'pour le dessin on créé le motif (des rectangles)
+          For i = 0 To $hDraArea.W 'on compte de 0 à la longueur du progressbartext
+            .Brush = .Color($iCouleurBar) 'couleur de remplissage des rectangles
+            .Rectangle($hDraArea.H * i, 0, $hDraArea.H / 1.3, $hDraArea.H) 'dessin des rectangles
+            .fill(True) 'remplissage des rectangles
+            .Stroke
+          Next 'passe au motif suivant
+          If $bReverse = False And $bMiddle = False Then .FillRect($hDraArea.W, 0, - $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (gauche -> droite)
+          If $bReverse = True And $bMiddle = False Then .FillRect(0, 0, $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (gauche <- droite)
+          If $bReverse = False And $bMiddle = True Then .FillRect($hDraArea.W / 2 - $hDraArea.W / 100 * iInverseValue / 2, 0, $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin de la barre principale
+          If $bReverse = True And $bMiddle = True Then 'si Reverse et Middle sont True
+            .FillRect(0, 0, $hDraArea.W / 100 * iInverseValue / 2 + 1, $hDraArea.H, $hDraArea.Background) 'dessin de la barre principale (segment gauche)
+            .FillRect($hDraArea.W, 0, - $hDraArea.W / 100 * iInverseValue / 2, $hDraArea.H, $hDraArea.Background) 'dessin de la barre principale(segment droite)
+          Endif
+        End With
+      Case 2 'on affiche le motif numéro 2 (cercle) donc pas de texte car ce serait illisible
+        '--------------------------------------
+        'sens de défilement = gauche -> droite (ok)
+        'sens de défilement = gauche <- droite (ok)
+        'sens de défilement = milieu <- exterieur (ok)
+        'sens de défilement = milieu -> exterieur (ok)
+        '--------------------------------------
+        With Paint 'pour le dessin on créé le motif (des cercles)
+          .Scale(1, 1) 'met à l'échelle
+          .LineWidth = 1 'taille du trait de dessin
+          For i = 0 To $hDraArea.W 'on compte de 0 à la longueur du progressbartext
+            .Brush = .Color($iCouleurBar) 'couleur de remplissage des cercles
+            .Arc(($hDraArea.H + 3) * i - $hDraArea.H / 2, $hDraArea.H / 2, $hDraArea.H / 2) 'dessin des cercles
+            .fill(True) 'remplissage des cercles
+            .Rectangle($hDraArea.H * i, 0, 2, $hDraArea.H) 'dessin du rectangle de séperation
+            .Brush = .Color($hDraArea.Background) 'couleur d'écriture pour le rectangle de séparation = incolor
+            .Stroke
+          Next 'passe au motif suivant
+          If $bReverse = False And $bMiddle = False Then .FillRect($hDraArea.W, 0, - $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (gauche -> droite)
+          If $bReverse = True And $bMiddle = False Then .FillRect(0, 0, $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (gauche <- droite)
+          If $bReverse = False And $bMiddle = True Then .FillRect($hDraArea.W / 2 - $hDraArea.W / 100 * iInverseValue / 2, 0, $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin de la barre principale
+          If $bReverse = True And $bMiddle = True Then 'si Reverse et Middle sont True
+            .FillRect(0, 0, $hDraArea.W / 100 * iInverseValue / 2 + 1, $hDraArea.H, $hDraArea.Background) 'dessin de la barre principale (segment gauche)
+            .FillRect($hDraArea.W, 0, - $hDraArea.W / 100 * iInverseValue / 2, $hDraArea.H, $hDraArea.Background) 'dessin de la barre principale(segment droite)
+          Endif
+        End With
+      Case 3 'on affiche le motif numéro 3 (picture) donc pas de texte car ce serait illisible
+        If $pPic = Null Then 'si l'utilisateur n'a pas définit d'image
+          Return 'on sort
+        Else 'sinon on affiche...
+          If $bReverse = False And $bMiddle = False Then 'si Reverse et Middle sont faux alors c'est le sens de défilement gauche vers la droite
+            Paint.FillRect($hDraArea.W, 0, - $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (gauche -> droite)
+            Paint.DrawPicture($pPic, $hDraArea.W / 100 * Me.Value, $hDraArea.H / 2 - $pPic.H / 2) 'positionne la picture selon la valeur en cours
+          Endif
+          If $bReverse = True And $bMiddle = False Then 'si Reverse est vraie et Middle est faux alors c'est le sens de défilement droite vers la gauche
+            Paint.FillRect(0, 0, $hDraArea.W / 100 * iInverseValue, $hDraArea.H, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (gauche <- droite)
+            Paint.DrawPicture($pPic, $hDraArea.W / 100 * iInverseValue, $hDraArea.H / 2 - $pPic.H / 2) 'positionne la picture selon la valeur en cours
+          Endif
+        Endif
+    End Select
+  Else 'sinon (le composant est vertical)
+
+    Select $iMotif 'selon la valeur de Motif
+      Case 0 'par défaut aucun motif donc on affiche du texte dans des barres de progression pleine.
+        '--------------------------------------
+        'sens de défilement = haut -> bas (ok)
+        '--------------------------------------
+        If $bReverse = False And $bMiddle = False Then 'sens de défilement des progressbar par defaut(de gauche à droite)
+          With Paint 'on dessine un rectangle qui commence en haut à gauche dans le conteneur
+            .FillRect(0, 0, $hDraArea.W, $hDraArea.H / 100 * Me.Value, $iCouleurBar) 'dessin de la barre principale
+            .FillRect($hDraArea.W / 2 - $hDraArea.W / 4, 0, $hDraArea.W / 2, ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, $iCouleurBarBis) 'dessin de la barre interne
+            'on dessine le texte label interne
+            If Me.LabelBis Then
+              'texte en blanc sur fond de couleur (ok)
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), 0, hDimBis.W + $hpnl.Padding, $hDraArea.H / 100 * Me.Value)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 3 - hDimBis.H / 3, hDimBis.W + $hpnl.Padding)
+              'texte en noir sur fond tranparent (ok)
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, hDimBis.W + $hpnl.Padding, $hDraArea.H)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 3 - hDimBis.H / 3, hDimBis.W + $hpnl.Padding)
+            Endif
+            'on dessine le texte label principal
+            If Me.Label Then
+              'texte en blanc sur fond de couleur (ok)
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), 0, hDim.W + $hpnl.Padding, $hDraArea.H)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.W + $hpnl.Padding)
+              'texte en noir sur fond tranparent (ok)
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 100 * Me.Value, hDim.W + $hpnl.Padding, $hDraArea.H)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.W + $hpnl.Padding)
+            Endif
+          End With
+        Endif
+        '--------------------------------------
+        'sens de défilement = haut <- bas
+        '--------------------------------------
+        If $bReverse = True And $bMiddle = False Then 'inversé (de droite à gauche)
+          With Paint 'on dessine un rectangle qui commence en haut à droite dans le conteneur
+            .FillRect(0, $hDraArea.H, $hDraArea.W, - $hDraArea.H / 100 * Me.Value, $iCouleurBar) 'dessin de la barre principale
+            .FillRect($hDraArea.W / 2 - $hDraArea.W / 4, $hDraArea.H, $hDraArea.W / 2, - ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, $iCouleurBarBis) 'dessin de la barre interne
+            'on dessine le texte label interne
+            If Me.LabelBis Then
+              'texte en blanc sur fond de couleur
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H - $hDraArea.H / 3 - hDimBis.H / 3, 0, hDimBis.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), - ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, hDim.W + $hpnl.Padding, $hDraArea.H)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H - $hDraArea.H / 3 - hDimBis.H / 3, 0, hDimBis.H + $hpnl.Padding)
+            Endif
+            'on dessine le texte
+            If Me.Label Then
+              'texte en blanc sur fond de couleur (ok)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.W + $hpnl.Padding, $hDraArea.H / 100 * Me.Value)
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), - $hDraArea.H / 100 * Me.Value, hDim.W + $hpnl.Padding, $hDraArea.H)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.W + $hpnl.Padding, $hDraArea.H / 100 * Me.Value)
+            Endif
+          End With
+        Endif
+        '----------------------------------------
+        'sens de défilement = milieu -> exterieur (ok)
+        '----------------------------------------
+        If $bReverse = False And $bMiddle = True Then 'sens de défilement des progressbar par defaut(du centre vers les extérieurs)
+          With Paint 'on dessine un rectangle qui commence au milieu conteneur
+            .FillRect(0, $hDraArea.H / 2 - $hDraArea.H / 100 * Me.Value / 2, $hDraArea.W, $hDraArea.H / 100 * Me.Value, $iCouleurBar) 'dessin de la barre principale
+            .FillRect($hDraArea.W / 2 - $hDraArea.W / 4, $hDraArea.H / 2 - ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, $hDraArea.W / 2, ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis, $iCouleurBarBis) 'dessin de la barre interne
+            'on dessine le texte label interne
+            If Me.LabelBis Then
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 3 - hDimBis.H / 3, hDimBis.W + $hpnl.Padding, $hDraArea.H)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 3 - hDimBis.H / 3, hDimBis.H + $hpnl.Padding)
+              'texte en blanc sur fond de couleur
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 2 - ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, hDimBis.W + $hpnl.Padding, ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 3 - hDimBis.H / 3, hDimBis.H + $hpnl.Padding)
+            Endif
+            'on dessine le texte label principal couleurs fixe (ok)
+            If Me.Label Then
+              'texte en noir sur fond tranparent
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.W + $hpnl.Padding, $hDraArea.H)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.H + $hpnl.Padding)
+              'texte en blanc sur fond de couleur milieu
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - $hDraArea.H / 100 * Me.Value / 2, hDim.W + $hpnl.Padding, $hDraArea.H / 100 * Me.Value)
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.H + $hpnl.Padding)
+            Endif
+          End With
+        Endif
+        '----------------------------------------
+        'sens de défilement = milieu <- exterieur (ok)
+        '----------------------------------------
+        If $bReverse = True And $bMiddle = True Then 'sens de défilement des progressbar par defaut(de l'extérieur vers le centre)
+          With Paint 'on dessine la barre de progression
+            'on dessine deux rectangles (1 qui commence à gauche et 1 qui commence à droite du conteneur) qui vont se rejoindre au milieu du conteneur
+            .FillRect(0, 0, $hDraArea.W, $hDraArea.H / 100 * Me.Value / 2 + 1, $iCouleurBar) 'dessin de la barre principale (segment gauche)
+            .FillRect(0, $hDraArea.H, $hDraArea.W, - $hDraArea.H / 100 * Me.Value / 2, $iCouleurBar) 'dessin de la barre principale(segment droite)
+            .FillRect($hDraArea.W / 2 - $hDraArea.W / 4, 0, $hDraArea.W / 2, ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, $iCouleurBarBis) 'dessin de la barre interne (segment gauche)
+            .FillRect($hDraArea.W / 2 - $hDraArea.W / 4, $hDraArea.H, $hDraArea.W / 2, - ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, $iCouleurBarBis) 'dessin de la barre interne (segment droite)
+            'on dessine le texte label interne
+            If Me.LabelBis Then
+              'texte en blanc sur fond de couleur extrémités
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 3 - hDimBis.H / 3, hDimBis.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent milieu
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis / 2, hDim.W + $hpnl.Padding, $hDraArea.H - ($hDraArea.H / 100 * Me.Value / Me.MaxValueBis) * Me.ValueBis)
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.TextBis, (($hDraArea.W + $hpnl.Padding) / 2) - (hDimBis.W / 2), $hDraArea.H / 3 - hDimBis.H / 3, hDimBis.H + $hpnl.Padding)
+            Endif
+            'on dessine le texte label principal
+            If Me.Label Then
+              'texte en blanc sur fond de couleur extrémités
+              .Brush = .Color(Color.TextBackground) 'couleur d'écriture = blanc
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.H + $hpnl.Padding)
+              'texte en noir sur fond tranparent milieu
+              .ClipRect = Rect((($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 100 * Me.Value / 2 + 1, hDim.W + $hpnl.Padding, $hDraArea.H - ($hDraArea.H / 100 * Me.Value))
+              .Brush = .Color(Color.TextForeground) 'couleur d'écriture = noir
+              .DrawText(Me.Text, (($hDraArea.W + $hpnl.Padding) / 2) - (hDim.W / 2), $hDraArea.H / 2 - hDim.H / 2, hDim.H + $hpnl.Padding)
+            Endif
+          End With
+        Endif
+      Case 1 'on affiche le motif numéro 1 (rectangle) donc pas de texte car ce serait illisible
+        '--------------------------------------
+        'sens de défilement = haut -> bas (ok)
+        'sens de défilement = haut <- bas (ok)
+        'sens de défilement = milieu <- exterieur (ok)
+        'sens de défilement = milieu -> exterieur (ok)
+        '--------------------------------------
+        With Paint 'pour le dessin on créé le motif (des rectangles)
+          For i = 0 To $hDraArea.H 'on compte de 0 à la hauteur du progressbartext
+            .Brush = .Color($iCouleurBar) 'couleur de remplissage des rectangles
+            .Rectangle(0, $hDraArea.W * i, $hDraArea.W, $hDraArea.W / 1.3) 'dessin des rectangles
+            .fill(True) 'remplissage des rectangles
+            .Stroke
+          Next 'passe au motif suivant
+          If $bReverse = False And $bMiddle = False Then .FillRect(0, $hDraArea.H, $hDraArea.W, - $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (haut -> bas)
+          If $bReverse = True And $bMiddle = False Then .FillRect(0, 0, $hDraArea.W, $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (haut <- bas)
+          If $bReverse = False And $bMiddle = True Then .FillRect(0, $hDraArea.H / 2 - $hDraArea.H / 100 * iInverseValue / 2, $hDraArea.W, $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin de la barre principale
+          If $bReverse = True And $bMiddle = True Then 'si Reverse et Middle sont True
+            .FillRect(0, 0, $hDraArea.W, $hDraArea.H / 100 * iInverseValue / 2 + 1, $hDraArea.Background) 'dessin de la barre principale (segment haut)
+            .FillRect(0, $hDraArea.H, $hDraArea.W, - $hDraArea.H / 100 * iInverseValue / 2, $hDraArea.Background) 'dessin de la barre principale(segment bas)
+          Endif
+        End With
+      Case 2 'on affiche le motif numéro 2 (cercle) donc pas de texte car ce serait illisible
+        '--------------------------------------
+        'sens de défilement = haut -> bas (ok)
+        'sens de défilement = haut <- bas (ok)
+        'sens de défilement = milieu <- exterieur (ok)
+        'sens de défilement = milieu -> exterieur (ok)
+        '--------------------------------------
+        With Paint 'pour le dessin on créé le motif (des cercles)
+          .Scale(1, 1) 'met à l'échelle
+          .LineWidth = 1 'taille du trait de dessin
+          For i = 0 To $hDraArea.H 'on compte de 0 à la hauteur du progressbartext
+            .Brush = .Color($iCouleurBar) 'couleur de remplissage des cercles
+            .Arc($hDraArea.W / 2, ($hDraArea.W + 3) * i - $hDraArea.W / 2, $hDraArea.W / 2) 'dessin des cercles
+            .fill(True) 'remplissage des cercles
+            .Stroke
+          Next 'passe au motif suivant
+          If $bReverse = False And $bMiddle = False Then .FillRect(0, $hDraArea.H, $hDraArea.W, - $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (haut -> bas)
+          If $bReverse = True And $bMiddle = False Then .FillRect(0, 0, $hDraArea.W, $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (haut <- bas)
+          If $bReverse = False And $bMiddle = True Then .FillRect(0, $hDraArea.H / 2 - $hDraArea.H / 100 * iInverseValue / 2, $hDraArea.W, $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin de la barre principale
+          If $bReverse = True And $bMiddle = True Then 'si Reverse et Middle sont True
+            .FillRect(0, 0, $hDraArea.W, $hDraArea.H / 100 * iInverseValue / 2 + 1, $hDraArea.Background) 'dessin de la barre principale (segment haut)
+            .FillRect(0, $hDraArea.H, $hDraArea.W, - $hDraArea.H / 100 * iInverseValue / 2, $hDraArea.Background) 'dessin de la barre principale(segment bas)
+          Endif
+        End With
+      Case 3 'on affiche le motif numéro 3 (picture) donc pas de texte car ce serait illisible
+        If $pPic = Null Then 'si l'utilisateur n'a pas définit d'image
+          Return 'on sort
+        Else 'sinon on affiche...
+          If $bReverse = False And $bMiddle = False Then 'si Reverse et Middle sont faux alors c'est le sens de défilement haut vers le bas
+            Paint.FillRect(0, 0, $hDraArea.W, $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (haut -> bas)
+            Paint.DrawPicture($pPic, $hDraArea.W / 2 - $pPic.W / 2, $hDraArea.H / 100 * iInverseValue) 'positionne la picture selon la valeur en cours
+          Endif
+          If $bReverse = True And $bMiddle = False Then 'si Reverse est vraie et Middle est faux alors c'est le sens de défilement bas vers le haut
+            Paint.FillRect(0, $hDraArea.H, $hDraArea.W, - $hDraArea.H / 100 * iInverseValue, $hDraArea.Background) 'dessin rectangle d'affichage/masquage (haut <- bas)
+            Paint.DrawPicture($pPic, $hDraArea.W / 2 - $pPic.W / 2, $hDraArea.H / 100 * Me.Value) 'positionne la picture selon la valeur en cours
+          Endif
+        Endif
+    End Select
+  Endif
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Val As Boolean)
+
+  $bBorder = Val
+  $hpnl.Border = IIf(Me.Border, 1, 0)
+
+End
+
+Private Function ColorBar_Read() As Integer
+
+  Return $iCouleurBar 'retourne la valeur contenue dans $iCouleurBar
+
+End
+
+Private Sub ColorBar_Write(Value As Integer)
+
+  $iCouleurBar = Value 'écrit la valeur dans $iCouleurBar
+
+End
+
+Private Function ColorBarBis_Read() As Integer
+
+  Return $iCouleurBarBis 'retourne la valeur contenue dans $iCouleurBarBis
+
+End
+
+Private Sub ColorBarBis_Write(Value As Integer)
+
+  $iCouleurBarBis = Value 'écrit la valeur dans $iCouleurBarBis
+
+End
+
+Private Function Label_Read() As Boolean
+
+  Return $bLabel
+
+End
+
+Private Sub Label_Write({Label} As Boolean)
+
+  $bLabel = {Label}
+
+End
+
+Private Function LabelBis_Read() As Boolean
+
+  Return $bLabelBis
+
+End
+
+Private Sub LabelBis_Write({LabelBis} As Boolean)
+
+  $bLabelBis = {LabelBis}
+
+End
+
+Private Function MaxValue_Read() As Integer
+
+  Return $iValeurMax 'retourne la valeur contenue dans $iValeurMax
+
+End
+
+Private Sub MaxValue_Write(Value As Integer)
+
+  $iValeurMax = Value 'écrit la valeur dans $iValeurMax
+  $hDraArea.Refresh() 'on rafraichis l'affichage de la $hDraArea
+
+End
+
+Private Function MaxValueBis_Read() As Integer
+
+  Return $iValeurMaxBis 'retourne la valeur contenue dans $iValeurMaxBis
+
+End
+
+Private Sub MaxValueBis_Write(Value As Integer)
+
+  $iValeurMaxBis = Value 'écrit la valeur dans $iValeurMaxBis
+
+End
+
+Private Function Middle_Read() As Boolean
+
+  Return $bMiddle
+
+End
+
+Private Sub Middle_Write(Val As Boolean)
+
+  $bMiddle = val
+
+End
+
+Private Function MinValue_Read() As Integer
+
+  Return $iValeurMin 'retourne la valeur contenue dans $iValeurMin
+
+End
+
+Private Sub MinValue_Write(Value As Integer)
+
+  $iValeurMin = Value 'écrit la valeur dans $iValeurMin
+
+End
+
+Private Function MinValueBis_Read() As Integer
+
+  Return $iValeurMinBis 'retourne la valeur contenue dans $iValeurMinBis
+
+End
+
+Private Sub MinValueBis_Write(Value As Integer)
+
+  $iValeurMinBis = Value 'écrit la valeur dans $iValeurMinBis
+
+End
+
+Private Function Motif_Read() As Integer
+
+  Return $iMotif 'retourne la valeur de $iMotif
+
+End
+
+Private Sub Motif_Write(Value As Integer)
+
+  $iMotif = Value 'écrit la valeur dans $iMotif
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $pPic 'retourne la valeur de la picture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $pPic = Value 'récupère la picture
+  $hDraArea.Refresh() 'on rafraichis l'affichage de la $hDraArea
+
+End
+
+Private Function Reverse_Read() As Boolean
+
+  Return $bReverse
+
+End
+
+Private Sub Reverse_Write(Val As Boolean)
+
+  $bReverse = Val
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Str$ As String)
+
+  $sText = Str$
+
+End
+
+Private Function TextBis_Read() As String
+
+  Return $sTextBis
+
+End
+
+Private Sub TextBis_Write(Str$ As String)
+
+  $sTextBis = Str$
+
+End
+
+Private Function Value_Read() As Integer
+
+  Return $iVal 'retourne la valeur de $iVal
+
+End
+
+Private Sub Value_Write(Value As Integer)
+
+  $iVal = Value 'écrit la valeur dans $iVal
+  $hDraArea.Refresh() 'on rafraichis l'affichage de la $hDraArea
+
+End
+
+Private Function ValueBis_Read() As Integer
+
+  Return $iValBis 'retourne la valeur de $iValBis
+
+End
+
+Private Sub ValueBis_Write(Value As Integer)
+
+  $iValBis = Value 'écrit la valeur dans $iValBis
+
+End

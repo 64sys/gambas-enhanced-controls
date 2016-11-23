@@ -1,0 +1,882 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,109,72)
+  { Slider1 Slider
+    MoveScaled(2,3,37,5)
+  }
+  { CheckBox1 CheckBox
+    MoveScaled(47,4,13,4)
+    Text = ("Auto")
+  }
+  { ScrollView1 ScrollView
+    MoveScaled(2,9,105,61)
+    { ProgressBarText1 ProgressBarText
+      MoveScaled(0,0,59,4)
+    }
+    { ProgressBarText2 ProgressBarText
+      MoveScaled(0,5,59,4)
+    }
+    { ProgressBarText3 ProgressBarText
+      MoveScaled(0,10,59,6)
+    }
+    { ProgressBarText4 ProgressBarText
+      MoveScaled(0,17,59,7)
+    }
+    { ProgressBarText5 ProgressBarText
+      MoveScaled(0,31,59,4)
+    }
+    { ProgressBarText6 ProgressBarText
+      MoveScaled(0,36,59,4)
+    }
+    { ProgressBarText7 ProgressBarText
+      MoveScaled(0,41,59,6)
+    }
+    { ProgressBarText8 ProgressBarText
+      MoveScaled(0,48,59,7)
+    }
+    { ProgressBarText9 ProgressBarText
+      MoveScaled(0,62,59,4)
+    }
+    { Label2 Label
+      MoveScaled(63,5,38,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Label3 Label
+      MoveScaled(63,0,36,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { Label4 Label
+      MoveScaled(63,11,35,4)
+      Text = ("<- Propriété Font = Value")
+    }
+    { Label5 Label
+      MoveScaled(63,18,38,4)
+      Text = ("<- Propriété ColorBarBis = RGB")
+    }
+    { Separator1 Separator
+      MoveScaled(0,24,59,2)
+    }
+    { Separator2 Separator
+      MoveScaled(0,29,59,2)
+    }
+    { Label6 Label
+      MoveScaled(0,26,59,4)
+      Text = ("Idem ProgressBarText1, 2, 3, 4 mais propriété Reverse = True")
+      Alignment = Align.Center
+    }
+    { Label7 Label
+      MoveScaled(62,31,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { Label8 Label
+      MoveScaled(62,36,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Label9 Label
+      MoveScaled(62,42,39,4)
+      Text = ("<- Propriété Font = Value")
+    }
+    { Label10 Label
+      MoveScaled(62,49,39,4)
+      Text = ("<- Propriété ColorBarBis = RGB")
+    }
+    { Separator3 Separator
+      MoveScaled(0,55,59,2)
+    }
+    { Label11 Label
+      MoveScaled(1,57,58,4)
+      Text = ("Propriété Middle = True + Reverse = False")
+      Alignment = Align.Center
+    }
+    { Separator4 Separator
+      MoveScaled(0,60,59,2)
+    }
+    { Label1 Label
+      MoveScaled(63,62,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText10 ProgressBarText
+      MoveScaled(0,67,59,4)
+    }
+    { Label12 Label
+      MoveScaled(63,67,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { ProgressBarText11 ProgressBarText
+      MoveScaled(0,72,59,6)
+    }
+    { Label13 Label
+      MoveScaled(63,73,39,4)
+      Text = ("<- Propriété Font = Value")
+    }
+    { ProgressBarText12 ProgressBarText
+      MoveScaled(0,79,59,7)
+    }
+    { Label14 Label
+      MoveScaled(63,80,39,4)
+      Text = ("<- Propriété ColorBarBis = RGB")
+    }
+    { Separator5 Separator
+      MoveScaled(0,86,59,2)
+    }
+    { Label15 Label
+      MoveScaled(1,88,58,4)
+      Text = ("Propriété Middle = True + Reverse = True")
+      Alignment = Align.Center
+    }
+    { Separator6 Separator
+      MoveScaled(0,91,59,2)
+    }
+    { ProgressBarText13 ProgressBarText
+      MoveScaled(0,93,59,4)
+    }
+    { ProgressBarText14 ProgressBarText
+      MoveScaled(0,98,59,4)
+    }
+    { Label16 Label
+      MoveScaled(63,98,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { ProgressBarText15 ProgressBarText
+      MoveScaled(0,103,59,6)
+    }
+    { Label17 Label
+      MoveScaled(63,104,39,4)
+      Text = ("<- Propriété Font = Value")
+    }
+    { ProgressBarText16 ProgressBarText
+      MoveScaled(0,110,59,7)
+    }
+    { Label18 Label
+      MoveScaled(63,111,39,4)
+      Text = ("<- Propriété ColorBarBis = RGB")
+    }
+    { Label19 Label
+      MoveScaled(63,93,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText17 ProgressBarText
+      MoveScaled(0,125,59,3)
+    }
+    { Separator7 Separator
+      MoveScaled(0,122,59,2)
+    }
+    { Label20 Label
+      MoveScaled(1,119,58,4)
+      Text = ("Propriété Motif = 1")
+      Alignment = Align.Center
+    }
+    { Separator8 Separator
+      MoveScaled(0,117,59,2)
+    }
+    { Label21 Label
+      MoveScaled(63,125,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText18 ProgressBarText
+      MoveScaled(0,130,59,3)
+    }
+    { Label22 Label
+      MoveScaled(63,130,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Separator9 Separator
+      MoveScaled(0,133,59,2)
+    }
+    { Label23 Label
+      MoveScaled(1,135,58,4)
+      Text = ("Propriété Motif = 1 + Reverse = True")
+      Alignment = Align.Center
+    }
+    { Separator10 Separator
+      MoveScaled(0,138,59,2)
+    }
+    { ProgressBarText19 ProgressBarText
+      MoveScaled(0,140,59,3)
+    }
+    { Label24 Label
+      MoveScaled(63,140,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText20 ProgressBarText
+      MoveScaled(0,145,59,3)
+    }
+    { Label25 Label
+      MoveScaled(63,145,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Separator11 Separator
+      MoveScaled(0,148,59,2)
+    }
+    { Label26 Label
+      MoveScaled(1,150,58,4)
+      Text = ("Propriété Motif = 1 + Reverse = False + Middle =True")
+      Alignment = Align.Center
+    }
+    { Separator12 Separator
+      MoveScaled(0,153,59,2)
+    }
+    { ProgressBarText21 ProgressBarText
+      MoveScaled(0,155,59,3)
+    }
+    { Label27 Label
+      MoveScaled(63,155,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText22 ProgressBarText
+      MoveScaled(0,160,59,3)
+    }
+    { Label28 Label
+      MoveScaled(63,160,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Separator13 Separator
+      MoveScaled(0,163,59,2)
+    }
+    { Label29 Label
+      MoveScaled(1,165,58,4)
+      Text = ("Propriété Motif = 1 + Reverse = True + Middle =True")
+      Alignment = Align.Center
+    }
+    { Separator14 Separator
+      MoveScaled(0,168,59,2)
+    }
+    { ProgressBarText23 ProgressBarText
+      MoveScaled(0,170,59,3)
+    }
+    { ProgressBarText24 ProgressBarText
+      MoveScaled(0,175,59,3)
+    }
+    { Label30 Label
+      MoveScaled(63,170,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { Label31 Label
+      MoveScaled(63,175,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Separator15 Separator
+      MoveScaled(0,178,59,2)
+    }
+    { Label32 Label
+      MoveScaled(1,180,58,4)
+      Text = ("Propriété Motif = 2")
+      Alignment = Align.Center
+    }
+    { Separator16 Separator
+      MoveScaled(0,183,59,2)
+    }
+    { ProgressBarText25 ProgressBarText
+      MoveScaled(0,186,59,3)
+    }
+    { Label33 Label
+      MoveScaled(63,186,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText26 ProgressBarText
+      MoveScaled(0,191,59,3)
+    }
+    { Label34 Label
+      MoveScaled(63,191,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Separator17 Separator
+      MoveScaled(0,194,59,2)
+    }
+    { Label35 Label
+      MoveScaled(1,196,58,4)
+      Text = ("Propriété Motif = 2 + Reverse = True")
+      Alignment = Align.Center
+    }
+    { Separator18 Separator
+      MoveScaled(0,199,59,2)
+    }
+    { ProgressBarText27 ProgressBarText
+      MoveScaled(0,201,59,3)
+    }
+    { Label36 Label
+      MoveScaled(63,201,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText28 ProgressBarText
+      MoveScaled(0,206,59,3)
+    }
+    { Label37 Label
+      MoveScaled(63,206,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Separator19 Separator
+      MoveScaled(0,209,59,2)
+    }
+    { Label38 Label
+      MoveScaled(1,211,58,4)
+      Text = ("Propriété Motif = 2 + Reverse = False + Middle =True")
+      Alignment = Align.Center
+    }
+    { Separator20 Separator
+      MoveScaled(0,214,59,2)
+    }
+    { ProgressBarText29 ProgressBarText
+      MoveScaled(0,216,59,3)
+    }
+    { Label39 Label
+      MoveScaled(63,216,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText30 ProgressBarText
+      MoveScaled(0,221,59,3)
+    }
+    { Label40 Label
+      MoveScaled(63,221,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { Separator21 Separator
+      MoveScaled(0,224,59,2)
+    }
+    { Label41 Label
+      MoveScaled(1,226,58,4)
+      Text = ("Propriété Motif = 2 + Reverse = True + Middle =True")
+      Alignment = Align.Center
+    }
+    { Separator22 Separator
+      MoveScaled(0,229,59,2)
+    }
+    { ProgressBarText31 ProgressBarText
+      MoveScaled(0,231,59,3)
+    }
+    { Label42 Label
+      MoveScaled(63,231,39,4)
+      Text = ("<- Propriété ColorBar = Color.DarkBlue")
+    }
+    { ProgressBarText32 ProgressBarText
+      MoveScaled(0,236,59,3)
+    }
+    { Label43 Label
+      MoveScaled(63,236,39,4)
+      Text = ("<- Propriété ColorBar = RGB")
+    }
+    { ProgressBarText33 ProgressBarText
+      MoveScaled(0,246,58,4)
+    }
+    { Separator23 Separator
+      MoveScaled(-1,239,59,2)
+    }
+    { Label44 Label
+      MoveScaled(0,241,58,4)
+      Text = ("Propriété Motif = 3")
+      Alignment = Align.Center
+    }
+    { Separator24 Separator
+      MoveScaled(-1,244,59,2)
+    }
+    { Label45 Label
+      MoveScaled(62,246,39,4)
+      Text = ("<- Changement d'image selon la valeur")
+    }
+    { ProgressBarText34 ProgressBarText
+      MoveScaled(0,251,58,4)
+    }
+    { Label46 Label
+      MoveScaled(-1,251,59,3)
+      Font = Font["Bold,+1"]
+      Foreground = Color.Orange
+      Text = (". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    }
+    { Label47 Label
+      MoveScaled(-1,263,59,3)
+      Font = Font["Bold,+1"]
+      Foreground = Color.Orange
+      Text = (". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    }
+    { ProgressBarText35 ProgressBarText
+      MoveScaled(0,263,58,4)
+    }
+    { Separator25 Separator
+      MoveScaled(0,255,59,2)
+    }
+    { Label48 Label
+      MoveScaled(1,257,58,4)
+      Text = ("Propriété Motif = 3 + Reverse = True")
+      Alignment = Align.Center
+    }
+    { Separator26 Separator
+      MoveScaled(0,260,59,2)
+    }
+    { Label49 Label
+      MoveScaled(62,263,39,4)
+      Text = ("<- Changement d'image selon la valeur")
+    }
+    { Label50 Label
+      MoveScaled(62,251,39,4)
+      Text = ("<- Changement d'image selon la valeur")
+    }
+    { ProgressBarText36 ProgressBarText
+      MoveScaled(0,275,6,42)
+    }
+    { ProgressBarText37 ProgressBarText
+      MoveScaled(11,275,6,42)
+    }
+    { ProgressBarText38 ProgressBarText
+      MoveScaled(22,275,9,42)
+    }
+    { ProgressBarText39 ProgressBarText
+      MoveScaled(36,275,9,42)
+    }
+    { ProgressBarText40 ProgressBarText
+      MoveScaled(54,275,6,42)
+    }
+    { ProgressBarText41 ProgressBarText
+      MoveScaled(65,275,6,42)
+    }
+    { ProgressBarText42 ProgressBarText
+      MoveScaled(76,275,9,42)
+    }
+    { ProgressBarText43 ProgressBarText
+      MoveScaled(90,275,9,42)
+    }
+    { ProgressBarText44 ProgressBarText
+      MoveScaled(0,324,6,42)
+    }
+    { ProgressBarText45 ProgressBarText
+      MoveScaled(11,324,6,42)
+    }
+    { ProgressBarText46 ProgressBarText
+      MoveScaled(22,324,9,42)
+    }
+    { ProgressBarText47 ProgressBarText
+      MoveScaled(36,324,9,42)
+    }
+    { ProgressBarText48 ProgressBarText
+      MoveScaled(54,324,6,42)
+    }
+    { ProgressBarText49 ProgressBarText
+      MoveScaled(65,324,6,42)
+    }
+    { ProgressBarText50 ProgressBarText
+      MoveScaled(76,324,9,42)
+    }
+    { ProgressBarText51 ProgressBarText
+      MoveScaled(90,324,9,42)
+    }
+    { ProgressBarText52 ProgressBarText
+      MoveScaled(0,372,3,42)
+    }
+    { ProgressBarText53 ProgressBarText
+      MoveScaled(5,372,3,42)
+    }
+    { ProgressBarText54 ProgressBarText
+      MoveScaled(10,372,3,42)
+    }
+    { ProgressBarText55 ProgressBarText
+      MoveScaled(15,372,3,42)
+    }
+    { ProgressBarText56 ProgressBarText
+      MoveScaled(20,372,3,42)
+    }
+    { ProgressBarText57 ProgressBarText
+      MoveScaled(25,372,3,42)
+    }
+    { ProgressBarText58 ProgressBarText
+      MoveScaled(30,372,3,42)
+    }
+    { ProgressBarText59 ProgressBarText
+      MoveScaled(35,372,3,42)
+    }
+    { ProgressBarText60 ProgressBarText
+      MoveScaled(41,372,3,42)
+    }
+    { ProgressBarText61 ProgressBarText
+      MoveScaled(46,372,3,42)
+    }
+    { ProgressBarText62 ProgressBarText
+      MoveScaled(51,372,3,42)
+    }
+    { ProgressBarText63 ProgressBarText
+      MoveScaled(56,372,3,42)
+    }
+    { ProgressBarText64 ProgressBarText
+      MoveScaled(61,372,3,42)
+    }
+    { ProgressBarText65 ProgressBarText
+      MoveScaled(66,372,3,42)
+    }
+    { ProgressBarText66 ProgressBarText
+      MoveScaled(71,372,3,42)
+    }
+    { ProgressBarText67 ProgressBarText
+      MoveScaled(76,372,3,42)
+    }
+    { ProgressBarText68 ProgressBarText
+      MoveScaled(82,372,4,42)
+    }
+    { ProgressBarText69 ProgressBarText
+      MoveScaled(89,372,4,42)
+    }
+    { ProgressBarText70 ProgressBarText
+      MoveScaled(95,372,4,42)
+    }
+    { Label53 Label
+      MoveScaled(59,0,4,3)
+      Text = ("1")
+      Alignment = Align.Center
+    }
+    { Label54 Label
+      MoveScaled(59,5,4,3)
+      Text = ("2")
+      Alignment = Align.Center
+    }
+    { Label55 Label
+      MoveScaled(59,11,4,3)
+      Text = ("3")
+      Alignment = Align.Center
+    }
+    { Label56 Label
+      MoveScaled(59,18,4,3)
+      Text = ("4")
+      Alignment = Align.Center
+    }
+    { Label57 Label
+      MoveScaled(59,31,4,3)
+      Text = ("5")
+      Alignment = Align.Center
+    }
+    { Label58 Label
+      MoveScaled(59,36,4,3)
+      Text = ("6")
+      Alignment = Align.Center
+    }
+    { Label59 Label
+      MoveScaled(59,42,4,3)
+      Text = ("7")
+      Alignment = Align.Center
+    }
+    { Label60 Label
+      MoveScaled(59,49,4,3)
+      Text = ("8")
+      Alignment = Align.Center
+    }
+    { Label61 Label
+      MoveScaled(59,62,4,3)
+      Text = ("9")
+      Alignment = Align.Center
+    }
+    { Label62 Label
+      MoveScaled(59,67,4,3)
+      Text = ("10")
+      Alignment = Align.Center
+    }
+    { Label63 Label
+      MoveScaled(59,73,4,3)
+      Text = ("11")
+      Alignment = Align.Center
+    }
+    { Label64 Label
+      MoveScaled(59,80,4,3)
+      Text = ("12")
+      Alignment = Align.Center
+    }
+    { Label65 Label
+      MoveScaled(59,111,4,3)
+      Text = ("16")
+      Alignment = Align.Center
+    }
+    { Label66 Label
+      MoveScaled(59,104,4,3)
+      Text = ("15")
+      Alignment = Align.Center
+    }
+    { Label67 Label
+      MoveScaled(59,98,4,3)
+      Text = ("14")
+      Alignment = Align.Center
+    }
+    { Label68 Label
+      MoveScaled(59,93,4,3)
+      Text = ("13")
+      Alignment = Align.Center
+    }
+    { Label69 Label
+      MoveScaled(59,145,4,3)
+      Text = ("20")
+      Alignment = Align.Center
+    }
+    { Label70 Label
+      MoveScaled(59,140,4,3)
+      Text = ("19")
+      Alignment = Align.Center
+    }
+    { Label71 Label
+      MoveScaled(59,130,4,3)
+      Text = ("18")
+      Alignment = Align.Center
+    }
+    { Label72 Label
+      MoveScaled(59,125,4,3)
+      Text = ("17")
+      Alignment = Align.Center
+    }
+    { Label73 Label
+      MoveScaled(58,263,4,3)
+      Text = ("35")
+      Alignment = Align.Center
+    }
+    { Label74 Label
+      MoveScaled(58,251,4,3)
+      Text = ("34")
+      Alignment = Align.Center
+    }
+    { Label75 Label
+      MoveScaled(58,246,4,3)
+      Text = ("33")
+      Alignment = Align.Center
+    }
+    { Label76 Label
+      MoveScaled(59,236,4,3)
+      Text = ("32")
+      Alignment = Align.Center
+    }
+    { Label77 Label
+      MoveScaled(59,201,4,3)
+      Text = ("27")
+      Alignment = Align.Center
+    }
+    { Label78 Label
+      MoveScaled(59,186,4,3)
+      Text = ("25")
+      Alignment = Align.Center
+    }
+    { Label79 Label
+      MoveScaled(59,175,4,3)
+      Text = ("24")
+      Alignment = Align.Center
+    }
+    { Label80 Label
+      MoveScaled(59,170,4,3)
+      Text = ("23")
+      Alignment = Align.Center
+    }
+    { Label81 Label
+      MoveScaled(59,160,4,3)
+      Text = ("22")
+      Alignment = Align.Center
+    }
+    { Label82 Label
+      MoveScaled(59,155,4,3)
+      Text = ("21")
+      Alignment = Align.Center
+    }
+    { Label83 Label
+      MoveScaled(59,231,4,3)
+      Text = ("31")
+      Alignment = Align.Center
+    }
+    { Label84 Label
+      MoveScaled(59,221,4,3)
+      Text = ("30")
+      Alignment = Align.Center
+    }
+    { Label85 Label
+      MoveScaled(59,216,4,3)
+      Text = ("29")
+      Alignment = Align.Center
+    }
+    { Label86 Label
+      MoveScaled(59,206,4,3)
+      Text = ("28")
+      Alignment = Align.Center
+    }
+    { Label87 Label
+      MoveScaled(59,191,4,3)
+      Text = ("26")
+      Alignment = Align.Center
+    }
+    { Label88 Label
+      MoveScaled(92,271,4,3)
+      Text = ("43")
+      Alignment = Align.Center
+    }
+    { Label89 Label
+      MoveScaled(78,271,4,3)
+      Text = ("42")
+      Alignment = Align.Center
+    }
+    { Label90 Label
+      MoveScaled(66,271,4,3)
+      Text = ("41")
+      Alignment = Align.Center
+    }
+    { Label91 Label
+      MoveScaled(55,271,4,3)
+      Text = ("40")
+      Alignment = Align.Center
+    }
+    { Label92 Label
+      MoveScaled(38,271,4,3)
+      Text = ("39")
+      Alignment = Align.Center
+    }
+    { Label93 Label
+      MoveScaled(24,271,4,3)
+      Text = ("38")
+      Alignment = Align.Center
+    }
+    { Label94 Label
+      MoveScaled(12,271,4,3)
+      Text = ("37")
+      Alignment = Align.Center
+    }
+    { Label95 Label
+      MoveScaled(1,271,4,3)
+      Text = ("36")
+      Alignment = Align.Center
+    }
+    { Label96 Label
+      MoveScaled(92,321,4,3)
+      Text = ("51")
+      Alignment = Align.Center
+    }
+    { Label97 Label
+      MoveScaled(78,321,4,3)
+      Text = ("50")
+      Alignment = Align.Center
+    }
+    { Label98 Label
+      MoveScaled(66,321,4,3)
+      Text = ("49")
+      Alignment = Align.Center
+    }
+    { Label99 Label
+      MoveScaled(55,321,4,3)
+      Text = ("48")
+      Alignment = Align.Center
+    }
+    { Label100 Label
+      MoveScaled(38,321,4,3)
+      Text = ("47")
+      Alignment = Align.Center
+    }
+    { Label101 Label
+      MoveScaled(24,321,4,3)
+      Text = ("46")
+      Alignment = Align.Center
+    }
+    { Label102 Label
+      MoveScaled(12,321,4,3)
+      Text = ("45")
+      Alignment = Align.Center
+    }
+    { Label103 Label
+      MoveScaled(1,321,4,3)
+      Text = ("44")
+      Alignment = Align.Center
+    }
+    { Label104 Label
+      MoveScaled(89,369,4,3)
+      Text = ("69")
+      Alignment = Align.Center
+    }
+    { Label105 Label
+      MoveScaled(76,369,4,3)
+      Text = ("67")
+      Alignment = Align.Center
+    }
+    { Label106 Label
+      MoveScaled(66,369,4,3)
+      Text = ("65")
+      Alignment = Align.Center
+    }
+    { Label107 Label
+      MoveScaled(56,369,4,3)
+      Text = ("63")
+      Alignment = Align.Center
+    }
+    { Label108 Label
+      MoveScaled(46,369,4,3)
+      Text = ("61")
+      Alignment = Align.Center
+    }
+    { Label109 Label
+      MoveScaled(35,369,4,3)
+      Text = ("59")
+      Alignment = Align.Center
+    }
+    { Label110 Label
+      MoveScaled(25,369,4,3)
+      Text = ("57")
+      Alignment = Align.Center
+    }
+    { Label111 Label
+      MoveScaled(15,369,4,3)
+      Text = ("55")
+      Alignment = Align.Center
+    }
+    { Label112 Label
+      MoveScaled(5,369,4,3)
+      Text = ("53")
+      Alignment = Align.Center
+    }
+    { Label113 Label
+      MoveScaled(95,369,4,3)
+      Text = ("70")
+      Alignment = Align.Center
+    }
+    { Label114 Label
+      MoveScaled(82,369,4,3)
+      Text = ("68")
+      Alignment = Align.Center
+    }
+    { Label115 Label
+      MoveScaled(71,369,4,3)
+      Text = ("66")
+      Alignment = Align.Center
+    }
+    { Label116 Label
+      MoveScaled(61,369,4,3)
+      Text = ("64")
+      Alignment = Align.Center
+    }
+    { Label117 Label
+      MoveScaled(51,369,4,3)
+      Text = ("62")
+      Alignment = Align.Center
+    }
+    { Label118 Label
+      MoveScaled(41,369,4,3)
+      Text = ("60")
+      Alignment = Align.Center
+    }
+    { Label119 Label
+      MoveScaled(30,369,4,3)
+      Text = ("58")
+      Alignment = Align.Center
+    }
+    { Label120 Label
+      MoveScaled(20,369,4,3)
+      Text = ("56")
+      Alignment = Align.Center
+    }
+    { Label121 Label
+      MoveScaled(10,369,4,3)
+      Text = ("54")
+      Alignment = Align.Center
+    }
+    { Label122 Label
+      MoveScaled(0,369,4,3)
+      Text = ("52")
+      Alignment = Align.Center
+    }
+    { Label51 Label
+      MoveScaled(95,372,4,42)
+      Font = Font["Bold,+1"]
+      Foreground = Color.Orange
+      Alignment = Align.Center
+    }
+    { Label52 Label
+      MoveScaled(89,372,4,42)
+      Font = Font["Bold,+1"]
+      Foreground = Color.Orange
+      Alignment = Align.Center
+    }
+  }
+}

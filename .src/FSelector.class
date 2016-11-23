@@ -1,0 +1,29 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  ToolButton1.Text = ("Abrir ejemplo") & " dbControls"
+  ToolButton2.Text = ("Abrir ejemplo") & " xControls"
+  ToolButton3.Text = ("Abrir ejemplo") & " ProgressBarText"
+
+End
+
+Public Sub ToolButton1_Click()
+
+  Connections["provincias"].host = Application.Path
+  Connections["provincias"].Open
+  FDBControls.Show()
+
+End
+
+Public Sub ToolButton2_Click()
+
+  FXControls.Show()
+
+End
+
+Public Sub ToolButton3_Click()
+
+  FProgbar.Show()
+
+End

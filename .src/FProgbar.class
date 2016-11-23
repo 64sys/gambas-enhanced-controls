@@ -1,0 +1,1380 @@
+' Gambas class file
+
+'attribution des images (/Affichage/Projet/Données)
+'la variable imgxxx récupère l'image correspondante à Picture=["Monimage.png"]
+Public imgV As Picture = Picture["point_vert.png"]
+Public imgJ As Picture = Picture["point_jaune.png"]
+Public imgR As Picture = Picture["point_rouge.png"]
+Public imgpcm1 As Picture = Picture["pr1.png"]
+Public imgpcm2 As Picture = Picture["pr2.png"]
+Public imgpcm3 As Picture = Picture["pr3.png"]
+Public imgpcm4 As Picture = Picture["pr4.png"]
+Public imgpcm5 As Picture = Picture["pr5.png"]
+Public imgpcm6 As Picture = Picture["pr6.png"]
+Public imgpcm7 As Picture = Picture["pr7.png"]
+Public imgpcm8 As Picture = Picture["pr8.png"]
+Public imgrold As Picture = Picture["rouleaud.png"]
+Public imgrolg As Picture = Picture["rouleaug.png"]
+Public imgroldv As Picture = Picture["rouleaudvide.png"]
+Public imgrolgv As Picture = Picture["rouleaugvide.png"]
+Public imgrolh As Picture = Picture["rouleauh.png"]
+Public imgrolhv As Picture = Picture["rouleauhvide.png"]
+Public imgrolb As Picture = Picture["rouleaub.png"]
+Public imgrolbv As Picture = Picture["rouleaubvide.png"]
+
+Public $bmd As Boolean 'si faux on monte, si vrai on descend
+
+Public Sub Form_KeyPress() 'control l'appui des touches
+
+  If Key.Shift Then Inc Slider1.Value 'appuyer sur [Shift] = incrémente la valeur du slider de 1
+  If Key.Control Then Dec Slider1.Value 'appuyer sur [Ctrl] = décrémente la valeur du slider de 1
+
+End
+
+Public Sub Form_Open() 'à l'ouverture du formulaire
+
+  Dim i As Integer
+
+  For i = 0 To ProgressBarText70.H / 10 'sert au dessin des pointillés pour les progressbartext verticaux...
+    Label51.Text = Label51.Text & "." & Chr(10)
+    Label52.Text = Label52.Text & "." & Chr(10)
+  Next
+
+  Slider1.Value = 50 'attrbue une valeur initiale au slider
+  Slider1_Change() 'puis on entre dans la procédure (lorsque la valeur du slider change)
+
+End
+
+Public Sub Slider1_Change() 'lorsque la valeur du slider change
+
+  Dim msg As String = ("La valeur du ProgressBarText est de ") & Slider1.Value & "%"
+  Dim tp As String = (Slider1.Value / 10) + 6
+  Dim dizaine As Float = Slider1.Value / 10
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText1 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText2 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Font = Font["Bold,+2"] 'type et taille de la fonte
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = ("Plein") 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = ("Normal") 'affiche ce texte
+      Case 0 To 25 'entre 0 et 25
+        .Text = ("Vide") 'affiche ce texte
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText3 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'ProgressBarText3.Value récupère la valeur en cours du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText4 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    If Slider1.Value > 0 Then 'si la valeur du slider est supérieur à 0
+      If CInt(Round(dizaine) * 10) / Slider1.Value = 1 Then
+        .Font = Font["Bold,Italic,Underline,+2"] 'paramètres de la fonte
+        .Text = msg 'texte affiché dans le ProgressBarText
+        .TextBis = "" 'texte affiché dans la barre interne de défilement
+      Else 'sinon
+        .Font = Font["DejaVu Sans,,,0"] 'paramètres de la fonte
+        .Text = "" 'texte affiché dans le ProgressBarText
+        .TextBis = "Intermédiaire = " & (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+      Endif
+    Endif
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple inversé
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'ColorBarBis obligatoire (sinon noir par defaut)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText5 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .ColorBarBis = Color.DarkBlue 'couleur de la barre interne de défilement
+    .Reverse = True 'sens de défilement inversé
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple inversé avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis obligatoire (sinon noir par defaut)
+  'Text cette variable indique le texte à afficher
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText6 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre interne de défilement
+    .Font = Font["Bold,+2"] 'paramètres de la fonte
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = ("Plein") 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = ("Normal") 'affiche ce texte
+      Case 0 To 25 'entre 0et 25
+        .Text = ("Vide") 'affiche ce texte
+    End Select
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple inversé avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'ColorBarBis obligatoire (sinon noir par defaut)
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText7 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .ColorBarBis = Color.Gray 'couleur de la barre interne de défilement
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText8 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    If Slider1.Value > 0 Then 'si la valeur du slider est supérieur à 0
+      If CInt(Round(dizaine) * 10) / Slider1.Value = 1 Then
+        .Font = Font["Bold,Italic,Underline,+2"] 'paramètres de la fonte
+        .Text = msg 'texte affiché dans le ProgressBarText
+        .TextBis = "" 'texte affiché dans la barre interne de défilement
+      Else 'sinon
+        .Font = Font["DejaVu Sans,,,0"] 'paramètres de la fonte
+        .Text = "" 'texte affiché dans le ProgressBarText
+        .TextBis = "Intermédiaire = " & (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+      Endif
+    Endif
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10 'calcul de la valeur intermédiaire pour la barre interne de défilement
+    .Reverse = True 'sens de défilement inversé
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText9 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'Text cette variable indique le texte à afficher
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText10 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Font = Font["Bold,+2"] 'type et taille de la fonte
+    .Middle = True 'affichage par début au centre
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = ("Plein") 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = ("Normal") 'affiche ce texte
+      Case 0 To 25 'entre 0 et 25
+        .Text = ("Vide") 'affiche ce texte
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText11 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double middle avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Middle indique le mode d'affichage de la barre de progression
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText12 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .Middle = True 'affichage par début au centre
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    If Slider1.Value > 0 Then 'si la valeur du slider est supérieur à 0
+      If CInt(Round(dizaine) * 10) / Slider1.Value = 1 Then
+        .Font = Font["Bold,Italic,Underline,+2"] 'paramètres de la fonte
+        .Text = msg 'texte affiché dans le ProgressBarText
+        .TextBis = "" 'texte affiché dans la barre interne de défilement
+      Else 'sinon
+        .Font = Font["DejaVu Sans,,,0"] 'paramètres de la fonte
+        .Text = "" 'texte affiché dans le ProgressBarText
+        .TextBis = "Intermédiaire = " & (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+      Endif
+    Endif
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle + reverse
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText13 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle + reverse avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'Text cette variable indique le texte à afficher
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText14 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Font = Font["Bold,+2"] 'type et taille de la fonte
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = ("Plein") 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = ("Normal") 'affiche ce texte
+      Case 0 To 25 'entre 0 et 25
+        .Text = ("Vide") 'affiche ce texte
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle + reverse avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText15 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = msg 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double middle + reverse avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText16 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    If Slider1.Value > 0 Then 'si la valeur du slider est supérieur à 0
+      If CInt(Round(dizaine) * 10) / Slider1.Value = 1 Then
+        .Font = Font["Bold,Italic,Underline,+2"] 'paramètres de la fonte
+        .Text = msg 'texte affiché dans le ProgressBarText
+        .TextBis = "" 'texte affiché dans la barre interne de défilement
+      Else 'sinon
+        .Font = Font["DejaVu Sans,,,0"] 'paramètres de la fonte
+        .Text = "" 'texte affiché dans le ProgressBarText
+        .TextBis = "Intermédiaire = " & (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+      Endif
+    Endif
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple (rectangle)
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText17 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText18 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Reverse = true
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText19 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Reverse = true avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText20 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText21 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText22 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True + Reverse = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText23 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True + Reverse = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText24 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle)
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText25 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText26 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Reverse = true
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText27 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Reverse = true avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText28 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText29 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText30 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True + Reverse = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText31 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True + Reverse = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText32 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 3 simple (picture)
+  '----------------------------------------------------------------------------------------------------
+  'Motif est a 3 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText33 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Motif = 3 'Motif est a 3 (donc pas de texte ni de textbis)
+    Select .Value 'selon la valeur (ici du ProgressBarText)
+      Case 0 To 20 'entre 0 et 20
+        .Picture = imgR 'la propriété picture récupère cette image
+      Case 21 To 40 'entre 21 et 40
+        Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+          Case True '0 = True
+            .Picture = imgR 'la propriété picture récupère cette image
+          Case False '0 = False
+            .Picture = imgJ 'la propriété picture récupère cette image
+        End Select
+      Case 41 To 60 'entre 41 et 60
+        .Picture = imgJ 'la propriété picture récupère cette image
+      Case 61 To 80 'entre 61 et 80
+        Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+          Case True '0 = True
+            .Picture = imgV 'la propriété picture récupère cette image
+          Case False '0 = False
+            .Picture = imgJ 'la propriété picture récupère cette image
+        End Select
+      Case 81 To 100 'entre 81 et 100
+        .Picture = imgV 'la propriété picture récupère cette image
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 3 simple (picture)
+  '----------------------------------------------------------------------------------------------------
+  'Motif est a 3 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText34 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Motif = 3 'Motif est a 3 (donc pas de texte ni de textbis)
+    If $bmd Then 'si $bmd est True
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgpcm2 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgpcm1 'la propriété picture récupère cette image
+      End Select
+    Else 'sinon
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgrold 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgroldv 'la propriété picture récupère cette image
+      End Select
+    Endif
+    .Raise 'met le progressbartext à l'avant plan (ainsi il recouvre le label)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 3 simple (picture) + Reverse
+  '----------------------------------------------------------------------------------------------------
+  'Motif est a 3 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText35 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Motif = 3 'Motif est a 3 (donc pas de texte ni de textbis)
+    If $bmd Then 'si $bmd est True
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgpcm3 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgpcm4 'la propriété picture récupère cette image
+      End Select
+    Else 'sinon
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgrolg 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgrolgv 'la propriété picture récupère cette image
+      End Select
+    Endif
+    .Raise 'met le progressbartext à l'avant plan (ainsi il recouvre le label)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  '
+  '                           Le progressbartext est vertical ! ! !
+  '
+  'en fait on détermine automatiquement si la largeur est > à la hauteur lorsque le composant est dessiné
+  '
+  '----------------------------------------------------------------------------------------------------
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText36 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Text = Slider1.Value & "%"
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText37 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Font = Font["Bold,+2"] 'type et taille de la fonte
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = "P" & Chr(10) & "l" & Chr(10) & "e" & Chr(10) & "i" & Chr(10) & "n" 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = "N" & Chr(10) & "o" & Chr(10) & "r" & Chr(10) & "m" & Chr(10) & "a" & Chr(10) & "l" 'affiche ce texte
+      Case 0 To 25 'entre 0 et 25
+        .Text = "V" & Chr(10) & "i" & Chr(10) & "d" & Chr(10) & "e" 'affiche ce texte
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText38 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = Slider1.Value & "%" 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'ProgressBarText3.Value récupère la valeur en cours du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText39 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    .TextBis = (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+    .Text = Slider1.Value & "%" 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple inversé
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'ColorBarBis obligatoire (sinon noir par defaut)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText40 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .ColorBarBis = Color.DarkBlue 'couleur de la barre interne de défilement
+    .Reverse = True 'sens de défilement inversé
+    .Text = Slider1.Value & "%"  'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple inversé avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis obligatoire (sinon noir par defaut)
+  'Text cette variable indique le texte à afficher
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText41 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre interne de défilement
+    .Font = Font["Bold,+2"] 'paramètres de la fonte
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = "P" & Chr(10) & "l" & Chr(10) & "e" & Chr(10) & "i" & Chr(10) & "n" 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = "N" & Chr(10) & "o" & Chr(10) & "r" & Chr(10) & "m" & Chr(10) & "a" & Chr(10) & "l" 'affiche ce texte
+      Case 0 To 25 'entre 0et 25
+        .Text = "V" & Chr(10) & "i" & Chr(10) & "d" & Chr(10) & "e" 'affiche ce texte
+    End Select
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple inversé avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'ColorBarBis obligatoire (sinon noir par defaut)
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText42 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .ColorBarBis = Color.Gray 'couleur de la barre interne de défilement
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = Slider1.Value & "%" 'texte affiché dans le ProgressBarText
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText43 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    .Text = Slider1.Value & "%"  'texte affiché dans le ProgressBarText
+    .TextBis = (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10 'calcul de la valeur intermédiaire pour la barre interne de défilement
+    .Reverse = True 'sens de défilement inversé
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText44 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Text = Slider1.Value & "%" 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'Text cette variable indique le texte à afficher
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText45 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Font = Font["Bold,+2"] 'type et taille de la fonte
+    .Middle = True 'affichage par début au centre
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = "P" & Chr(10) & "l" & Chr(10) & "e" & Chr(10) & "i" & Chr(10) & "n" 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = "N" & Chr(10) & "o" & Chr(10) & "r" & Chr(10) & "m" & Chr(10) & "a" & Chr(10) & "l" 'affiche ce texte
+      Case 0 To 25 'entre 0 et 25
+        .Text = "V" & Chr(10) & "i" & Chr(10) & "d" & Chr(10) & "e" 'affiche ce texte
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText46 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = Slider1.Value & "%" 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double middle avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Middle indique le mode d'affichage de la barre de progression
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText47 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .Middle = True 'affichage par début au centre
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    .Text = Slider1.Value & "%"  'texte affiché dans le ProgressBarText
+    .TextBis = (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle + reverse
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText48 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    .Text = Slider1.Value & "%" 'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle + reverse avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'Border indique La présence de la bordure du composant
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'Text cette variable indique le texte à afficher
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText49 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Border = False 'Dispose une bordure autour du composant (non)
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Font = Font["Bold,+2"] 'type et taille de la fonte
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    Select Slider1.Value 'selon la valeur du slider
+      Case 75 To 100 'entre 75 et 100
+        .Text = "P" & Chr(10) & "l" & Chr(10) & "e" & Chr(10) & "i" & Chr(10) & "n" 'affiche ce texte
+      Case 26 To 74 'entre 26 et 74
+        .Text = "N" & Chr(10) & "o" & Chr(10) & "r" & Chr(10) & "m" & Chr(10) & "a" & Chr(10) & "l" 'affiche ce texte
+      Case 0 To 25 'entre 0 et 25
+        .Text = "V" & Chr(10) & "i" & Chr(10) & "d" & Chr(10) & "e" 'affiche ce texte
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage simple middle + reverse avec agrandissement du texte
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Font définit la fonte qui sera utilisée. Le facteur d'agrandissement est donné par la variable tp
+  'Text cette variable indique le texte à afficher
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText50 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.Gray 'couleur de la barre de défilement
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    .Font = Font["Bold,Italic,Underline," & tp] 'paramètres de la fonte
+    .Text = Slider1.Value & "%"  'texte affiché dans le ProgressBarText
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Affichage double middle + reverse avec changement de couleur des 2 barres de défilement
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar la couleur de la barre de défilement est indexée sur la valeur du Slider1
+  'ColorBarBis la couleur de la barre de défilement interne est indexée sur la variable dizaine
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Font définit la fonte qui sera utilisée.
+  'Label est vrai (pour autorisation d'affichage du texte)
+  'LabelBis est vrai (pour autorisation d'affichage du texte)
+  'MaxValuBis est utilisée pour le calcul des divisions intermédiaire
+  'Text cette variable indique le texte à afficher dans la barre principale
+  'TextBis cette variable indique le texte à afficher dans la barre interne
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText51 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, 125, Slider1.Value * 2.55) 'couleur de la barre de défilement
+    .ColorBarBis = Color.RGB(- dizaine * 255, dizaine * 255, 0) 'couleur de la barre interne de défilement
+    .Middle = True 'affichage par début au centre
+    .Reverse = True 'sens de défilement inversé
+    .LabelBis = True 'possibilité d'écrire du texte dans la barre interne de défilement
+    .MaxValueBis = 9 'initialisation de la valeur maximal de la barre interne de défilement
+    .Text = Slider1.Value & "%"  'texte affiché dans le ProgressBarText
+    .TextBis = (CStr(dizaine - Fix(dizaine)) * 10) & "%" 'texte affiché dans la barre interne de défilement
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+    .ValueBis = (dizaine - Fix(dizaine)) * 10
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple (rectangle)
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText52 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText53 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Reverse = true
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText54 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Reverse = true avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText55 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText56 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText57 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True + Reverse = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText58 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 1 simple  (rectangle) + Middle = True + Reverse = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 1 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText59 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 1 'Motif est a 1 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle)
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText60 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText61 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Reverse = true
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText62 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Reverse = true avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText63 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText64 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText65 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True + Reverse = True
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText66 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.DarkBlue 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 2 simple (cercle) + Middle = True + Reverse = True avec changement de couleur
+  '----------------------------------------------------------------------------------------------------
+  'ColorBar qui indique la couleur de la barre de défilement
+  'Motif est a 2 (donc pas de texte ni de textbis)
+  'Middle indique le mode d'affichage de la barre de progression
+  'Reverse est vrai (inverse le sens d'affichage)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText67 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .ColorBar = Color.RGB(- Slider1.Value * 2.55, Slider1.Value * 2.55, 0) 'couleur de la barre de défilement
+    .Motif = 2 'Motif est a 2 (donc pas de texte ni de textbis)
+    .Middle = True 'affiche à partir du milieu
+    .Reverse = True 'inverse le sens d'affichage
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 3 simple (picture)
+  '----------------------------------------------------------------------------------------------------
+  'Motif est a 3 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText68 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Motif = 3 'Motif est a 3 (donc pas de texte ni de textbis)
+    Select .Value 'selon la valeur (ici du ProgressBarText)
+      Case 0 To 20 'entre 0 et 20
+        .Picture = imgR 'la propriété picture récupère cette image
+      Case 21 To 40 'entre 21 et 40
+        Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+          Case True '0 = True
+            .Picture = imgR 'la propriété picture récupère cette image
+          Case False '0 = False
+            .Picture = imgJ 'la propriété picture récupère cette image
+        End Select
+      Case 41 To 60 'entre 41 et 60
+        .Picture = imgJ 'la propriété picture récupère cette image
+      Case 61 To 80 'entre 61 et 80
+        Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+          Case True '0 = True
+            .Picture = imgV 'la propriété picture récupère cette image
+          Case False '0 = False
+            .Picture = imgJ 'la propriété picture récupère cette image
+        End Select
+      Case 81 To 100 'entre 81 et 100
+        .Picture = imgV 'la propriété picture récupère cette image
+    End Select
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 3 simple (picture)
+  '----------------------------------------------------------------------------------------------------
+  'Motif est a 3 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText69 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Motif = 3 'Motif est a 3 (donc pas de texte ni de textbis)
+    If $bmd Then 'si $bmd est True
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgpcm7 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgpcm5 'la propriété picture récupère cette image
+      End Select
+    Else 'sinon
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgrolh 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgrolhv 'la propriété picture récupère cette image
+      End Select
+    Endif
+    .Raise 'met le progressbartext à l'avant plan (ainsi il recouvre le label)
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+  '----------------------------------------------------------------------------------------------------
+  'Motif = 3 simple (picture) + Reverse
+  '----------------------------------------------------------------------------------------------------
+  'Motif est a 3 (donc pas de texte ni de textbis)
+  'Toutes les autres propriétés sont laissées à leur valeur par défaut.
+  With ProgressBarText70 'pour ce ProgressBarText on attribue les valeurs ou les actions suivantes...
+    .Motif = 3 'Motif est a 3 (donc pas de texte ni de textbis)
+    If $bmd Then 'si $bmd est True
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgpcm8 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgpcm6 'la propriété picture récupère cette image
+      End Select
+    Else 'sinon
+      Select .Value Mod 2 = 0 'divise la valeur par 2 et selon que le reste de la division est O = True ou 0 = False...
+        Case True '0 = True
+          .Picture = imgrolb 'la propriété picture récupère cette image
+        Case False '0 = False
+          .Picture = imgrolbv 'la propriété picture récupère cette image
+      End Select
+    Endif
+    .Raise 'met le progressbartext à l'avant plan (ainsi il recouvre le label)
+    .Reverse = True 'sens de défilement inversé
+    .Value = Slider1.Value 'la propriété value du ProgressBarText récupère celle du slider
+  End With
+
+End
+
+Public Sub CheckBox1_Click() 'lorsque la CheckBox1 est cochée (ou décochée)
+
+  Dim i As Integer
+
+  While CheckBox1.Value = True 'tant que la CheckBox1 est cochée
+    'augmente les ProgressBarText
+    For i = 0 To 100 'pour i compte de 0 à 100
+      Slider1.Value = i 'le slider prend la valeur de i
+      $bmd = False 'positionne $bmd sur False
+      Wait 0.03 'utilisée pour l'affichage et la temporisation
+    Next
+    'diminue les ProgressBarText
+    For i = 100 To 0 Step -1 'pour i décompte de 100 à 0 par palier de 1
+      Slider1.Value = i 'le slider prend la valeur de i
+      $bmd = True 'positionne $bmd sur True
+      Wait 0.03 'utilisée pour l'affichage et la temporisation
+    Next
+  Wend
+
+End

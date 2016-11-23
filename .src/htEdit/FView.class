@@ -1,0 +1,41 @@
+' Gambas class file
+
+Property url As String
+Property HTML As String
+
+
+Public Sub btnBack_Click()
+
+  WebView1.Back
+
+End
+
+Public Sub btnForward_Click()
+
+  WebView1.Forward
+
+End
+
+Private Function url_Read() As String
+
+    Return WebView1.url
+
+End
+
+Private Sub url_Write(Value As String)
+
+    WebView1.Url = Value
+    
+End
+
+Private Function HTML_Read() As String
+
+    Return WebView1.HTML
+
+End
+
+Private Sub HTML_Write(Value As String)
+
+    WebView1.HTML = Value
+
+End

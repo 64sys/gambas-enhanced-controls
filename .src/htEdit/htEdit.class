@@ -1,0 +1,96 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,HTML,Text,Border,ReadOnly,ShowControls=True,Value"
+Public Const _DrawWith As String = "-"
+Public Const _Group As String = "View"
+Public Const _Similar As String = "TextArea"
+
+Property HTML As String ''Texto HTML que contiene el control.
+Property Value As String ''Sinónimo de HTML
+Property Border As Boolean ''Borde del editor
+Property Read Text As String ''Texto del control despojado de las etiquetas HTML
+Property ShowControls As Boolean ''Oculta los controles para que se comporte como un textarea
+Property ReadOnly As Boolean ''Oculta los controles e impide modificaciones
+
+Private $fEditor As FhtEdit
+Public wView As WebView 'Como no es posible exponer todos los métodos y propiedades del webview, exponemos el webview entero.
+
+Public Sub _new()
+    
+    $fEditor = New FhtEdit(Me)
+    wView = $fEditor.hWebView
+    Me.Proxy = wView
+    
+End
+
+
+Private Function Text_Read() As String
+
+    Return wView.Text
+
+End
+
+
+Private Function HTML_Read() As String
+
+    Return $fEditor.HTML
+    
+End
+
+Private Sub HTML_Write(Value As String)
+
+    $fEditor.HTML = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+    Return $fEditor.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+    $fEditor.Border = Value
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+    Return $fEditor.ReadOnly
+    
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+    $fEditor.ReadOnly = Value
+
+End
+
+Private Function ShowControls_Read() As Boolean
+
+    Return $fEditor.ShowControls
+
+End
+
+Private Sub ShowControls_Write(Value As Boolean)
+
+    $fEditor.ShowControls = Value
+
+End
+
+Private Function Value_Read() As String
+
+    Return $fEditor.HTML
+
+End
+
+Private Sub Value_Write(Value As String)
+
+    Me.HTML = Value
+
+End

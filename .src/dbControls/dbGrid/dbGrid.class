@@ -1,0 +1,447 @@
+' Gambas class file
+
+Export
+
+Inherits GridView
+
+Public Const _Properties As String = "*,Conexion,sqlString,colReturn,widths,titles,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=T,selectedcolor{Color}=-1"
+Public Const _Group As String = "Chooser"
+Public Const _Similar As String = "GridView,TableView"
+Public Const _drawWith As String = "GridView"
+
+Property conexion As String ''nombre de la base de datos, debe ser una de las bases registradas de connections
+Property sqlString As String ''Nombre de tabla o sentencia SQL
+Property widths As String[] ''Array de widths de columna (opcional)., Valores: <un número>: ancho fijo; -1: ancho = Ancho del titulo de la columna; -2: columna.expand=true
+Property titles As String[] ''Array de títulos de columna. Opcional. Por defecto: el nombre del campo
+Property bgcolor As Integer ''Color de fondo de celda
+Property forecolor As Integer ''Color de la fuente
+Property alternate As Boolean ''Alternar colores en las líneas
+Property selectedcolor As Integer ''Color de celda seleccionada
+Property query As _Query  '' Objeto de la clase _Query que contiene el desglose de sqlstring
+Property Read rslt As Result   ''El result generado por la propiedad table
+Property Read isShift As Boolean '' Indica si se tenía mayúscula pulsada mientras se disparaba un evento
+Property colReturn As Integer  ''Número de columna que contiene la clave del registro (por defecto es la columna 0)
+Property Read value As String[]  ''Array que contiene los colReturn de las filas seleccionadas
+Property Read isControl As Boolean 'Indica si está pulsada control
+
+Private $colReturn As Integer
+Private $conexion As Connection
+Private $widths As Integer[]
+Private $titles As String[]
+Private $rs As Result
+Private $query As _Query
+Private $obs As Observer
+Private $isShift As Boolean
+Private $isControl As Boolean
+Private $bgcolor As Integer
+Private $forecolor As Integer
+Private $alternate As Boolean
+Private $selectedcolor As Integer
+Private $fila As Integer
+Private $columna As Integer
+Private $lighter As Integer
+Private $activequery As String
+
+Public Sub _new()
+
+  $obs = New Observer(Me) As "grid"
+  clear()
+
+End
+
+Public Sub Clear()
+
+  Super.Clear()
+  $obs = New Observer(Me) As "grid"
+  Me.Header = GridView.Both
+  Me.Mode = Select.Multiple
+  $titles = New String[]
+  $widths = New Integer[]
+  Me.bgcolor = Color.Lighter(Color.LightBackground)
+  $forecolor = Color.Foreground
+  $selectedcolor = Color.SelectedBackground
+  $alternate = True
+  $colReturn = 0
+  $fila = -1
+  $columna = -1
+
+End
+
+Public Sub grid_data(row As Integer, col As Integer)
+
+  Dim cad As String
+
+  If Not $rs Or Me.Row > $rs.count - 1 Then Return
+  $rs.MoveTo(Row)
+  Select Case $rs.Fields[col].type
+    Case gb.Date
+      Try cad = Format($rs[$rs.Fields[col].name], "dd-mm-yyyy")
+    Case gb.Boolean
+      cad = IIf($rs[$rs.Fields[col].name], "SI", "NO")
+    Case Else
+      cad = CStr($rs[$rs.Fields[Col].Name])
+  End Select
+  Me.Data.Text = cad
+  Me.Data.Foreground = $forecolor
+  If $alternate And (Row Mod 2) <> 0 Then
+    ' Me.Data.Background = $lighter
+    Me.Data.Background = Color.Merge($lighter, $bgcolor, 0.2)
+  Else
+    Me.Data.Background = $bgcolor
+  Endif
+  If Me.Rows.Selection.Exist(row) Then
+    Me.Data.Background = $selectedcolor
+  Endif
+  Me.Data.Font.Bold = ($fila = row)
+  If $columna = col And $fila = row Then
+    Me.Data.background = Color.Darker($selectedcolor) 'Me.Data.background) 'Color.Merge($selectedcolor, Color.darker($selectedcolor), 0.5)
+    Me.Data.Foreground = Color.White
+  Endif
+
+End
+
+Public Function populate(Optional force As Boolean = False) As Boolean
+
+  Dim n, ncol, nrow As Integer
+  Dim ar As String[]
+  Dim s As String
+
+  If IsNull($conexion) Or IsNull($query) Then Return False
+  If Not $conexion.opened Then
+    Try $conexion.Open
+    If Error Then Return
+  Endif
+  s = $query.sqlstring
+  If s > "" Then
+    If s <> $activequery Or force Or IsNull($rs) Then
+      $activequery = s
+      nrow = Me.Row
+      ncol = Me.Column
+      Try $rs = $conexion.exec(s)
+      If Error Or Not $rs Then
+        Return False
+      Endif
+      Me.Rows.UnSelectAll()
+    Endif
+  Else
+    Return False
+  Endif
+  Me.Rows.Count = 0
+  Me.Columns.Count = $rs.Fields.Count
+  If $titles.count < $rs.Fields.Count Then
+    For n = $titles.Count To $rs.Fields.count - 1
+      $titles.Add($rs.Fields[n].name)
+    Next
+  Endif
+  s = Replace(LCase($query.order), "(", "")
+  s = Replace(s, "`", "")
+  ar = Split(s, ",")
+  For n = 0 To ar.Max
+    ar[n] = LTrim(ar[n])
+  Next
+  For n = 0 To $rs.Fields.Count - 1
+    Me.Columns[n].Text = $titles[n]
+    If ar.count > 0 Then
+      If ar.Find(LCase($rs.fields[n].name & " desc")) > -1 Then
+        Me.Columns[n].text &= " " & String.Chr(Int(&25BC))
+      Else If ar.Find(LCase($rs.fields[n].name & " asc")) > -1 Then
+        Me.Columns[n].text &= " " & String.Chr(Int(&25B2))
+      Else
+        Me.Columns[n].text = $titles[n]
+      Endif
+    Endif
+  Next
+  For n = 0 To $widths.count - 1
+    If $widths[n] = -2 Then
+      Me.Columns[n].Expand = True
+    Else
+      Me.Columns[n].Expand = False
+      Me.Columns[n].Width = $widths[n]
+    Endif
+  Next
+  For n = $widths.Count To $rs.Fields.count - 1
+    $widths.Add(-2)
+    Me.Columns[n].Expand = True
+  Next
+  Me.Rows.Count = $rs.Count
+  Me.MoveTo(nrow, ncol)
+
+  Return True
+
+Catch
+
+  Try Message("Error: " & Error.Text & "\nEn: " & Error.where)
+
+End
+
+Public Sub grid_KeyPress()
+
+  $isShift = Key.shift
+  $isControl = Key.Control
+
+End
+
+Public Sub grid_KeyRelease()
+
+  $isShift = False
+  $isControl = False
+
+End
+
+Public Sub grid_ColumnClick(Column As Integer)
+
+  Dim col, filtro As String
+
+  col = dbcomillas($rs.Fields[column].name)
+  If $isShift Or $query.order = "" Then
+    Inc Application.Busy
+    $query.order = col & " asc"
+    populate(True)
+    Dec Application.Busy
+    Stop Event
+    Return
+  Endif
+  filtro = $query.order
+  If InStr(filtro, col & " asc") > 0 Then
+    filtro = Replace(filtro, col & " asc", col & " desc")
+  Else If InStr(filtro, col & " desc") > 0 Then
+    filtro = Replace(filtro, col & " desc", "")
+  Else
+    filtro &= "," & col & " asc"
+  Endif
+  If Right(filtro, 1) = "," Then filtro = Left(filtro, -1)
+  filtro = Replace(filtro, ",,", ",")
+  $query.order = filtro
+  Inc Application.Busy
+  populate(True)
+  Dec Application.Busy
+  Stop Event
+
+End
+
+Public Sub dbcomillas(columna As String) As String
+
+  Dim tabla As String
+  Dim ar As String[]
+  'Devuelve el campo de la columna entrecomillado, separando la tabla y el campo en diferentes comillas si es que en el result está así
+  tabla = IIf(InStr(columna, ".") > 0, Left(columna, InStr(columna, ".") - 1), "")
+  ar = Split($query.from, ", ")
+  If ar.Find(tabla) > -1 Then
+    Return "`" & tabla & "`.`" & Mid(columna, InStr(columna, ".") + 1) & "`"
+  Else
+    Return "`" & columna & "`"
+  Endif
+
+End
+
+Public Sub grid_click()
+
+  $fila = Me.row
+  $columna = Me.Column
+  If Not ($isshift Or $iscontrol) Then
+    Me.Rows.Selection = [$fila]   'Esto evita el comportamiento del botón derecho de ratón en la selección múltiple
+  Endif
+
+End
+
+Private Function conexion_Read() As String
+
+  Return $conexion.name
+
+End
+
+Private Sub conexion_Write(Value As String)
+
+  If connections.Exist(Value) Then
+    $conexion = Connections[Value]
+  Endif
+  If Not IsNull($query) Then
+    Me.populate(True)
+  Endif
+
+End
+
+Private Function widths_Read() As String[]
+
+  Dim ar As New Integer[]
+  Dim n As Integer
+
+  For Each n In $widths
+    ar.Add(CStr(n))
+  Next
+  Return ar
+
+End
+
+Private Sub widths_Write(Value As String[])
+
+  Dim n As Integer
+
+  $widths = New Integer[]
+  If Not IsNull(value) Then
+    For n = 0 To Value.Count - 1
+      $widths.Add(CInt(value[n]))
+    Next
+  Endif
+  If $widths.count < Me.Columns.Count Then
+    For n = 0 To $widths.Count - 1
+      If $widths[n] = -2 Then
+        Me.Columns[n].width = -2
+      Endif
+    Next
+  Endif
+  Me.populate
+
+End
+
+Private Function titles_Read() As String[]
+
+  Return $titles
+
+End
+
+Private Sub titles_Write(Value As String[])
+
+  $titles = Value
+  Me.populate
+
+End
+
+Private Function bgcolor_Read() As Integer
+
+  Return $bgcolor
+
+End
+
+Private Sub bgcolor_Write(Value As Integer)
+
+  $lighter = color.Lighter(Value)
+  $bgcolor = Value
+
+End
+
+Private Function forecolor_Read() As Integer
+
+  Return $forecolor
+
+End
+
+Private Sub forecolor_Write(Value As Integer)
+
+  $forecolor = Value
+
+End
+
+Private Function alternate_Read() As Boolean
+
+  Return $alternate
+
+End
+
+Private Sub alternate_Write(Value As Boolean)
+
+  $alternate = Value
+
+End
+
+Private Function selectedcolor_Read() As Integer
+
+  Return $selectedcolor
+
+End
+
+Private Sub selectedcolor_Write(Value As Integer)
+
+  $selectedcolor = Value
+
+End
+
+Private Function query_Read() As _Query
+
+  Return $query
+
+End
+
+Private Function query_write(Value As _Query)
+
+  Dim consulta As String
+
+  consulta = Me.table
+
+  $query = Value
+
+  If consulta <> $query.sqlString Then
+    Me.populate(True)
+  Endif
+
+End
+
+Private Function isShift_Read() As Boolean
+
+  Return $isShift
+
+End
+
+Public Sub grid_ColumnResize(Column As Integer)
+
+  If $widths[column] <> Me.Columns[column].width
+    Me.Columns[column].expand = False
+  Endif
+
+End
+
+Private Function value_Read() As String[]
+
+  Dim $avalue As New String[]
+  Dim n As Integer
+
+  For n = 0 To Me.Rows.Selection.Count - 1
+    Try $avalue.Add(Me[Me.Rows.Selection[n], $colReturn].Text)
+  Next
+  Return $avalue
+
+End
+
+Private Function colReturn_Read() As Integer
+
+  Return $colReturn
+
+End
+
+Private Sub colReturn_Write(Value As Integer)
+
+  $colReturn = value
+
+End
+
+Private Function sqlString_Read() As String
+
+  If Not IsNull($query) Then
+    Return $query.sqlString
+  Else
+    Return ""
+  Endif
+
+End
+
+Private Sub sqlString_Write(Value As String)
+
+  $query = New _Query
+  $query.sqlstring = Value
+  If Not IsNull($conexion) Then
+    Me.populate()
+  Endif
+
+End
+
+Private Function rslt_Read() As Result
+
+  Return $rs
+
+End
+
+Private Function isControl_Read() As Boolean
+
+  Return $isControl
+
+End

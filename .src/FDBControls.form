@@ -1,0 +1,242 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,131,94)
+  Text = ("dbControles: Demo.")
+  Arrangement = Arrange.Fill
+  Spacing = True
+  Margin = True
+  Padding = 10
+  { testMenu Menu
+    Text = ("Menú Específico")
+    { mAlta Menu
+      Action = "mNuevo"
+      Text = ("Nuevo Registro")
+      Picture = Picture["icon:/22/add"]
+    }
+    { mEditar Menu
+      Action = "mEditar"
+      Text = ("Editar Registro")
+      Picture = Picture["icon:/22/edit"]
+    }
+    { mEliminar Menu
+      Action = "mEliminar"
+      Text = ("Eliminar Registro")
+      Picture = Picture["icon:/22/delete"]
+    }
+  }
+  { HSplit1 HSplit
+    MoveScaled(1,0,125,87)
+    Expand = True
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(1,1,61,86)
+      Expand = True
+      Arrangement = Arrange.Vertical
+      { Label5 Label
+        MoveScaled(1,0,27,3)
+        Foreground = Color.DarkRed
+        Text = ("dbGrid")
+      }
+      { dbGrid1 dbGrid
+        MoveScaled(1,4,59,19)
+        ToolTip = ("Pulsa en las cabeceras de las columnas para Ordenar")
+        Expand = True
+        Conexion = "provincias"
+        sqlString = "select * from provincias"
+      }
+      { HBox1 HBox
+        MoveScaled(1,25,59,4)
+        { CheckBox1 CheckBox
+          MoveScaled(0,0,15,2)
+          Text = ("Alternar")
+          Value = CheckBox.True
+        }
+        { Label2 Label
+          MoveScaled(14,0,7,4)
+          Text = ("Texto")
+          Alignment = Align.Right
+        }
+        { ColorButton1 ColorButton
+          MoveScaled(22,0,6,4)
+        }
+        { Label3 Label
+          MoveScaled(30,0,6,4)
+          Text = ("Fondo")
+          Alignment = Align.Right
+        }
+        { ColorButton2 ColorButton
+          MoveScaled(36,0,6,4)
+        }
+        { Label4 Label
+          MoveScaled(43,0,9,4)
+          Text = ("Selección")
+          Alignment = Align.Right
+        }
+        { ColorButton3 ColorButton
+          MoveScaled(53,0,6,4)
+        }
+      }
+      { Label6 Label
+        MoveScaled(0,30,27,3)
+        Foreground = Color.DarkRed
+        Text = ("dbGridFilter")
+      }
+      { dbGridFilter1 dbGridFilter
+        MoveScaled(0,33,59,26)
+        ToolTip = ("Botón derecho para Menú Contextual")
+        Expand = True
+        conexion = "provincias"
+        sqlstring = "Select provincias.Codigo, provincias.Provincia, comunidades.comunidad from provincias,comunidades where provincias.comunidad=comunidades.codigo"
+        colReturn = 1
+        widths = ["50", "120"]
+        mode = 1
+      }
+      { HBox3 HBox
+        MoveScaled(1,60,57,4)
+        { ckbutton2 CheckBox
+          MoveScaled(0,0,32,3)
+          Text = ("Ver Barra de Botones en posición")
+          Value = CheckBox.True
+        }
+        { cbPosicion ComboBox
+          MoveScaled(33,0,16,4)
+          List = [("Horizontal"), ("Vertical")]
+        }
+      }
+      { Panel2 Panel
+        MoveScaled(0,65,59,19)
+        Border = Border.Plain
+        { Label1 Label
+          MoveScaled(1,0,49,4)
+          Foreground = Color.DarkRed
+          Text = ("Opciones de Manejo del menú contextual del dbGridFilter")
+          Alignment = Align.Center
+        }
+        { ckbutton1 CheckBox
+          MoveScaled(1,4,44,3)
+          Text = ("Activar Exportar Datos en el Menú")
+          Value = CheckBox.True
+        }
+        { RadioButton2 RadioButton
+          MoveScaled(1,8,20,3)
+          Text = ("Menú por defecto")
+          Value = True
+        }
+        { RadioButton1 RadioButton
+          MoveScaled(36,13,22,3)
+          Text = ("Sin Menú ")
+        }
+        { RadioButton4 RadioButton
+          MoveScaled(36,8,19,3)
+          Text = ("Menú específico")
+        }
+        { RadioButton3 RadioButton
+          MoveScaled(1,13,35,3)
+          Text = ("Menú por defecto + Menú Específico")
+        }
+      }
+    }
+    { Panel3 Panel
+      MoveScaled(62,0,62,85)
+      Expand = True
+      Arrangement = Arrange.Vertical
+      { Panel4 Panel
+        MoveScaled(1,1,60,35)
+        { dbComboBox1 dbComboBox
+          MoveScaled(0,3,27,4)
+          ToolTip = ("Click para ver Valor Seleccionado")
+          sqlstring = "Select Provincia,Codigo from provincias"
+          listfields = ["Provincia"]
+          fieldkey = "Codigo"
+          conexion = "provincias"
+        }
+        { dbListBox1 dbListBox
+          MoveScaled(1,12,27,22)
+          ToolTip = ("Click para ver Valor Seleccionado")
+          sqlstring = "Select Provincia,Codigo from provincias"
+          listfields = ["Provincia"]
+          fieldkey = "Codigo"
+          conexion = "provincias"
+        }
+        { dbSqlTree1 dbSqlTree
+          MoveScaled(30,12,26,22)
+          ToolTip = ("Click para ver Valor Seleccionado")
+          conexion = "provincias"
+          sqlString = "select comunidades.comunidad,provincias.Provincia from comunidades,provincias where comunidades.codigo=provincias.comunidad"
+          fieldkey = "Provincia"
+          icons = ["sun", "home"]
+        }
+        { FileBox1 FileBox
+          MoveScaled(29,3,29,4)
+          ToolTip = ("Permite seleccionar un fichero pulsando el botón")
+        }
+        { Label7 Label
+          MoveScaled(0,0,27,3)
+          Foreground = Color.DarkRed
+          Text = ("dbCombobox1")
+        }
+        { Label8 Label
+          MoveScaled(31,0,27,3)
+          Foreground = Color.DarkRed
+          Text = ("Filebox")
+        }
+        { Label9 Label
+          MoveScaled(1,9,27,3)
+          Foreground = Color.DarkRed
+          Text = ("dbListBox")
+        }
+        { Label10 Label
+          MoveScaled(30,9,27,3)
+          Foreground = Color.DarkRed
+          Text = ("dbSqlTree")
+        }
+      }
+      { Label11 Label
+        MoveScaled(1,38,27,3)
+        Foreground = Color.DarkRed
+        Text = ("dbGridFilter")
+      }
+      { htEdit1 htEdit
+        MoveScaled(1,42,61,24)
+        ToolTip = ("Edita HTML sencillo")
+        Expand = True
+        HTML = "<!DOCTYPE html><html><head><meta http-equiv=\"CONTENT-TYPE\" content=\"text/html; charset=utf-8\"><meta http-equiv=\"content-language\" content=\"es\"></head><body><div style=\"text-align: center;\"><b><font color=\"#0000ff\" size=\"6\">dbControles</font></b></div><div style=\"text-align: center;\"><b><font color=\"#0000ff\" size=\"6\">Varios controles para visualizar bases de datos</font></b></div><b><div><b><br></b></div>dbComboBox</b><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div>&nbsp;Despliega una lista de los campos <i>(listfields)</i> de una consulta sql <i>(sqlstring)</i> de una conexion declarada <i>(conexion)</i> y devuelve el valor <i>(Value)</i> de un campo de la consulta <i>(fieldkey)&nbsp;\n</i></div></blockquote><div><br></div><div><br></div><div><b>ListBox</b>&nbsp;</div><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div>Lista los campos <i>(listfields)</i> de una consulta sql <i>(sqlstring)</i> de una conexion declarada <i>(conexion)</i> y devuelve el valor<i> (Value) </i>de un campo de la consulta<i>(fieldkey)&nbsp;\n</i></div></blockquote><div><b>dbSqlTree</b>&nbsp;</div><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div>Crea un árbol con los campos <i>(listfields)</i> de una consulta sql <i>(sqlstring)</i> de una conexion declarada <i>(conexion)</i> y devuelve el valor <i>(Value)</i> de un campo de la consulta<i>(fieldkey)</i></div></blockquote><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div>&nbsp;</div></blockquote><div><b>dbGrid:</b>&nbsp;\n</div><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div>Lista el resultado de una consulta sql <i>(sqlstring</i>) de una conexion declarada<i> (conexion)</i> pudiendo elegir la columna que tendrá el valor de retorno <i>(colkey</i>). Ofrece el contenido de colkey de las celdas seleccionadas en el Array Value<i> (Value</i>).\nPermite establecer las cabeceras de columnas <i>(titles)</i>, los anchos de columna <i>(widths)</i>.&nbsp;</div><div>También ordenaciones pulsando en las cabeceras de columna.&nbsp;</div><div><ul><li>Primer Click = orden ascendente&nbsp;<br></li><li>Segundo Click = orden descendente&nbsp;<br></li><li>Tercer Click = sin orden en la columna&nbsp;<br></li><li>Mayúscula + Click = Cancela todos los ordenes y establece sólo esa columna ascendente&nbsp;<br></li></ul></div></blockquote><b>&nbsp;dbGridFilter&nbsp;</b><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div>\nEs un dbGrid que permite establecer filtros para la consulta SQL y Exportar el contenido del Grid a un fichero .csv</div><div>También permite mostrar u ocultar un panel de botones (<i>showControls</i>) y mostrar u ocultar el menú contextual por defecto (<i>defaultmenu</i>). Permite otros&nbsp;menús contextuales (<i>Submenu) </i>que pueden ser añadidos al menu contextual o mostrados solos.</div><div><br></div></blockquote><div style=\"text-align: center;\"><font color=\"#0000ff\" size=\"5\"><span style=\"background-color: rgb(255, 255, 255);\">Otros Controles incluídos</span></font></div><b>filebox</b>&nbsp;<br><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><div>Permite seleccionar un fichero pulsando el botón db</div><div><br></div></blockquote><div><b>&nbsp;htEdit:</b>&nbsp;</div><blockquote style=\"margin: 0px 0px 0px 40px; border: none; padding: 0px;\">Edita HTML sencillo. Permite formateo de texto e inclusión de enlaces e imágenes.</blockquote><blockquote style=\"margin: 0px 0px 0px 40px; border: none; padding: 0px;\"><br></blockquote><br><div>Para usarlos basta con pulsar en el botón de más abajo y facilitar la carpete donde resida un proyecto de Gambas. Luego hay que añadir a dicho proyecto los componentes de gambas que utilizan éstos controles:</div><div><ul><li>gb.db</li><li>gb.form.mdi</li><li>gb.gui.qt.webkit</li></ul><div>Si nuestro proyecto no utiliza gb.gui.qt y utiliza gb.qt4 o gb.qt5 exclusivamente deberemos enlazar en lugar de gb.gui.qt el gb.qt4/qt5.webkit, necesario.</div></div><div><br></div></body></html>"
+      }
+      { CheckBox2 CheckBox
+        MoveScaled(2,67,20,3)
+        Text = ("Mostrar Controles")
+        Value = CheckBox.True
+      }
+      { HBox2 HBox
+        MoveScaled(4,79,57,5)
+        { Button1 Button
+          MoveScaled(0,0,50,5)
+          ToolTip = ("Pulsando este botón se crearán los enlaces simbólicos necesarios para utilizar todos estos controles en un proyecto de Gambas Existente.")
+          Text = ("Añadir estos Controles a un Proyecto Existente")
+          Picture = Picture["icon:/22/apply"]
+        }
+      }
+    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action mEditar
+    Text = "Editar Registro"
+    Shortcut = ""
+    Picture = "icon:/22/edit"
+  }
+  { Action mEliminar
+    Text = "Eliminar Registro"
+    Shortcut = ""
+    Picture = "icon:/22/delete"
+  }
+  { Action mNuevo
+    Text = "Nuevo Registro"
+    Shortcut = ""
+    Picture = "icon:/22/add"
+  }
+}

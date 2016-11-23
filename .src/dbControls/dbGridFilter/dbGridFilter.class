@@ -1,0 +1,323 @@
+' Gambas class file
+
+Inherits UserControl
+
+Export
+
+Public Const _Properties As String = "*,conexion,sqlstring,colReturn,widths,title,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=-1,selectedcolor{Color}=-1,mode,subMenu{Menu},menuDefault=-1,showButtons=-1,showExportMenu=-1,posButtons{Align.Bottom;Right}=Bottom"
+Public Const _Group As String = "Chooser"
+Public Const _Similar As String = "GridView"
+Public Const _drawWith As String = "TableView"
+
+Event Click()
+Event DblClick()
+Event Action_Activate(opcion As String)
+
+Property conexion As String ''nombre de la Conexión a la BD
+Property sqlstring As String ''Nombre de tabla o sentencia SQL
+Property colReturn As Integer ''Número de columna, empezando por 0 cuyo valor queremos devolver
+Property widths As String[] ''Anchos de las columnas si las queremos fijas
+Property titles As String[] ''Titulos de las columnas si las queremos distintas a los nombres de los campos
+Property mode As Integer ''Modo de selección, multiple, single
+Property bgcolor As Integer ''Color de fondo de celda
+Property forecolor As Integer ''Color de la fuente
+Property alternate As Boolean ''Alternar colores en las líneas
+Property selectedcolor As Integer ''Color de celda seleccionada
+Property subMenu As String ''nombre del menu definido popup con el botón derecho del ratón
+Property menuDefault As Boolean ''Si cierto aparecerá el menú por defecto. Si se ha establecido  subMenu éste aparecerá debajo del menu por defecto. Si falso y hay subMenu sólo aparecerá subMenu. Si falso y no hay subMenu, no aparecerá nada.
+Property grid As DbGrid
+Property showButtons As Boolean ''Especifica si la botonera es visible o no
+Property posButtons As Integer ''Posición de la Botonera 0=debajo, 1=encima,2=Izquierda,3=derecha
+Property showExportMenu As Boolean ''Especifica si la opción de exportar los datos a CSV en el menú por defecto es visible o no.
+Property Read value As String[] ''Array con los valores de las filas seleccionadas en la columna <colReturn>
+Property Read pnBotones As Panel '' panel para añadir botones al control
+Property Read isShift As Boolean
+Property Read isControl As Boolean
+
+Private $fdbGridFilter As FdbGridFilter
+Private $Grid As DbGrid
+Private obs As Observer
+Private $menu As String
+
+Public Sub _new()
+
+  $fdbGridFilter = New FdbGridFilter(Me)
+  'fdbGridFilter.verDefault = True
+  $fdbGridFilter.Show
+  $Grid = $fdbGridFilter.grid
+  $Grid.Header = GridView.Both
+  $Grid.ScrollBar = Scroll.Both
+  $Grid.Mode = Select.Multiple
+  ' Me.bgcolor = Color.Lighter(Color.LightBackground)
+  ' Me.forecolor = Color.Foreground
+  ' Me.selectedcolor = Color.SelectedBackground
+  obs = New Observer($Grid) As "Grid"
+
+End
+
+Public Sub populate(Optional Force As Boolean = False)
+
+  Dim n As Integer
+
+  n = Max(0, $grid.Row)
+  $grid.populate(force)
+  $grid.MoveTo(n, 0)
+
+End
+
+Public Sub subMenus(opcion As String)
+
+  Raise Action_Activate(opcion)
+
+End
+
+Public Sub Grid_Click()
+
+  Raise Click()
+
+End
+
+Private Function conexion_Read() As String
+
+  Return $grid.conexion
+
+End
+
+Private Sub conexion_Write(Value As String)
+
+  $grid.Conexion = Value
+
+End
+
+Private Function sqlstring_Read() As String
+
+  Return $grid.sqlstring
+
+End
+
+Private Sub sqlstring_Write(Value As String)
+
+  $grid.sqlstring = Value
+
+End
+
+Private Function value_Read() As String[]
+
+  Return $grid.value
+
+End
+
+Private Function colReturn_Read() As Integer
+
+  Return $grid.colReturn
+
+End
+
+Private Sub colReturn_Write(Value As Integer)
+
+  $Grid.colReturn = Value
+
+End
+
+Private Function widths_Read() As String[]
+
+  Dim ar As New String[]
+  Dim n As Integer
+
+  For Each n In $Grid.widths
+    ar.Add(Str(n))
+  Next
+  Return ar
+
+End
+
+Private Sub widths_Write(Value As String[])
+
+  Dim aint As New Integer[]
+  Dim s As String
+
+  For Each s In value
+    aint.Add(Val(s))
+  Next
+  $grid.widths = aint
+
+End
+
+Private Function titles_Read() As String[]
+
+  Return $Grid.titles
+
+End
+
+Private Sub titles_Write(Value As String[])
+
+  $Grid.titles = Value
+
+End
+
+Private Function bgcolor_Read() As Integer
+
+  Return $grid.bgcolor
+
+End
+
+Private Sub bgcolor_Write(Value As Integer)
+
+  $Grid.bgcolor = Value
+
+End
+
+Private Function forecolor_Read() As Integer
+
+  Return $Grid.forecolor
+
+End
+
+Private Sub forecolor_Write(Value As Integer)
+
+  $grid.forecolor = Value
+
+End
+
+Private Function alternate_Read() As Boolean
+
+  Return $grid.alternate
+
+End
+
+Private Sub alternate_Write(Value As Boolean)
+
+  $Grid.alternate = Value
+
+End
+
+Private Function selectedcolor_Read() As Integer
+
+  Return $Grid.selectedcolor
+
+End
+
+Private Sub selectedcolor_Write(Value As Integer)
+
+  $Grid.selectedcolor = Value
+
+End
+
+Private Function pnBotones_Read() As Panel
+
+  Return $fdbGridFilter.pnBotones
+
+End
+
+Private Function subMenu_Read() As String
+
+  Return $Menu
+
+End
+
+Private Sub subMenu_Write(Value As String)
+
+  Dim n As Integer
+  Dim f As Object
+
+  $menu = Value
+  If Value = "" Then
+    $fdbGridFilter.subMenu = Null
+  Else
+    f = Me
+    Do
+      f = f.parent
+    Loop Until f Is Form
+    For n = 0 To f.Menus.Count - 1
+      If f.Menus[n].name = $menu Then
+        $fdbGridFilter.subMenu = f.Menus[n]
+        Break
+      Endif
+    Next
+  Endif
+
+End
+
+Private Function mode_Read() As Integer
+
+  Return $grid.Mode
+
+End
+
+Private Sub mode_Write(Value As Integer)
+
+  $grid.Mode = Value
+
+End
+
+Private Function isShift_Read() As Boolean
+
+  Return $Grid.isShift
+
+End
+
+Private Function isControl_Read() As Boolean
+
+  Return $Grid.isControl
+
+End
+
+Private Function grid_Read() As DbGrid
+
+  Return $grid
+
+End
+
+Private Sub grid_Write(Value As DbGrid)
+
+  $grid = Value
+
+End
+
+Private Function menuDefault_Read() As Boolean
+
+  Return $fdbGridFilter.verDefault
+
+End
+
+Private Sub menuDefault_Write(Value As Boolean)
+
+  $fdbGridFilter.verDefault = Value
+
+End
+
+Private Function showButtons_Read() As Boolean
+
+  Return $fdbGridFilter.pnBots.Visible
+
+End
+
+Private Sub showButtons_Write(Value As Boolean)
+
+  $fdbGridFilter.pnBots.Visible = Value
+
+End
+
+Private Function showExportMenu_Read() As Boolean
+
+  Return $fdbGridFilter.Menus[0].Children[4].Visible
+
+End
+
+Private Sub showExportMenu_Write(Value As Boolean)
+
+  $fdbGridFilter.Menus[0].Children[5].Visible = Value
+
+End
+
+Private Function posButtons_Read() As Integer
+
+  Return $fdbGridFilter.posButtons
+
+End
+
+Private Sub posButtons_Write(Value As Integer)
+
+  $fdbGridFilter.posButtons = Value
+
+End

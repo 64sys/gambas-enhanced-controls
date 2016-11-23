@@ -1,0 +1,9 @@
+# Gambas Connection File 3.0
+[Connection]
+Type="sqlite"
+RememberPassword=False
+IgnoreCharset=False
+DisplayMetadata=False
+RememberTemplate=False
+Database="Provincias"
+

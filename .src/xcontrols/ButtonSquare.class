@@ -1,0 +1,177 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Text,Picture,PullDown,Formulario"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "8,8"
+Public Const _Similar As String = "Button"
+Public Const _DrawWith As String = "Button"
+
+Event Click
+
+Property Picture As Picture
+Property Text As String
+
+Property PullDown As Boolean
+Property Formulario As Variant
+Private $Formulario As Variant
+
+Private $PullDown As Boolean = False
+
+Private $hPicture As Picture
+Private $sText As String
+Private $hDA As DrawingArea
+Private $bState As Boolean
+
+Public Sub _new()
+
+  $hDA = New DrawingArea(Me) As "da"
+  Me.Proxy = $hDA
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hPicture = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Public Sub da_Draw()
+
+  Dim hImage As New Image
+  Dim iFlag As Integer = Style.StateOf(Me)
+
+  If Me.W > Me.H Then
+    Me.H = Me.W
+  Else
+    Me.W = Me.H
+  Endif
+
+  Style.PaintButton(0, 0, $hDA.W, $hDA.H, $bState, iFlag, False)
+
+  If $hPicture Then
+    hImage = $hPicture.Image.Stretch(Me.W / 2, Me.H / 2)
+    If $sText Then
+      Paint.DrawImage(hImage, (Me.W - hImage.W) / 2, (Me.H / 2) - (hImage.H - (Desktop.Scale)))
+
+      If $PullDown = True Then
+        'Caracteres especiales: http://www.w3schools.com/charsets/ref_utf_geometric.asp
+        Draw.RichText(Html(String.Chr(9660)), Me.w - 15, - Me.h / 2 + 5, Me.W, Me.H + (Me.H / 2), Align.left)
+      Endif
+      Draw.RichText(Html($sText), 0, 0, Me.W, Me.H + (Me.H / 2), Align.Center)
+
+    Else
+      Paint.DrawImage(hImage, (Me.W - hImage.W) / 2, (Me.H - hImage.H) / 2)
+    Endif
+  Else
+    Draw.RichText(Html($sText), 0, 0, Me.W, Me.H, Align.Center)
+  Endif
+
+End
+
+Public Sub da_MouseDown()
+
+  Dim obj As Object
+
+  $bState = True
+  $hDA.Refresh
+
+  'arrancar el formulario indicado en propiedad
+  If $Formulario <> "" Then
+
+    'crea un objeto de la clase $formulario, y lo abre en las coordenadas del botón
+    Try obj = Object.New($formulario)
+    If Error Then
+      'se produce un error al crear el formulario
+    Else
+      obj.xx = Me.ScreenX 'lo coloca en la pantalla debajo del boton que lo llama
+      obj.yy = Me.h + Me.screeny 'lo coloca en la pantalla debajo del boton que lo llama
+      obj.border = False 'le quito el borde
+      obj.showmodal()  'importante: poner un boton par que cierre el formulario, ya que al no tener borde, no se puede cerrar sin un boton nuevo
+
+      obj = Null 'borro el formulario
+
+    Endif
+
+  Endif
+
+  Raise Click
+
+End
+
+Public Sub da_MouseUp()
+
+  $bState = False
+  $hDA.Refresh
+
+End
+
+Public Sub da_Enter()
+
+  $hDA.Refresh
+
+End
+
+Public Sub da_Leave()
+
+  $hDA.Refresh
+
+End
+
+Public Sub da_GotFocus()
+
+  $hDA.Refresh
+
+End
+
+Public Sub da_LostFocus()
+
+  $hDA.Refresh
+
+End
+
+Private Function PullDown_Read() As Boolean
+
+  Return $PullDown
+
+End
+
+Private Sub PullDown_Write(Value As Boolean)
+
+  $Pulldown = Value
+  $hDA.Refresh
+
+End
+
+Private Function Formulario_Read() As Variant
+
+  Return $Formulario
+
+End
+
+Private Sub Formulario_Write(Value As Variant)
+
+  $Formulario = Value
+
+End

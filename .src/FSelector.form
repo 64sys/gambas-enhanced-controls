@@ -1,0 +1,36 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,40,32)
+  Arrangement = Arrange.Vertical
+  { Panel1 Panel
+    MoveScaled(1,2,39,5)
+    Expand = True
+    Arrangement = Arrange.Horizontal
+    { ToolButton1 ToolButton
+      MoveScaled(0,0,27,5)
+      Expand = True
+      Picture = Picture["icon:/32/tools"]
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(1,8,39,5)
+    Expand = True
+    Arrangement = Arrange.Horizontal
+    { ToolButton2 ToolButton
+      MoveScaled(0,0,27,5)
+      Expand = True
+      Picture = Picture["icon:/32/component"]
+    }
+  }
+  { Panel3 Panel
+    MoveScaled(1,14,39,5)
+    Expand = True
+    Arrangement = Arrange.Horizontal
+    { ToolButton3 ToolButton
+      MoveScaled(0,0,27,5)
+      Expand = True
+      Picture = Picture["icon:/32/component"]
+    }
+  }
+}

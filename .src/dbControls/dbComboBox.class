@@ -1,0 +1,185 @@
+' Gambas class file
+
+'
+' Controles Extendidos
+'
+'
+' Copyright (C)
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Inherits ComboBox
+
+Export
+
+Public Const _Properties As String = "*,sqlstring,listfields,fieldkey,conexion"
+Public Const _Group As String = "Chooser"
+Public Const _Similar As String = "ComboBox,ListBox,dbListBox,ListEditor"
+
+Property sqlstring As String ''Table name of sql sentence. Tabla o consulta sql
+Property fieldkey As String '' Name of field to return - Nombe de Campo a devolver
+Property listfields As String[]    ''Fieldname list of fields to show (it'll be shown separated by dash ) lista de campos a mostrar (se verán separados por comas)
+Property value As Variant '' Fieldkey's value for the selected line - Valor de fieldkey de la línea elegida
+Property conexion As String   ''Connection's Name - Nombre de la Conexion almacenada a usar
+Property Read listkeys As Variant[] ''Array containing the key fields.
+
+Private $akeys As Variant[]
+Private $sqlstring As String
+Private $fieldkey As String
+Private $listfields As String[]
+Private $conexion As Connection
+Private $query As _Query
+
+Public Sub _new()
+
+  $akeys = New Variant[]
+  $listfields = New String[]
+
+End
+
+Public Sub Clear()
+
+  Super.Clear()
+  $akeys = New Variant[]
+  $sqlstring = ""
+  $fieldkey = ""
+  $listfields = New String[]
+  $conexion = ""
+  $query = New _Query
+
+End
+
+Public Sub populate()
+
+  Dim rs As Result
+  Dim alistfields As New String[]
+  Dim cad, s As String
+
+  If Not isOk() Then Return
+  rs = $conexion.exec($query.sqlString)
+  $akeys = New Variant[]
+  While rs.Available
+    $akeys.Add(rs[$fieldkey])
+    alistfields.Clear
+    For Each cad In $listfields
+      alistfields.Add(rs[cad])
+    Next
+    s = alistfields.Join("-")
+    Me.Add(s)
+    rs.MoveNext
+  Wend
+  Me.value = -1
+
+End
+
+Private Function value_Read() As Variant
+
+  If Me.index > -1 Then
+    Return $akeys[Me.Index]
+  Endif
+  Return False
+
+End
+
+Private Sub value_Write(Value As Variant)
+
+  If TypeOf(value) <> gb.Integer Then
+    Me.index = $akeys.Find(value)
+  Else
+    Me.index = CInt($akeys.Find(value))
+  Endif
+  If Me.index > -1 Then
+    Me.text = Me.List[Me.index]
+  Else
+    Me.Text = ""
+  Endif
+
+End
+
+Private Function sqlstring_Read() As String
+
+  Return $sqlstring
+
+End
+
+Private Sub sqlstring_Write(Value As String)
+
+  $query = New _Query
+  $query.sqlstring = Value
+  If isOk()
+    populate(True)
+  Endif
+
+End
+
+Private Function fieldkey_Read() As String
+
+  Return $fieldkey
+
+End
+
+Private Sub fieldkey_Write(Value As String)
+
+  $fieldkey = Value
+
+End
+
+Private Function listfields_Read() As String[]
+
+  Return $listfields.Copy()
+
+End
+
+Private Sub listfields_Write(Value As String[])
+
+  $listfields = Value
+
+End
+
+Private Function Conexion_Read() As String
+
+  Return $conexion.Name
+
+End
+
+Private Sub Conexion_Write(Value As String)
+
+  $conexion = connections[Value]
+  If isOk() Then
+    populate()
+  Endif
+
+End
+
+Private Function listkeys_Read() As Variant[]
+
+  Return $akeys.Copy()
+
+End
+
+Private Function isOk() As Boolean
+
+  If IsNull($conexion) Or IsNull($query) Or IsNull($listfields) Or Not $fieldkey Then Return False
+  If Not $conexion.opened Then
+    Try $conexion.Open
+    If Error Then
+      Return False
+    Endif
+  Endif
+  Return True
+
+End

@@ -1,0 +1,23 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,73,86)
+  { ProgressBarText1 ProgressBarText
+    MoveScaled(3,3,24,6)
+  }
+  { ProgressbarVertical1 ProgressbarVertical
+    MoveScaled(3,12,6,24)
+  }
+  { ButtonSquare1 ButtonSquare
+    MoveScaled(30,2,8,8)
+  }
+  { TextBoxExplain1 TextBoxExplain
+    MoveScaled(14,15,24,4)
+  }
+  { TextList1 TextList
+    MoveScaled(14,27,23,5)
+  }
+  { htEdit1 htEdit
+    MoveScaled(1,61,71,24)
+  }
+}

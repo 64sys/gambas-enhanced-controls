@@ -1,0 +1,76 @@
+' Gambas class file
+
+' Copyright (C) 2015 Tobias Boege <tobias@gambas-buch.de>
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License along
+' with this program; if not, write to the Free Software Foundation, Inc.,
+' 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+Export
+Inherits TextBox
+
+Public Const _Properties As String = "*,Explanation"
+Public Const _Similar As String = "TextBox"
+Public Const _DrawWith As String = "TextBox"
+
+Property Explanation As String
+
+Private $hBefore As Observer
+Private $hAfter As Observer
+Private $bShowExpl As Boolean
+Private $sExpl As String
+
+Public Sub _new()
+  $hBefore = New Observer(Me, False) As "Before"
+  $hAfter = New Observer(Me, True) As "After"
+End
+
+Public Sub Before_GotFocus()
+  If $bShowExpl Then
+    Super.Text = ""
+    Super.Foreground = $iActualForeground
+    $bShowExpl = False
+  Endif
+End
+
+Public Sub After_LostFocus()
+  If Not Super.Text Then
+    Super.Text = $sExpl
+    Super.Foreground = Color.Gray
+    $bShowExpl = True
+  Endif
+End
+
+Private Function Explanation_Read() As String
+  Return $sExpl
+End
+
+Private Sub Explanation_Write(Value As String)
+  $sExpl = Value
+  After_LostFocus()
+End
+
+' Hooks
+
+Property Foreground As Integer
+
+Private $iActualForeground As Integer
+
+Private Function Foreground_Read() As Integer
+  Return $iActualForeground
+End
+
+Private Sub Foreground_Write(Value As Integer)
+  $iActualForeground = Value
+  If Not $bShowExpl Then Super.Foreground = Value
+End
