@@ -2,7 +2,7 @@ FSelector
 
 0
 0
-0.0.3
+0.0.4
 
 gb.image
 gb.gui.qt
@@ -11,4 +11,5 @@ gb.db
 gb.settings
 gb.form.mdi
 gb.gui.qt.webkit
+gb.xml
 

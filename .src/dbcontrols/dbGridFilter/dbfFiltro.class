@@ -1,0 +1,294 @@
+' Gambas class file
+
+'
+' dbControls
+'
+' Copyright (C) Jorge Carrion.
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+
+Private thegrid As DbGrid
+Private insertar As Boolean
+
+Public Sub _new(elgrid As DbGrid)
+
+  thegrid = elgrid
+
+End
+
+Public Sub Form_Open()
+
+  Dim acampos As String[]
+  Dim n As Integer
+
+  Me.Center
+  HSplit1.Layout = [50, 50]
+  VSplit1.Layout = [70, 30]
+
+  acampos = New String[]
+  elfiltro.Text = thegrid.query.filter
+  For n = 0 To thegrid.rslt.Fields.Count - 1
+    campo1.Add(thegrid.rslt.Fields[n].Name)
+  Next
+  campo1.SetFocus
+
+End
+
+Public Sub hacerfiltro(campo As String, condicion As String, valor As String)
+
+  Dim filtro As String
+  Dim cCondicion, term As String
+
+  If thegrid.rslt.Fields[campo].Type = gb.date Then
+    valor = Format(Val(Replace(valor, "-", "/")), "yyyy/mm/dd")
+  Endif
+  '  campo = thegrid.tabla & "." & campo & ".desp"
+  campo = comillas(campo)
+  Select Case LCase(condicion)
+    Case "contiene"
+      cCondicion = campo & " LIKE '%" & valor & "%'"
+    Case "empieza por"
+      cCondicion = campo & " LIKE '" & valor & "%'"
+    Case "es igual a"
+      cCondicion = campo & " = '" & valor & "'"
+    Case "es distinto de"
+      cCondicion = campo & " <> '" & valor & "'"
+    Case "es mayor que"
+      cCondicion = campo & " > '" & valor & "'"
+    Case "es menor que"
+      cCondicion = campo & " < '" & valor & "'"
+    Case Else
+      cCondicion = ""
+  End Select
+  If elfiltro.Text Then
+    filtro = elfiltro.Text
+    term = Right(filtro, 4)
+    If Not (term = "" Or term = "and " Or term = " or " Or term = "not " Or Right(term, 2) = "( ")
+      filtro &= " and "
+    Endif
+  Endif
+  elfiltro.Text = filtro & cCondicion
+  valor1.text = ""
+
+End
+
+Public Sub bFiltrar_Click()
+
+  If elfiltro.text = "" Then
+    addcondicion
+  Endif
+  If elfiltro.text
+    thegrid.query.filter = elfiltro.Text
+    Me.Close
+  Else
+    Message.Warning("El filtro está vacío o es erróneo")
+  Endif
+
+End
+
+Public Sub valor1_KeyRelease()
+
+  If Key.code = Key.Enter Or Key.code = Key.Return Then
+    addcondicion
+  Endif
+
+End
+
+Private Sub addcondicion()
+
+  If campo1.text And condiciones1.text And valor1.text
+    hacerfiltro(campo1.text, condiciones1.Text, valor1.Text)
+    valor1.text = ""
+  Else
+    Message("No hay condición definida")
+  Endif
+  bFiltrar.SetFocus
+
+End
+
+Public Sub bLimpiar_Click()
+
+  elfiltro.Text = ""
+  campo1.SetFocus
+
+End
+' '
+
+Public Sub bValores_Click()
+
+  Dim aops As New String[]
+  Dim r As Result
+  Dim hc As New Connection
+
+  If Not campo1.Text Then
+    Message("Debe seleccionar un campo primero")
+    Return
+  Endif
+  If thegrid.rslt.Fields[campo1.Text].Type = gb.date Then
+    If valores.visible Then
+      valores.visible = False
+      hbFecha.Visible = True
+      Return
+    Endif
+  Else
+    hbFecha.Visible = False
+    valores.visible = True
+    hc = connections[thegrid.Conexion]
+    valores.clear
+    aops = New String[]
+    r = thegrid.rslt
+    Inc Application.Busy
+    r.MoveFirst
+    While r.Available
+      If Not aops.Exist(r[campo1.text]) Then aops.Add(r[campo1.text])    'esto es rapidisimo
+      r.MoveNext
+    Wend
+    valores.list = aops 'esto cuelga la aplicacion
+    valores.SetFocus
+    Dec Application.Busy
+  Endif
+
+Catch
+
+  If Application.Busy > 0 Then Application.Busy = 0
+  Message.Error(Error.Text & " - " & Error.Where)
+
+End
+'
+
+Public Sub valores_Change()
+
+  valor1.Text = valores.Text
+
+End
+
+Public Sub elfiltro_GotFocus()
+
+  insertar = True 'Si hemos entrado en el campo de la cadena de filtro el comportamiento de los botones de condicion es insertar, si no es añadir
+
+End
+
+Private Function comillas(campo As String) As String
+
+  '  Dim i As Integer
+  Dim concomillas, tcomillas As String
+  Dim apuntos As String[]
+  Dim tienecomillas, tienetabla As Boolean
+
+  tcomillas = "\"'`"
+  If InStr(tcomillas, Left(campo, 1)) > 0 Then 'ya está entrecomillado, se devuelve el valor original
+    Return campo
+  Endif
+  apuntos = Split(campo, ".")
+
+  If InStr(thegrid.query.from, apuntos[0]) > 0 Then
+    'es el nombre de una tabla y lo entrecomillamos
+    apuntos[0] &= "`"
+    tienetabla = True
+  Endif
+  apuntos[0] = "`" & apuntos[0]
+  If apuntos.count > 1 Then
+    If InStr(tcomillas, Left(apuntos[1], 1)) Then
+      tienecomillas = True
+    Else
+      If tienetabla Then
+        apuntos[1] = "`" & apuntos[1]
+      Endif
+    Endif
+  Endif
+  concomillas &= apuntos.Join(".")
+  concomillas &= If(tienecomillas, "", "`")
+
+  Return concomillas
+
+End
+
+Public Sub SelFecha_Activate()
+
+  valor1.text = Format(SelFecha.Value, "dd/mm/yyyy")
+
+End
+
+Public Sub valores_Click()
+
+  valor1.text = valores.Text
+
+End
+
+Public Sub bAnd_Click()
+
+  If insertar Then
+    elfiltro.Insert(" and ")
+    insertar = False
+  Else
+    elfiltro.text &= " and "
+  Endif
+
+End
+
+Public Sub bOr_Click()
+
+  If insertar Then
+    elfiltro.Insert(" or ")
+    insertar = False
+  Else
+    elfiltro.text &= " or "
+  Endif
+
+End
+
+Public Sub bParOn_Click()
+
+  If insertar Then
+    elfiltro.Insert(" ( ")
+    insertar = False
+  Else
+    elfiltro.text &= " ( "
+  Endif
+
+End
+
+Public Sub bParOff_Click()
+
+  If insertar Then
+    elfiltro.Insert(" ) ")
+    insertar = False
+  Else
+    elfiltro.text &= " ) "
+  Endif
+
+End
+
+Public Sub bNo_Click()
+
+  If InStr("and  or ", Right(elfiltro.Text, 4)) = 0 Then
+    balloon("Seleccione primero un operador (y o O)", bno)
+  Else
+    If insertar Then
+      elfiltro.Insert(" not ")
+      insertar = False
+    Else
+      elfiltro.text &= " not "
+    Endif
+  Endif
+
+End
+
+Public Sub bOk_Click()
+
+  addcondicion()
+
+End

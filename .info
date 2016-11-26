@@ -91,15 +91,15 @@ s
 _Similar
 C
 s
-"TextBox"
-_Group
-C
-s
-"Chooser"
+"DirBox,TextBox"
 _DrawWith
 C
 s
 "DirBox"
+_Group
+C
+s
+"Chooser"
 :Click
 :
 
@@ -147,6 +147,14 @@ _DefaultSize
 C
 s
 "24,6"
+_Similar
+C
+s
+"ProgressBar"
+_DrawWith
+C
+s
+"ProgressBar"
 Picture
 p
 Picture
@@ -448,6 +456,10 @@ _Properties
 C
 s
 "*,sqlstring,listfields,fieldkey,conexion"
+_Group
+C
+s
+"Chooser"
 _Similar
 C
 s
@@ -749,7 +761,7 @@ s
 _Group
 C
 s
-"View"
+"Chooser"
 _Similar
 C
 s
@@ -809,6 +821,10 @@ _Similar
 C
 s
 "TreeView,ListView,ColumnView"
+_DrawWith
+C
+s
+"TreeView"
 :Click
 :
 
@@ -884,15 +900,15 @@ _Properties
 C
 s
 "*,HTML,Text,Border,ReadOnly,ShowControls=True,Value"
-_DrawWith
-C
-s
-"-"
 _Group
 C
 s
 "View"
 _Similar
+C
+s
+"TextArea"
+_DrawWith
 C
 s
 "TextArea"

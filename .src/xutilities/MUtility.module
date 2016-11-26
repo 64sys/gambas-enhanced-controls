@@ -1,0 +1,840 @@
+' Gambas module file
+
+' Utilidades generales
+'
+' Copyright (C) Martín Belmonte
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Public Function DirChooser(Optional stInputPath As String) As String
+  'Selecciona la ruta de un directorio
+
+  Dim stDirPath As String
+
+  If stInputPath = "" Then
+    stInputPath = User.Home
+  Else
+    Dialog.Path = stInputPath
+  Endif
+
+  Dialog.Title = ("Seleccionar directorio")
+
+  Dialog.SelectDirectory
+
+  stDirPath = Dialog.Path
+
+  Return stDirPath
+
+End
+
+Public Function FileChooser(Optional strInputPath As String, Optional strFilter As String) As String ''Selecciona la ruta completa de un archivo, con el nombre y las extensión. Como opcional se puede pasar un directorio que es a donde se dirigira el filechooser cuando se abra.
+
+  Dim strFilepath, strExtension, strFilterA, strFilterB As String
+  Dim stxExtensions As New String[]
+
+  If strInputPath = "" Then
+    strInputPath = User.Home
+  Endif
+
+  Dialog.Title = ("Seleccionar archivo")
+
+  If strFilter <> "" Then
+    stxExtensions = Split(strFilter, ",")
+
+    strFilterB &= ("Filtro por:")
+    For Each strExtension In stxExtensions
+
+      strFilterA &= "*." & String.LCase(strExtension) & ";"
+      strFilterA &= "*." & String.UCase(strExtension)
+
+      strFilterB &= " *." & String.LCase(strExtension)
+
+    Next
+
+    Dialog.Filter = [strFilterA, strFilterB]
+
+  Endif
+
+  If Not Dialog.OpenFile(False) Then
+    strFilepath = Dialog.Path
+  Endif
+
+  Return strFilepath
+
+End
+
+Public Function FileNospace(stxParam As String[], Optional strDelim As String, Optional strExt As String) As String ''Devuelve un texto, nombre de arcivo concatenando todos los fragmentos que se le pase y pone todo en minusculas quita los caracteres fuera del rango 97-122 de ascci
+
+  Dim intPar As Integer
+  '  Dim strOutput As String
+  Dim strTemp As String
+  Dim intLeter As Integer
+  Dim strLeter As String
+  Dim strOutTmp As String
+  Dim stxOutput As New String[]
+  Dim strOutput As String
+
+  If strDelim = "" Then
+    strDelim = "#"
+  Endif
+
+  If strExt <> "" Then
+    strExt = String.LCase(strExt)
+    If InStr(strExt, ".") Then
+      strExt = Replace(strExt, ".", "")
+    Else
+      strExt = "." & strExt
+    Endif
+  Endif
+
+  If stxParam.Count > 0 Then
+    For intPar = 0 To stxParam.Max
+
+      strTemp = stxParam[intPar]
+      strTemp = String.LCase(strTemp)
+      strTemp = String.RemoveDiacritics(strTemp)
+      strTemp = Replace(strTemp, "  ", Chr(45))
+      strTemp = Replace(strTemp, "_", Chr(45))
+      strTemp = Replace(strTemp, "--", Chr(45))
+      strOutTmp = ""
+      For intLeter = 1 To String.Len(strTemp)
+        strLeter = String.Mid(strTemp, intLeter, 1)
+        Select Asc(strLeter)
+          Case Chr(32), Chr(45) ' Espacio o Gión
+            strOutTmp &= "-"
+          Case Else
+            If Asc(strLeter) > 96 And Asc(strLeter) < 123 Then
+              strOutTmp &= strLeter
+            Endif
+        End Select
+      Next
+      stxOutput.Add(strOutTmp)
+    Next
+  Endif
+
+  strOutput = stxOutput.Join(strDelim) & strExt
+
+  Return strOutput
+
+End
+
+Public Function FileVersion(strInputPath As String) As String
+  ' Obtencion de la version del archivo
+
+  Dim strVersion As String
+
+  Shell "file '" & strInputPath & "'" To strVersion
+
+  If InStr(strVersion, ":") <> 0 Then
+    strVersion = Replace(strVersion, ": ", ":")
+    strVersion = Split(strVersion, ":")[1]
+    strVersion = ArrangePath(strVersion)
+  Endif
+
+  Return strVersion
+
+End
+
+Public Function Chek4SQL(strInput As String) As String
+
+  Dim strOutput As String
+
+  strOutput = Replace(strInput, "\n", "")
+  strOutput = Replace(strOutput, "\r", "")
+  strOutput = Replace(strOutput, "\x00", "")
+  strOutput = Replace(strOutput, Chr(39), Chr(46)) ' ' > .
+  strOutput = Replace(strOutput, Chr(44), Chr(46)) ' , > .
+
+  Return strOutput
+
+End
+
+Public Function ArrangePath(strPathRaw As String) As String
+
+  Dim strPath As String
+
+  strPath = Replace(strPathRaw, "\n", "")
+  strPath = Replace(strPath, "\r", "")
+  strPath = Replace(strPath, "\x00", "")
+
+  Return strPath
+
+End
+
+Public Function CRC32(stInputPath As String, Optional strCase As String) As String '' Obtencion del crc32 de un archivo del que se pasa como parametro la ruta completa, como parametro opcional strCase puede ser U o L que parara todo a Ucase o Lcase.
+
+  Dim strCrc32 As String
+
+  Shell "crc32 '" & stInputPath & "'" To strCrc32
+
+  strCrc32 = String.Mid(strCrc32, 1, 8) ' Corte de 8 caracters para quitar el \n y demas carcteres si se produjeran
+
+  Select strCase
+    Case "U", "u", ""
+      strCrc32 = String.UCase(strCrc32)
+    Case "L", "l"
+      strCrc32 = String.LCase(strCrc32)
+  End Select
+
+  Return strCrc32
+
+End
+
+Public Function ExifTool(strPath As String) As String[]
+
+  Dim strExifRaw As String
+  Dim stxExifRaw As New String[]
+  Dim strExifTag As String
+  Dim strExifVal As String
+
+  Dim stxExifStd As New String[] ' Standard tags for sound files
+  Dim stxExiTag As New String[]
+  Dim stxExiVal As New String[]
+  Dim stxExif As New String[]
+  Dim intR As Integer
+  Dim intCursor As Integer
+  Dim intLen As Integer
+  Dim intE As Integer
+  Dim strPkgName As String
+  Dim strExifStdFile As String
+  '  Dim bolTagExist As String
+  Dim intTagExist As Integer
+
+  'Verificacion de la existencia del archivo
+
+  ' Nombre del paquete externo que usa esta funcion
+  strPkgName = "libimage-exiftool-perl"
+
+  strExifStdFile = User.Home &/ "exiftags.txt"
+  If Exist(strExifStdFile) Then
+    stxExifStd = Split(File.Load(strExifStdFile), gb.NewLine)
+  Else
+    stxExifStd = Split("Title:Track:Artist:Album:Genre:Year:FileType:AudioBitrate:ChannelMode:Duration:SampleRate", ":")
+  Endif
+
+  If Exist(strPath) = True Then
+    If Stat(strPath).Type = gb.File Then
+      ' Toma todos los tags del archivo
+      If InStr(strPath, Chr(39)) <> 0 Then
+        strPath = Replace(strPath, Chr(39), Chr(92) & Chr(39))
+      Endif
+
+      Select Msys.DistroShort()
+        Case "manjaro", "ubuntu", "mint", "debian"
+          If Msys.PkgStat(strPkgName) = True Then
+            Shell "exiftool -f -s -s '" & strPath & "' 2>&1" To strExifRaw
+          Else
+            Message(("Falta el paquete") & " " & strPkgName)
+          Endif
+
+        Case Else
+          If Msys.PkgStat(strPkgName) = True Then
+            Shell "exiftool -f -s -s '" & strPath & "' 2>&1" To strExifRaw
+          Else
+            Message(("Falta el paquete") & " " & strPkgName)
+          Endif
+      End Select
+
+      stxExifRaw = Split(strExifRaw, "\n")
+      For intR = 0 To stxExifRaw.Max
+        If stxExifRaw[intR] <> "" Then
+          intCursor = InStr(stxExifRaw[intR], ": ")
+          intLen = String.Len(stxExifRaw[intR])
+
+          strExifTag = String.Mid(stxExifRaw[intR], 1, intCursor - 1)
+          strExifVal = String.Mid(stxExifRaw[intR], intCursor + 2, intLen - intCursor - 1)
+
+          ' Retoque de la información
+          Select strExifTag
+            Case "AudioBitrate", "NominalBitrate"
+              strExifTag = "AudioBitrate"
+              strExifVal = Split(strExifVal, " ")[0]
+
+            Case "Duration"
+              strExifVal = Split(strExifVal, " ")[0]
+              strExifVal = HMStoSeconds(strExifVal)
+
+            Case "ChannelMode", "AudioChannels"
+              strExifTag = "ChannelMode"
+              If InStr(String.LCase(strExifVal), "stereo") <> 0 Then
+                strExifVal = 2
+              Else
+                strExifVal = 1
+              Endif
+
+            Case "Track", "TrackNumber"
+              strExifTag = "Track"
+              If InStr(strExifVal, "/") <> 0 Then
+                strExifVal = Split(strExifVal, "/")[0]
+              Endif
+
+            Case "Year", "Date"
+              strExifTag = "Year"
+
+          End Select
+
+          If InStr(strExifVal, ":") <> 0 Then
+            strExifVal = Replace(strExifVal, ":", ".")
+          Endif
+
+          'strExif = strExifTag & ":" & strExifVal
+
+          stxExiTag.Add(strExifTag)
+          stxExiVal.Add(strExifVal)
+
+          ' Preparación de la matriz de datos
+          ' stxExif.Add(strExif)
+        Endif
+      Next
+
+      For intE = 0 To stxExifStd.Max
+
+        intTagExist = stxExiTag.Find(stxExifStd[intE])
+
+        Select intTagExist
+          Case -1
+            stxExif.Add(stxExifStd[intE] & ":" & "")
+          Case Else
+            stxExif.Add(stxExiTag[intTagExist] & ":" & stxExiVal[intTagExist])
+        End Select
+
+      Next
+
+    Endif
+
+  Endif
+
+  Return stxExif
+
+End
+
+Public Function Timestamp(datTime As Date) As String '' Retorna una cadena de texto con el tiempo en formato "yyyymmddhhnnss"
+
+  Return Format(datTime, "yyyymmddhhnnss")
+
+End
+
+Public Function Capital(strInput As String) As String
+
+  Dim strOutput As String
+
+  If strInput <> "" Then
+
+    strOutput = String.UCase(String.Mid(strInput, 1, 1))
+    strOutput &= String.LCase(String.Mid(strInput, 2, String.len(strInput) - 1))
+
+  Else
+    strOutput = ""
+  Endif
+
+  Return strOutput
+
+End
+
+Public Function MouseButton(intKey As Integer) As String '' Funcion que retorna el nombre en ingés del boton del ratón que se ha presionado.
+
+  Dim strMouseButton As String
+
+  Select intKey
+    Case 1
+      strMouseButton = "Left"
+    Case 2
+      strMouseButton = "Right"
+    Case 4
+      strMouseButton = "Center"
+    Case 16
+      strMouseButton = "Function-1"
+    Case 8
+      strMouseButton = "Function-2"
+  End Select
+
+  Return strMouseButton
+
+End
+
+Public Function ArrayInclude(stxList As String[], strFind As String) As String[]
+  ''Quita de la lista los textos que no tengan la cadena de texto pasada como parametro
+
+  Dim strItem As String
+  Dim stxAuxiliar As New String[]
+
+  stxAuxiliar.Clear
+
+  For Each strItem In stxList
+    If InStr(strItem, strFind) <> 0 Then
+
+      stxAuxiliar.Add(strItem)
+
+    Endif
+
+  Next
+
+  Return stxAuxiliar
+
+End
+
+Public Function ArrayExclude(stxList As String[], strFind As String) As String[]
+  ''Quita de la lista los textos que tengan la cadena de texto pasada como parametro
+
+  Dim strItem As String
+  '  Dim intItem As Integer
+  Dim stxAuxiliar As New String[]
+
+  stxAuxiliar.Clear
+
+  For Each strItem In stxList
+    If InStr(strItem, strFind) = 0 Then
+
+      stxAuxiliar.Add(strItem)
+
+    Endif
+
+  Next
+
+  Return stxAuxiliar
+
+End
+
+Public Function FileInfo(strFilePath As String) As String[]
+
+  Dim stxFileMeta As New String[]
+  Dim stxExif As New String[]
+  Dim intF As Integer
+  Dim strFileDir As String
+  Dim strFileName As String
+  Dim strFileExt As String
+  Dim strFileBase As String
+  Dim strFileSize As String
+  Dim strFileTime As String
+  Dim strFileCRC32 As String
+  Dim strFileVersion As String
+
+  strFilePath = ArrangePath(strFilePath)
+
+  If Stat(strFilePath).Type = gb.File Then
+    ' Informacion básica para todo tipo de archivo
+
+    stxFileMeta.Add("FilePath:" & strFilePath)
+
+    strFileDir = File.Dir(strFilePath)
+    stxFileMeta.Add("FileDirectory:" & strFileDir)
+
+    strFileName = File.Name(strFilePath)
+    stxFileMeta.Add("FileName:" & strFileName)
+
+    strFileExt = File.Ext(strFilePath)
+    stxFileMeta.Add("FileExt:" & strFileExt)
+
+    strFileBase = File.BaseName(strFilePath)
+    stxFileMeta.Add("FileBase:" & strFileBase)
+
+    strFileSize = Stat(strFilePath).Size
+    stxFileMeta.Add("FileSize:" & strFileSize)
+
+    strFileTime = MUtility.Timestamp(Stat(strFilePath).Time)
+    strFileTime = Replace(strFileTime, ":", ".")
+    stxFileMeta.Add("FileTime:" & strFileTime)
+
+    strFileCRC32 = Mutility.CRC32(strFilePath)
+    stxFileMeta.Add("FileCRC32:" & strFileCRC32)
+
+    strFileVersion = Mutility.FileVersion(strFilePath)
+    strFileVersion = Replace(strFileVersion, ":", ".")
+    stxFileMeta.Add("FileVersion:" & strFileVersion)
+
+    Select Lower(strFileExt)
+      Case "mp3", "ogg", "flac"
+
+        stxExif = Mutility.ExifTool(strFilePath)
+
+        For intF = 0 To stxExif.Max
+
+          stxFileMeta.Add(stxExif[intF])
+
+        Next
+
+      Case Else
+
+    End Select
+
+  Endif
+
+  Return stxFileMeta
+
+End
+
+Public Function ConvertPath(txt As String) As String
+  ''' Función de jguardon en gambas-es
+  ''' Descodifica los caracteres hexadecimales en las URI's recorriendo la cadena dada
+  ''' Params: txt la URI a descodificar
+  ''' Return: la URI descodificada
+
+  Dim txt_len As Integer
+  Dim i As Integer
+  Dim ch As String
+  Dim digits As String
+  Dim resultado As String
+
+  resultado = ""
+  txt_len = Len(txt)
+  i = 1
+  Do While i <= txt_len
+    ' Examinar el siguiente caracter
+    ch = Mid$(txt, i, 1)
+    If ch = "+" Then
+      ' Convertir a espacio
+      resultado = resultado & "+"
+    Else If ch <> "%" Then
+      ' Normal, no cambiar
+      resultado = resultado & ch
+    Else If i > txt_len - 2 Then
+      resultado = resultado & ch
+    Else
+      ' Obtener los siguientes caracteres hex.
+      digits = Mid$(txt, i + 1, 2)
+      ' Debug digits
+      ' aquí convertimos el valor hexadecimal a entero y
+      ' se lo pasamos a Chr que devuelve el carácter correcto.
+      resultado = resultado & Chr$(CInt(Val("&" & digits)))
+      i = i + 2
+    Endif
+    i = i + 1
+  Loop
+
+  Return resultado
+
+End
+
+Public Function NamingCon() As String[] '' Devuelve una lista de nombres de controles y su abreviación de tres caracteres
+
+  Dim stxNCon As New String[]
+
+  stxNCon.Add("Bolean:bol")
+  stxNCon.Add("ButtonBox:bto")
+  stxNCon.Add("Button:btn")
+  stxNCon.Add("CheckBox:cko")
+  stxNCon.Add("Collection:ctn")
+  stxNCon.Add("ColorButton:cob")
+  stxNCon.Add("ColorChooser:coc")
+  stxNCon.Add("ColorPalette:cop")
+  stxNCon.Add("ColumnView:cuw")
+  stxNCon.Add("ComboBox:cmo")
+  stxNCon.Add("Connection:con")
+  stxNCon.Add("Control:crl")
+  stxNCon.Add("DataBase:dbs")
+  stxNCon.Add("DataBrowser:dbw")
+  stxNCon.Add("DataCombo:dcm")
+  stxNCon.Add("DataComboView:dcv")
+  stxNCon.Add("DataControl:dcr")
+  stxNCon.Add("DataSource:dsr")
+  stxNCon.Add("DateBox:dto")
+  stxNCon.Add("DateChooser:dtc")
+  stxNCon.Add("Date:dat")
+  stxNCon.Add("Date[]:dtx")
+  stxNCon.Add("Dial:dal")
+  stxNCon.Add("DirBox:dio")
+  stxNCon.Add("DirChooser:dic")
+  stxNCon.Add("DirView:diw")
+  stxNCon.Add("DocumentView:dcw")
+  stxNCon.Add("DrawingArea:dra")
+  stxNCon.Add("Editor:edi")
+  stxNCon.Add("Expander:exn")
+  stxNCon.Add("FileChooser:fic")
+  stxNCon.Add("Fileld:fld")
+  stxNCon.Add("FileProperties:fii")
+  stxNCon.Add("FileView:fiw")
+  stxNCon.Add("Float:flo")
+  stxNCon.Add("Float[]:flx")
+  stxNCon.Add("FontBox:fno")
+  stxNCon.Add("FontChooser:fnc")
+  stxNCon.Add("Frame:fra")
+  stxNCon.Add("GambasEditor:gbe")
+  stxNCon.Add("GridView:grw")
+  stxNCon.Add("Hbox:hzo")
+  stxNCon.Add("Hpanel:hzn")
+  stxNCon.Add("Hsplit:hzs")
+  stxNCon.Add("IconPanel:icn")
+  stxNCon.Add("IconView:icw")
+  stxNCon.Add("ImageView:imw")
+  stxNCon.Add("InputBox:ito")
+  stxNCon.Add("Integer:int")
+  stxNCon.Add("Integer[]:inx")
+  stxNCon.Add("Label:lbl")
+  stxNCon.Add("LCDlabel:lcd")
+  stxNCon.Add("ListBox:lso")
+  stxNCon.Add("ListEditor:lse")
+  stxNCon.Add("ListView:lsw")
+  stxNCon.Add("MaskBox:mko")
+  stxNCon.Add("MenuButton:mub")
+  stxNCon.Add("MessageView:mgw")
+  stxNCon.Add("MovieBox:mio")
+  stxNCon.Add("Object:obj")
+  stxNCon.Add("Panel:pnl")
+  stxNCon.Add("PictureBox:pio")
+  stxNCon.Add("Picture:pic")
+  stxNCon.Add("Printer:ptr")
+  stxNCon.Add("Process:prs")
+  stxNCon.Add("ProgressBar:psr")
+  stxNCon.Add("RadioButton:rdb")
+  stxNCon.Add("Result:res")
+  stxNCon.Add("ScrollArea:sca")
+  stxNCon.Add("ScrollBar:scr")
+  stxNCon.Add("ScrollView:scw")
+  stxNCon.Add("Separator:sep")
+  stxNCon.Add("SidePanel:sdn")
+  stxNCon.Add("SliderBox:sdo")
+  stxNCon.Add("Slider:sld")
+  stxNCon.Add("SpinBox:sio")
+  stxNCon.Add("Spiner:sir")
+  stxNCon.Add("String:str")
+  stxNCon.Add("String[]:stx")
+  stxNCon.Add("SwitchButton:swb")
+  stxNCon.Add("Table:tbl")
+  stxNCon.Add("TableView:tbw")
+  stxNCon.Add("TabPanel:tan")
+  stxNCon.Add("TabStrip:tat")
+  stxNCon.Add("TextArea:txa")
+  stxNCon.Add("TextBoxExplained:teo")
+  stxNCon.Add("TextBox:txo")
+  stxNCon.Add("TextEdit:txe")
+  stxNCon.Add("TextLabel:txl")
+  stxNCon.Add("TextList:tlo")
+  stxNCon.Add("TextView:txw")
+  stxNCon.Add("Timer:tmr")
+  stxNCon.Add("ToggleButton:tgb")
+  stxNCon.Add("ToolButton:tob")
+  stxNCon.Add("ToolPanel:ton")
+  stxNCon.Add("TreeView:trw")
+  stxNCon.Add("URLLabel:url")
+  stxNCon.Add("ValueBox:vao")
+  stxNCon.Add("Variant:vrt")
+  stxNCon.Add("Variant[]:vrx")
+  stxNCon.Add("Vbox:veo")
+  stxNCon.Add("Vpanel:ven")
+  stxNCon.Add("Vsplit:ves")
+  stxNCon.Add("Wizard:wiz")
+
+  Return stxNCon
+
+End
+
+Public Function HMStoSeconds(strTime As String) As Integer
+
+  Dim stxTime As New String[]
+  'Dim intZ As Integer
+  Dim intTime As Integer
+
+  stxTime = Split(strTime, ":")
+
+  intTime = (stxTime[0] * 3600) + (stxTime[1] * 60) + stxTime[2]
+
+  Return intTime
+
+End
+
+Public Function MkConfXml(strXmlPath As String) As Integer '' Creacion de archivo de configuracion inicial xml
+
+  Dim writer As New XmlWriter
+  Dim stxParameters As New String[]
+  Dim intE As Integer
+  Dim stxAtrib As New String[]
+  Dim intA As Integer
+
+  stxParameters.Add("MediaFolder:Path")
+  stxParameters.Add("CapitalMode:Mode")
+  stxParameters.Add("LangCurr:Name")
+  stxParameters.Add("Languages:Name")
+  stxParameters.Add("Software:Name:Seed:Prod")
+
+  'Apertura del documento
+  writer.Open(strXmlPath, True) 'True es para que le ponga los saltos de linea
+  writer.StartElement(Application.Name)
+
+  'Creación de una entidad
+  For intE = 0 To stxParameters.Max
+    stxAtrib.Clear
+    stxAtrib = Split(stxParameters[intE], ":")
+
+    writer.StartElement(stxAtrib[0])
+    If stxAtrib.Count > 1 Then
+      For intA = 1 To stxAtrib.Max
+        writer.StartElement(stxAtrib[intA])
+        writer.Text("")
+        writer.EndElement
+      Next
+    Endif
+    writer.EndElement
+  Next
+
+  writer.EndElement
+
+  writer.EndDocument
+
+  Return 1
+
+End
+
+Public Function ListDeldup(stxInput As String[]) As String[]
+
+  Dim strTmp As String
+  Dim stxOut As New String[]
+
+  stxInput.Sort
+
+  For Each strTmp In stxInput
+    If stxOut.Find(strTmp) = -1 Then
+      stxOut.Add(strTmp)
+    Endif
+  Next
+
+  Return stxOut
+
+End
+
+Public Function Werun(strProc1 As String) As Integer '' Devuelve si el programa se ejecuta desde el ide o no
+
+  Dim strProcRaw1 As String
+  Dim strPProc As String
+  Dim strProcRaw2 As String
+  Dim intMode As Integer
+
+  ' Averiguar el PPID
+  strProcRaw1 = ""
+  Shell "ps -ef | grep " & strProc1 & " | grep gbx3" To strProcRaw1
+  strProcRaw1 = Replace(strProcRaw1, "\t", "|")
+  strProcRaw1 = Replace(strProcRaw1, " ", "|")
+  strProcRaw1 = Replace(strProcRaw1, "||", "|")
+  strProcRaw1 = Replace(strProcRaw1, "||", "|")
+  strProcRaw1 = Replace(strProcRaw1, "||", "|")
+
+  'Shell "ps -ef | grep " & strProc1 & " | grep gbx3 | cut -d ''-f2" To strPProc
+
+  If strProcRaw1 <> "" Then
+    strPProc = Split(strProcRaw1, "|")[2]
+    'Averiguar el nombre del programa padre
+    Shell "ps -ef | grep " & strPProc & " | grep gbr3" To strProcRaw2
+    strProcRaw2 = Replace(strProcRaw2, "  ", " ")
+    strProcRaw2 = Replace(strProcRaw2, "\t", "|")
+    strProcRaw2 = Replace(strProcRaw2, " ", "|")
+    strProcRaw2 = Replace(strProcRaw2, "||", "|")
+    strProcRaw2 = Replace(strProcRaw2, "||", "|")
+    strProcRaw2 = Replace(strProcRaw2, "||", "|")
+
+    If strProcRaw2 <> "" Then
+      If Split(strProcRaw2, "|")[1] = strPProc Then
+        intMode = 1 ' Se esta ejecutando desde el IDE
+      Else
+        intMode = 0 ' Se esta ejecutando desde un paquete
+      Endif
+    Endif
+
+  Endif
+
+  Return intMode
+
+End
+
+Public Sub ScanFolder(strDir As String, Optional strExt As String) As String[] '' Escanea una carpeta que se pasa como parametro en busca de archivos se puede filtrar con una lista de extensiones separadas por comas.
+
+  Dim stxFiles As New String[]
+  Dim stxExt As New String[]
+
+  Dim intE As Integer
+  Dim intR As Integer
+
+  Dim strFileRaw As String
+  Dim strFilePro As String
+  Dim intA As Integer
+
+  If IsDir(strDir) = True Then
+
+    If strExt = "" Then
+
+      stxFiles = RDir(strDir)
+
+    Else
+      If InStr(strExt, ",") <> 0 Then
+
+        strExt = String.LCase(strExt)
+
+        stxExt = Split(strExt, ",")
+
+        If stxExt.Count > 1 Then
+
+          For intE = 0 To stxExt.Max
+            Select intE
+              Case 0
+
+                stxFiles = RDir(strDir, "*." & stxExt[intE])
+
+              Case Else
+
+                stxFiles.Insert(RDir(strDir, "*." & stxExt[intE]))
+
+            End Select
+
+          Next
+
+        Endif
+
+      Else
+        stxFiles = RDir(strDir, "*." & strExt, True)
+      Endif
+
+    Endif
+
+  Endif
+
+  stxFiles.Sort
+
+  For intA = 0 To stxFiles.Max
+
+    stxFiles[intA] = strDir &/ stxFiles[intA]
+
+  Next
+
+  For intR = 0 To stxFiles.Max
+
+    strFileRaw = stxFiles[intR]
+
+    If Stat(strFileRaw).Type = gb.File Then
+      strFilePro = MUtility.ConvertPath(strFileRaw)
+      strFilePro = MUtility.Chek4SQL(strFilePro)
+
+      If strFileRaw <> strFilePro Then
+
+        Try Copy strFileRaw To strFilePro
+
+        Wait 0.3
+        If Exist(strFilePro) = True Then
+          stxFiles[intR] = strFilePro
+          Kill strFileRaw
+        Else
+          Message.Info(("El archivo ") &
+            gb.NewLine & strFileRaw &
+            gb.NewLine &
+            ("Tiene caracteres no ascii"))
+        Endif
+
+      Endif
+    Endif
+
+  Next
+
+  Return stxFiles
+
+End

@@ -1,36 +1,51 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,40,32)
-  Arrangement = Arrange.Vertical
+  MoveScaled(0,0,57,16)
+  Arrangement = Arrange.Horizontal
+  Padding = 1
   { Panel1 Panel
-    MoveScaled(1,2,39,5)
+    MoveScaled(0,0,43,15)
     Expand = True
-    Arrangement = Arrange.Horizontal
-    { ToolButton1 ToolButton
-      MoveScaled(0,0,27,5)
+    Arrangement = Arrange.Vertical
+    { Panel2 Panel
+      MoveScaled(0,0,39,5)
       Expand = True
-      Picture = Picture["icon:/32/tools"]
+      Arrangement = Arrange.Horizontal
+      { ToolButton1 ToolButton
+        MoveScaled(0,0,27,5)
+        Expand = True
+        Picture = Picture["icon:/32/tools"]
+      }
+    }
+    { Panel3 Panel
+      MoveScaled(0,5,39,5)
+      Expand = True
+      Arrangement = Arrange.Horizontal
+      { ToolButton2 ToolButton
+        MoveScaled(0,0,27,5)
+        Expand = True
+        Picture = Picture["icon:/32/component"]
+      }
+    }
+    { Panel4 Panel
+      MoveScaled(0,10,39,5)
+      Expand = True
+      Arrangement = Arrange.Horizontal
+      { ToolButton3 ToolButton
+        MoveScaled(0,0,27,5)
+        Expand = True
+        Picture = Picture["icon:/32/component"]
+      }
     }
   }
-  { Panel2 Panel
-    MoveScaled(1,8,39,5)
-    Expand = True
-    Arrangement = Arrange.Horizontal
-    { ToolButton2 ToolButton
-      MoveScaled(0,0,27,5)
+  { Panel5 Panel
+    MoveScaled(46,0,11,15)
+    Arrangement = Arrange.Fill
+    { btoLink Button
+      MoveScaled(-3,2,16,4)
       Expand = True
-      Picture = Picture["icon:/32/component"]
-    }
-  }
-  { Panel3 Panel
-    MoveScaled(1,14,39,5)
-    Expand = True
-    Arrangement = Arrange.Horizontal
-    { ToolButton3 ToolButton
-      MoveScaled(0,0,27,5)
-      Expand = True
-      Picture = Picture["icon:/32/component"]
+      Text = ("Link")
     }
   }
 }

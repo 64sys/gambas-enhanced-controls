@@ -1,5 +1,25 @@
 ' Gambas class file
 
+' GEC
+'
+' Copyright (C) Martín Belmonte
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
 Public Sub Form_Open()
 
   ToolButton1.Text = ("Abrir ejemplo") & " dbControls"
@@ -25,5 +45,53 @@ End
 Public Sub ToolButton3_Click()
 
   FProgbar.Show()
+
+End
+
+Public Sub btoLink_Click()
+
+  Dim proyecto As String
+  Dim n As Integer
+
+  n = Message.Question("Para añadir éstos controles a tus proyectos de Gambas tienes tres opciones: Enlazarlos, Copiarlos, o Instalarlos.\n"
+  "Si los enlazas, para modificar o a ñadir algo en ellos, tendrás que hacerlo en éste proyecto. Los cambios se propagarán automáticamente a todos los proyectos enlazados."
+  "\n\nSi los copias, las modificaciones y cambios que les hagas sólo serán visibles en el proyecto donde realices esos cambios."
+  "\n\nUna tercera opción es crear el paquete de instalación de éste proyecto y luego instalarlo en tu ordenador. Podrás entonces añadirlo a tu proyecto como cualquier otro componente de Gambas.", "Enlazar", "Copiar", "Cancelar")
+  If n = 3 Then Return
+  If Dialog.SelectDirectory() Then Return
+  proyecto = Dialog.Path
+  If n = 1 Then
+    Shell "ln -s \"" & Application.path & "/.src/dbcontrols\" \"" & proyecto & "/.src\"" Wait
+    Shell "ln -s \"" & Application.path & "/dbc_iconos\" \"" & proyecto & "\"" Wait
+
+    Shell "ln -s \"" & Application.path & "/.src/htedit\" \"" & proyecto & "/.src\"" Wait
+    'Shell "ln -s \"" & Application.path & "/dbc_iconos\" \"" & proyecto & "\"" Wait
+
+    Shell "ln -s \"" & Application.path & "/.src/xcontrols\" \"" & proyecto & "/.src\"" Wait
+    Shell "ln -s \"" & Application.path & "/xiconos\" \"" & proyecto & "\"" Wait
+
+    Shell "ln -s \"" & Application.path & "/.src/xutilities\" \"" & proyecto & "/.src\"" Wait
+
+    Shell "ln -s \"" & Application.path & "/geniconos\" \"" & proyecto & "\"" Wait
+
+    Shell "cp -r \"" & Application.path & "/.hidden/control\" \"" & proyecto & "/.hidden/control\"" Wait    ' íconos de los controles
+
+  Else
+    Shell "cp -r \"" & Application.path & "/.src/dbcontrols\" \"" & proyecto & "/.src\"" Wait
+    Shell "cp -r \"" & Application.path & "/dbciconos\" \"" & proyecto &/ "dbciconos\"" Wait
+
+    Shell "cp -r \"" & Application.path & "/.src/htedit\" \"" & proyecto & "/.src\"" Wait
+    '
+
+    Shell "cp -r \"" & Application.path & "/.src/xcontrols\" \"" & proyecto & "/.src\"" Wait
+    Shell "cp -r \"" & Application.path & "/xiconos\" \"" & proyecto & "xicons\"" Wait
+
+    Shell "cp -r \"" & Application.path & "/.src/xutilities\" \"" & proyecto & "/.src\"" Wait
+
+    Shell "cp -r \"" & Application.path & "/geniconos\" \"" & proyecto & "genicons\"" Wait
+
+    Shell "cp -r \"" & Application.path & "/.hidden/control\" \"" & proyecto &/ ".hidden/control\"" Wait
+  Endif
+  Message("Terminado. No olvide añadir los componentes \ngb.db\ngb.form.mdi\ngb.gui.qt.webkit\na su proyecto antes de compilarlo.")
 
 End

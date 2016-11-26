@@ -1,0 +1,405 @@
+' Gambas module file
+
+' Utilidades de sistema
+'
+' Copyright (C) Martín Belmonte
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Public Function Resume() As String
+
+  Dim strResume As String
+
+  strResume = "<b>So: </b>" & Distro()
+  strResume &= " <b>Arquitectura.So: </b>" & ArqSO()
+  strResume &= " <b>Arquitectura.Proc: </b>" & ArqMicro()
+  strResume &= " <b>Procesador: </b>" & MicroType()
+  strResume &= " <b>Ram: </b>" & Ram()
+  strResume &= " <b>Nombre.PC: </b>" & ComputerName()
+  strResume &= " <b>Usuario: </b>" & CurrentUser()
+  strResume &= " <b>Usuarios: </b>" & AllUsers()
+  strResume &= " <b>Escritorio: </b>" & DskType()
+  strResume &= " <b>Grupo: </b>" & WGroup()
+  strResume &= " <b>Gambas: </b>" & Vgambas()
+  strResume &= " <b>Actualizado: </b>" & LastUpgrade()
+
+  Return strResume
+
+End
+
+Public Function Distro() As String 'devuelve la distribución instalada xmi
+
+  Dim sDis As String
+
+  Shell "lsb_release -d | cut -d':' -f2" To sDis
+  Replace(sDis, gb.Tab, "")
+  sDis = Trim(sDis)
+  Return sDis
+
+End
+
+Public Function DistroShort() As String
+
+  Dim strDistro As String
+  Dim strDistroShort As String
+  Dim stxDistros As New String[]
+  Dim stxDistro As New String[]
+  Dim intN As Integer
+
+  Shell "lsb_release -d | cut -d':' -f2" To strDistro
+  Replace(strDistro, gb.Tab, "")
+  strDistro = Trim(strDistro)
+
+  strDistro = strDistro
+  strDistro = Replace(strDistro, "  ", " ")
+  strDistro = Replace(strDistro, "  ", " ")
+  strDistro = Replace(strDistro, gb.Tab, " ")
+  strDistro = Replace(strDistro, gb.Tab, " ")
+  strDistro = String.LCase(strDistro)
+
+  stxDistros.clear
+  stxDistro.clear
+
+  stxDistros.Add("arch")
+  stxDistros.Add("debian")
+  stxDistros.Add("fedora")
+  stxDistros.Add("redhat")
+  stxDistros.Add("gentoo")
+  stxDistros.Add("manjaro")
+  stxDistros.Add("mint")
+  stxDistros.Add("opensuse")
+  stxDistros.Add("ubuntu")
+
+  stxDistro = Split(strDistro, " ")
+
+  strDistroShort = "Desconocida"
+
+  For intN = 0 To stxDistro.Max
+
+    If stxDistros.Find(stxDistro[intN]) <> -1 Then
+      strDistroShort = stxDistro[intN]
+      Break
+    Endif
+
+  Next
+
+  Return strDistroShort
+
+End
+
+Public Function ArqSO() As String 'devuelve la Arquitecura del Sistema Operativo
+
+  Return System.Architecture
+
+End
+
+Public Function ArqMicro() As String 'devuelve la Arquitecura del Procesador
+
+  Dim sArqPro As String
+
+  Exec ["uname", "-p"] To sArqPro 'Almacenamos la Arquitectura del Procesador
+  Return Replace(sArqPro, "\n", "")
+
+End
+
+Public Function MicroType() As String 'devuelve el tipo de Procesador
+
+  Dim sPro As String
+
+  Shell "cat /proc/cpuinfo | grep -i ghz | uniq | cut -f2 -d" & ":" To sPro
+  Return LTrim(Replace(sPro, "\n", ""))
+
+End
+
+Public Function Ram() As String 'devuelve cantidad de Ram en MB tambien con free -m
+
+  Dim sRam As String
+
+  Exec ["cat", "/proc/meminfo"] To sRam
+  Try sRam = Scan(sRam, "*MemTotal:*\n*")[1] 'Ocultamos el Error si no encuentra MenTotal: * \n
+  If Error Then
+    sRam = ""
+  Else
+    While Not IsDigit(Right(sRam))
+      sRam = Left(sRam, -1)
+    Wend
+    sRam = Trim(sRam)
+  Endif
+
+  If sRam Then
+    Try sRam = Format(CInt(sRam) / 1024, "0") & " MB"
+    If Not Error Then Return sRam
+  Endif
+
+End
+
+Public Function ComputerName() As String 'devuelve el nombre del pc
+
+  Return System.Host
+
+End
+
+Public Function CurrentUser() As String 'devuelve el usuario activo
+
+  Return System.User.Name
+
+End
+
+Public Function AllUsers() As String 'Devuelve los usuarios que hemos creado
+
+  Dim sUser As String
+
+  Shell "cat /etc/passwd |grep -iw '100.' | cut -d ':' -f1" To sUser
+
+  Return Replace(sUser, "\n", "")
+
+End
+
+Public Function DskType() As String 'devuelve el entorno del escritorio
+
+  Dim sEscritorio As String
+  'Shell "env | grep DESKTOP_SESSION= | cut -d '=' -f 2" To sEscritorio
+  sEscritorio = Desktop.Type
+
+  Return Replace(sEscritorio, "\n", "")
+
+End
+
+Public Function WGroup() As String 'devuelve el Grupo de trabajo del pc
+
+  Return System.Domain
+
+End
+
+Public Function SysFile(ruta As String) As String 'devuelve el sistema de ficheros
+
+  Dim sSF As String
+
+  Exec ["df", "-h", ruta] To sSF 'Almacenamos caracteristicas del Sistema de Ficheros pasado en ruta
+  Try sSF = Scan(sSF, "*\n*")[1] 'Ocultamos el Error si no encuentra la cadena
+  If Error Then sSF = ""
+  Return Replace(sSF, "\n", "")
+
+End
+
+Public Function Vgambas() As String 'devuelve la versión de gambas intalada en el pc
+
+  Return System.FullVersion
+
+End
+
+Public Function Ls(Ruta As String) As String 'devuelve un listado del directorio pasado en ruta
+
+  Dim sListado As String
+
+  Shell "ls -a " & Ruta To sListado 'Almacenamos listado directorio
+  Return RTrim(Replace(sListado, "\n", ":"))
+  'Otros comandos que devuelven un listado con las aplicaciones instaladas
+  ' dpkg - l
+  ' dpkg --get-selections es igual a dpkg -l | cut -d ' ' -f3
+
+End
+
+Public Function AddressIP() As String 'devuelve las Ips configuradas en el equipo
+
+  Dim sIPs As String
+
+  Shell "ifconfig | grep inet: |cut -d ':' -f2|cut -d ' ' -f1" To sIPs
+  Return RTrim(Replace(sIPs, "\n", " "))
+
+End
+
+Public Function LastNIP() As String 'devuelve el último digito de la Ip
+
+  Dim sIPs As String
+
+  Shell "ifconfig | grep inet: | grep Difus.|cut -d '.' -f5|cut  -d ' ' -f1" To sIPs
+  Return RTrim(Replace(sIPs, "\n", " "))
+
+End
+
+Public Function Hdserial() As String 'devuelve el número de serie del disco duro para utilizarlo como Pk en la BDD
+
+  Dim sNS As String
+
+  Shell "udevadm info --query=property --name=sda | grep SERIAL_ | awk -F '=' '{print $2}'" To sNS
+  Return RTrim(Replace(sNS, "\n", " "))
+
+End
+
+Public Function UUIDswap() As String
+  'devuelve UUID de la swap para utilizarlo como PK de la BDD
+  'Requiere permisos de Administrador
+
+  Dim sUID As String
+
+  Shell "blkid | grep swap | cut -d ' ' -f2 |cut -d '=' -f2" To sUID
+  Return Left(Right(sUID, -1), -2)
+
+End
+
+Public Function LastUpgrade() As String 'devuelve la Fecha de la ultima vez que se actualizo el sistema
+
+  'Dim Result As String
+  Dim long_iso As String
+  Dim strDistroShort As String
+  Dim strLastUpgrade As String
+
+  long_iso = "long-iso"
+
+  strDistroShort = DistroShort()
+
+  Select strDistroShort
+    Case "debian"
+      strLastUpgrade = Format$(Stat("/var/log/apt").Time, "yyyy/mm/dd hh:nn:ss")
+      strLastUpgrade = RTrim(Replace(strLastUpgrade, "\n", " "))
+
+    Case Else
+      strLastUpgrade = ("Desconocido")
+  End Select
+
+  Return strLastUpgrade
+
+End
+
+Public Function PkgStat(strPkg As String) As Boolean ''Devuelve el estado respecto a la instalacion de un paquete. Requiere como parametro de entrada el nombre exacto del paquete.
+
+  Dim strDistroShort As String
+  'Dim stxDistro As New String[]
+  'Dim intN As Integer
+  Dim strCommand As String
+  Dim strPkgStatus As String
+  Dim bolPkgStatus As Boolean
+
+  strDistroShort = DistroShort()
+
+  ' Obtencion de resultados
+  Select strDistroShort
+    Case "arch", "manjaro"
+      strCommand = "pacman -Qs " & strPkg
+
+      Shell strCommand & " 2>&1" To strPkgStatus
+
+      strPkgStatus = Split(strPkgStatus, "\n")[0]
+      strPkgStatus = Split(strPkgStatus, " ")[0]
+      If strPkgStatus = "local/" & strPkg
+        bolPkgStatus = True ' "yes"
+      Else
+        bolPkgStatus = False '"no"
+      Endif
+
+    Case "debian", "ubuntu", "mint"
+
+      strCommand = "dpkg-query -W -f='${Status}\n' " & strPkg
+
+      Shell strCommand & " 2>&1" To strPkgStatus
+
+      If strPkgStatus = "install ok installed\n" Then
+        bolPkgStatus = True ' "yes"
+      Else
+        bolPkgStatus = False '"no"
+      Endif
+
+      ' Case "fedora"
+      '   strCommand = "rpm-qa | grep " & strPkg
+      '
+      '   Shell strCommand & " 2>&1" To strPkgStatus
+      '
+      '   If strPkgStatus = "#FALTA-CODIFICAR#" Then
+      '     strPkgStatus = "#FALTA-CODIFICAR#" '"yes"
+      '   Else
+      '     strPkgStatus = "#FALTA-CODIFICAR#" '"no"
+      '   Endif
+      '
+      ' Case "opensuse"
+      '   strCommand = "zypper se -i " & strPkg
+      '
+      '   Shell strCommand & " 2>&1" To strPkgStatus
+      '
+      '   If strPkgStatus = "#FALTA-CODIFICAR#" Then
+      '     strPkgStatus = "#FALTA-CODIFICAR#" '"yes"
+      '   Else
+      '     strPkgStatus = "#FALTA-CODIFICAR#" '"no"
+      '   Endif
+      '
+      ' Case "gentoo"
+      '   strCommand = "emerge -pv " & strPkg
+      '
+      '   Shell strCommand & " 2>&1" To strPkgStatus
+      '
+      '   If strPkgStatus = "#FALTA-CODIFICAR#" Then
+      '     strPkgStatus = "#FALTA-CODIFICAR#" '"yes"
+      '   Else
+      '     strPkgStatus = "#FALTA-CODIFICAR#" '"no"
+      '   Endif
+
+  End Select
+
+  Return bolPkgStatus
+
+End
+
+Public Function XDGFolder() As String[]
+
+  Dim strHome As String
+  Dim stxXDGTmp As New String[]
+  Dim stxXDGFolders As New String[]
+  Dim strDirsFile As String
+  Dim strFlux As String
+  Dim intL As Integer
+  Dim strTmp As String
+  Dim strVar As String
+  Dim strFolder As String
+
+  strHome = User.Home
+
+  strDirsFile = strHome &/ ".config/user-dirs.dirs"
+
+  If Exist(strDirsFile) Then
+    strFlux = File.Load(strDirsFile)
+
+    stxXDGTmp = Split(strFlux, gb.NewLine)
+
+    For intL = 0 To stxXDGTmp.Max
+      strTmp = stxXDGTmp[intL]
+      If strTmp <> "" Then
+        If String.Mid(strTmp, 1, 4) = "XDG_" Then
+          If InStr(strTmp, "=")
+
+            strVar = ""
+            strFolder = ""
+
+            strVar = Split(strTmp, "=")[0]
+            strVar = Split(strVar, "_")[1]
+            strVar = String.LCase(strVar)
+
+            strFolder = Split(strTmp, "=")[1]
+            strFolder = Replace(strFolder, "$HOME/", "")
+            strFolder = Replace(strFolder, Chr(34), "")
+            strFolder = strHome &/ strFolder
+
+            stxXDGFolders.Add(strVar & ":" & strFolder)
+
+          Endif
+        Endif
+      Endif
+    Next
+  Endif
+
+  Return stxXDGFolders
+
+End

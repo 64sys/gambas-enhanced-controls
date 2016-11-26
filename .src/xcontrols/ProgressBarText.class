@@ -30,6 +30,8 @@ Public Const _Properties As String = "*,Value,ValueBis,Border=True,ColorBar,Colo
 Public Const _Group As String = "Form" 'le composant sera placé dans le groupe de composants (Form, View, Chooser, Container, Special, Deprecated ou celui que vous aurez créé)
 Public Const _DefaultEvent As String = "Enter" 'est une des procédures qui sera ouverte par défaut en mode edition
 Public Const _DefaultSize As String = "24,6" 'est la taille par defaut du composant affiché sur le Form lors de la conception
+Public Const _Similar As String = "ProgressBar"
+Public Const _DrawWith As String = "ProgressBar"
 
 'déclaration des objets
 Private $hpnl As New Panel(Me)

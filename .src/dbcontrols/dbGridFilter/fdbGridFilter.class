@@ -1,0 +1,379 @@
+' Gambas class file
+
+'
+' dbControls
+'
+' Copyright (C) Jorge Carrion.
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+
+Event Click()
+Event DblClick()
+
+Property SubMenu As Menu
+Property verDefault As Boolean
+Property verExport As Boolean
+Property posButtons As Integer
+
+Private elegidos As String[]
+Private $SubMenu As Menu
+Private $verDefault As Boolean
+Private $Export As Boolean
+Private $posButtons As Integer
+
+Public Sub Form_Open()
+
+  Inc Application.Busy
+  grid.populate()
+  elegidos = New String[]
+  Dec Application.Busy
+  grid.SetFocus()
+
+End
+
+Public Sub bAutofiltro_Click()
+
+  Dim cad, s As String
+  Dim oldFilter As String
+
+  If grid.column > -1 Then
+    Inc Application.Busy
+    oldFilter = grid.query.filter
+    Select Case grid.rslt.Fields[grid.Column].type
+      Case gb.Date
+        s = grid[grid.Row, grid.Column].text
+        cad = "\"" & Mid(s, 7) & "-" & Mid(s, 4, 2) & "-" & Mid(s, 1, 2) & "\""
+      Case gb.String
+        cad = "'" & grid[grid.Row, grid.Column].text & "'"
+      Case gb.Boolean
+        cad = IIf(grid[grid.Row, grid.Column].text = "SI", "True", "False")
+      Case Else
+        cad = grid[grid.Row, grid.Column].text
+    End Select
+    s = grid.dbcomillas(grid.rslt.fields[grid.Column].Name)
+    grid.query.filter = IIf(grid.query.filter, grid.query.filter & " and ", "") & s & " = " & cad ' & parrilla[parrilla.Row, parrilla.Column].text & "'"
+    If Not grid.populate(True) Then
+      Balloon("Campo inválido para filtrado en la consulta actual", grid,, grid.Current.X, grid.Current.y)
+      grid.query.filter = oldFilter
+    Endif
+
+    Dec Application.Busy
+  Endif
+
+End
+
+Public Sub bTodos_Click()
+
+  Inc Application.Busy
+  buscar.text = ""
+  grid.query.filter = ""
+  grid.query.order = ""
+  grid.populate(True)
+  Dec Application.Busy
+
+End
+
+Public Sub bVerfiltro_Click()
+
+  Dim filtro As String
+
+  If grid.query.filter Then
+    filtro = grid.query.filter
+    filtro = Replace(LCase(filtro), "like '%", "contengan '")
+    filtro = Replace(LCase(filtro), "like '", "empiezan por '")
+    filtro = Replace(filtro, "%'", "'")
+    filtro = Replace(filtro, "and", "y también que en")
+    filtro = Replace(filtro, " or ", " o que en ")
+    filtro = Replace(filtro, " not ", " no ")
+    filtro = "Ver los que en " & filtro
+  Else
+    filtro = "No hay filtros sobre la consulta original"
+  Endif
+  Message(filtro)
+
+End
+
+Public Sub bBuscar_Click()
+
+  Dim cad, nomcol, buscado, filtro As String
+  Dim col As Integer
+
+  If Not buscar.text Then
+    bTodos_click()
+  Else
+    If grid.column = -1 Then
+      Message.Warning("Debes hacer click primero en la columna por la que deseas filtrar")
+    Else
+      Inc Application.Busy
+      col = grid.Column
+      nomcol = grid.rslt.fields[grid.Column].Name
+      buscado = buscar.text
+      cad = grid.dbComillas(nomcol) & " like '%" & buscar.Text & "%'"
+      If InStr(grid.query.filter, cad) = 0 Then
+        filtro = grid.query.filter
+        grid.query.filter &= IIf(grid.query.filter, " and ", "") & cad
+        grid.populate(True)
+        If grid.Rows.Count = 0 Then
+          grid.query.filter = filtro
+          grid.populate(True)
+          grid.MoveTo(0, col)
+          buscar.SetFocus()
+          buscar.index = buscar.Find(buscado)
+          Balloon("No hay ningún registro que en " & nomcol & " contenga este valor", buscar)
+          buscar.text = buscado
+        Endif
+      Endif
+      Dec Application.Busy
+    Endif
+  Endif
+
+End
+
+Public Sub buscar_KeyRelease()
+
+  If Key.code = Key.Enter Or Key.Code = Key.Return Then
+    If buscar.find(buscar.Text) Then buscar.Add(buscar.text)
+    bBuscar_Click()
+  Endif
+
+End
+
+Public Sub bavanzado_Click()
+
+  Dim f As DbfFiltro
+  Dim cad As String
+
+  cad = grid.query.filter
+  f = New DbfFiltro(grid)
+  f.ShowModal
+  If cad <> grid.query.filter Then
+    Inc Application.Busy
+    grid.populate(True)
+    Dec Application.Busy
+  Endif
+
+End
+
+Public Sub Action_Activate(opcion As String) As String
+
+  Dim g As DbGridFilter
+
+  Select Case opcion
+    Case "mFiltrar"
+      bAutofiltro_Click()
+    Case "mFiltro"
+      bavanzado_Click()
+    Case "mNofiltrar"
+      bTodos_Click()
+    Case "mVerFiltro"
+      bVerfiltro_Click()
+    Case "mOrdenar"
+      grid.grid_ColumnClick(grid.column)
+    Case "mExportar"
+      exportar()
+    Case Else
+      g = Me.parent
+      g.SubMenus(opcion)
+  End Select
+
+End
+
+Public Sub grid_Click()
+
+  Raise Click()
+
+End
+
+Public Sub grid_DblClick()
+
+  If grid.isShift Then
+    bAutofiltro_Click()
+    Stop Event
+  Endif
+
+End
+
+Public Sub exportar()
+
+  Dim f, c, fila, columna As Integer
+  Dim csv, linea As String
+
+  Dialog.title = "Exportar fichero CSV"
+  Dialog.filter = ["*.csv", "Ficheros.csv"]
+  Dialog.autoext = True
+  If Dialog.SaveFile() Then Return
+  Inc Application.Busy
+  fila = grid.Row
+  columna = grid.Column
+  For c = 0 To grid.Columns.Count - 1
+    linea &= "\"" & grid.Columns[c].Title & "\";"
+  Next
+  linea = Left(linea, -1) & gb.NewLine
+  csv = linea
+  For f = 0 To grid.Rows.count - 1
+    linea = ""
+    For c = 0 To grid.Columns.Count - 1
+      linea &= "\"" & grid[f, c].Text & "\";"
+    Next
+    linea = Left(linea, -1) & gb.NewLine
+    csv &= linea
+  Next
+  File.Save(Dialog.Path, csv)
+  Dec Application.busy
+  Balloon("La lista se exportó en el fichero " & Dialog.path, grid)
+
+End
+
+Private Function SubMenu_Read() As Menu
+
+  Return $SubMenu
+
+End
+
+Private Sub SubMenu_Write(Value As Menu)
+
+  Dim n As Integer
+  Dim existe As Boolean
+  Dim nMenu As Menu
+
+  If IsNull(value) Then
+    grid.PopupMenu = ""
+    $submenu = Null
+    Return
+  Endif
+  For n = 0 To Me.Menus.Count - 1
+    If Me.Menus[n].name = Value.Name Then
+      existe = True
+      Break
+    Endif
+  Next
+  If Not existe Then
+    nMenu = New Menu(Me)  'Al recibir el menu por primera vez se crean dos menús, el que se recibe y el combinado
+    nMenu.name = Value.name
+    addMenu(nMenu, Value)
+    nMenu = New Menu(Me)
+    nMenu.Name = "Combi" & Value.name
+    addMenu(nMenu, Me.Menus[0])
+    addMenu(nMenu, Value)
+  Endif
+  If value.name = "mDefault" Then
+    If $verDefault Then
+      grid.PopupMenu = value.Name
+    Endif
+  Else
+    If $verDefault Then
+      grid.PopupMenu = "Combi" & value.Name
+    Else
+      grid.PopupMenu = Value.Name
+    Endif
+  Endif
+
+End
+
+Private Sub addMenu(nMenu As Menu, elmenu As Menu)
+
+  Dim opcion, op As Menu
+
+  For Each opcion In elmenu.children 'metemos el menú por defecto
+    op = New Menu(nMenu)
+    op.Action = opcion.Action
+    op.Caption = opcion.Caption
+    op.Picture = opcion.Picture
+    op.Visible = opcion.Visible
+    op.Enabled = opcion.Enabled
+    op.Toggle = opcion.Toggle
+    op.Checked = opcion.Checked
+    op.Radio = opcion.Radio
+  Next
+
+End
+
+Private Function verDefault_Read() As Boolean
+
+  Return $verDefault
+
+End
+
+Private Sub verDefault_Write(Value As Boolean)
+
+  $verDefault = Value
+  If $verDefault And Not $SubMenu Then Me.SubMenu = Me.Menus[0]
+
+End
+
+Public Sub grid_KeyRelease()
+
+  If Key.code > Key.Space Then
+    buscar.SetFocus()
+    buscar.text = Key.text
+  Endif
+
+End
+
+Private Function verExport_Read() As Boolean
+
+  Return $Export
+
+End
+
+Private Sub verExport_Write(Value As Boolean)
+
+  $Export = Value
+  Me.Menus[0].Children[5].Visible = Value
+  If $submenu And If $verDefault Then
+    $submenu.Children[5].visible = Value
+  Endif
+
+End
+
+Private Function posButtons_Read() As Integer
+
+  Return $posButtons
+
+End
+
+Private Sub posButtons_Write(Value As Integer)
+
+  $posButtons = Value
+
+  With pnbots
+    Me.Arrangement = Arrange.None
+    .Arrangement = Arrange.None
+    Select Case $posButtons
+      Case 0 'bottom
+        .left = 0
+        .top = grid.height + 1
+        .width = Me.Width
+        .Height = 28
+        buscar.Visible = True
+        bBuscar.Visible = True
+        .Raise
+        .Arrangement = Arrange.Horizontal
+        Me.Arrangement = Arrange.Vertical
+        Wait 1
+      Case 1 'Right
+        .left = Me.height - 30
+        .Top = 0
+        .width = 28
+        .Height = 28
+        buscar.Visible = False
+        bBuscar.Visible = False
+        .Arrangement = Arrange.Vertical
+        Me.Arrangement = Arrange.Horizontal
+    End Select
+  End With
+
+End

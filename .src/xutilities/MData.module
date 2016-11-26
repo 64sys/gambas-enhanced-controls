@@ -1,0 +1,279 @@
+' Gambas module file
+
+'
+' Mdata modeule
+'
+' Copyright (C) Martín Belmonte
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
+Public Sub ImportFileMetadata(conDat As Connection, strTab As String, stxReff As String[], stxValApp As String[])
+
+  Dim tblPri As Table ' Tabla primaria
+  Dim fldPri As Field ' Tabla primaria
+  Dim strSQL As String
+  Dim strSQLf As String
+  Dim strSQLv As String
+  Dim strSQLr As String ' PAra insertar registros en tablas foráneas
+
+  Dim stxFld As New String[]
+  Dim stxFldFK As New String[]
+  Dim stxTblFK As New String[] ' matriz de nombres de Tablas foránelas
+  Dim stxFldRK As New String[] ' matriz de Campos con las claves foránelas
+  Dim stxFldNK As New String[] ' matriz de Campos con los nombres foránelos
+
+  Dim intC As Integer
+  Dim intK As Integer
+  Dim resChk As Result
+  Dim intFK As Integer
+  Dim intD As Integer
+  Dim resIns As Result
+  Dim resUpd As Result
+
+  Dim resInsRef As Result
+
+  Dim strTmp As String
+
+  stxFldFK.Clear
+  stxTblFK.Clear
+  stxFldRK.Clear
+  stxFldNK.Clear
+
+  For Each strTmp In stxReff ' Creo las listas FK
+
+    stxFldFK.Add(Split(strTmp, ":")[0])
+    stxTblFK.Add(Split(strTmp, ":")[1])
+    stxFldRK.Add(Split(strTmp, ":")[2])
+    stxFldNK.Add(Split(strTmp, ":")[3])
+
+  Next
+
+  If conDat.Tables.Exist(strTab) = True Then
+
+    tblPri = conDat.Tables[strTab]
+
+    For Each fldPri In tblPri.Fields ' Creo la lista de campos
+      stxFld.Add(fldPri.Name)
+    Next
+
+    For intC = 0 To stxValApp.Max
+
+      intK = stxFldFK.Find(stxFld[intC])
+
+      If intK <> -1 Then ' Si el campo actual es referenciado busco el key en la tabla Foránea
+
+        resChk = conDat.Exec("select " & stxFldRK[intK] & " from " & stxTblFK[intK] & " where " & stxFldNK[intK] & " = '" & stxValApp[intC] & "'")
+
+        If resChk.Available Then
+          intFK = resChk[stxFldRK[intK]]
+
+          If intFK <> Null Then
+            stxValApp[intC] = CStr(intFK)
+          Endif
+        Else ' Quiere decir que el registro no existe en la referencia
+
+          strSQLr = "insert into " & stxTblFK[intK] & "(" & stxFldRK[intK] & "," & stxFldNK[intK] & ") values(Null" & ",'" & stxValApp[intC] & "')"
+
+          resInsRef = conDat.Exec(strSQLr)
+          Wait 0.1
+
+          resChk = conDat.Exec("select " & stxFldRK[intK] & " from " & stxTblFK[intK] & " where " & stxFldNK[intK] & " = '" & stxValApp[intC] & "'")
+
+          If resChk.Available Then
+            intFK = resChk[stxFldRK[intK]]
+
+            If intFK <> Null Then
+              'Print stxValues[intC]
+              stxValApp[intC] = CStr(intFK)
+            Endif
+          Else ' Quiere decir que el registro no existe en la referencia
+            Message.Info(("Tenes que insertar la referencia a mano porque") & gb.NewLine & ("la forma automatica no funciono"))
+          Endif
+
+        Endif
+
+      Endif
+
+    Next
+
+  Endif
+
+  ' Una vez que esta todo acomodado verifico si el registro existe o no
+  resChk = conDat.Exec("select " & stxFld[16] & "," & stxFld[17] & " from " & strTab & " where " & stxFld[16] & " = '" & stxValApp[16] & "' and " & stxFld[17] & " = '" & stxValApp[17] & "'")
+  If resChk.Available Then
+    ' El registro ya existe asi que procedo con un update
+
+    resChk = conDat.Exec("select * from " & strTab & " where " & stxFld[16] & " = '" & stxValApp[16] & "' and " & stxFld[17] & " = '" & stxValApp[17] & "'")
+
+    For intD = 2 To stxFld.Max
+      If stxValApp[intD] <> resChk[stxFld[intD]]
+        strSQLv &= stxFld[intD] & "='" & stxValApp[intD] & "',"
+      Endif
+
+    Next
+
+    strSQL = "update " & strTab & " set " & strSQLv & " where " & stxFld[16] & " = '" & stxValApp[16] & "' and " & stxFld[17] & " = '" & stxValApp[17] & "'"
+    strSQL = Replace(strSQL, "', where", "' where")
+
+    If strSQLv = "" Then
+      'Print ("No hay cambios para aplicar")
+    Else
+      resUpd = conDat.Exec(strSQL)
+    Endif
+
+  Else
+    'El registro no existe, así que procedo con un insert
+
+    For intD = 0 To stxFld.Max
+
+      Select intD
+        Case 0
+          strSQLf = "insert into " & strTab & "(" & stxFld[intD] & ","
+          strSQLv &= "Null" & ","
+
+        Case stxFld.Max
+          strSQLf &= stxFld[intD] & ") values("
+
+          Select tblPri.Fields[stxFld[intD]].Type
+            Case 4, 7
+              strSQLv &= stxValApp[intD] & ")"
+            Case 9
+              strSQLv &= "'" & stxValApp[intD] & "')"
+          End Select
+
+        Case Else
+
+          strSQLf &= stxFld[intD] & ","
+
+          Select tblPri.Fields[stxFld[intD]].Type
+
+            Case 4, 7
+
+              strSQLv &= stxValApp[intD] & ","
+            Case 9
+              strSQLv &= "'" & stxValApp[intD] & "',"
+          End Select
+      End Select
+
+    Next
+    strSQL = strSQLf & strSQLv
+    resIns = conDat.Exec(strSQL)
+
+  Endif
+
+End
+
+Public Sub getDBinfo(conDB As Connection) ''Extraccion de la informacion de la estructura de la base de datos
+
+  Dim strSQLk As String
+  Dim resDBk As Result
+  Dim intR As Integer
+  Dim strSentenceSQL As String
+  Dim strSentence As String
+  Dim stxSentence As New String[]
+  Dim strTBOrigin As String
+  Dim strFDOrigin As String
+  Dim strTBReference As String
+  Dim strFDReference As String
+  Dim tblReference As Table
+  Dim strFDShow As String
+  Dim stxRefFields As New String[]
+  Dim fldReference As Field
+  Dim stxFDShowPK As New String[]
+  Dim stxFDShow As New String[]
+  Dim stxOrigin As New String[]
+  Dim stxReference As New String[]
+
+  Select conDB.Type
+
+    Case "sqlite3"
+
+      strSQLk = "SELECT * FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name" ' La letra K es por Key
+      resDBk = MData.SQLResult(conDB, strSQLk)
+
+      ' Creacion de la lista de tabla.campofk
+      If conDB.Opened Then
+        If resDBk.Available Then
+          'Print "Foreign keys"
+          For intR = 0 To resDBk.Max
+            resDBk.MoveTo(intR)
+            strTBOrigin = Str(resDBk["name"])
+
+            strSentenceSQL = Str(resDBk["sql"])
+
+            If InStr(strSentenceSQL, "FOREIGN KEY") <> 0 Then
+
+              stxFDShow.Clear
+
+              stxSentence = Split(strSentenceSQL, "\n")
+              stxSentence = Mutility.ArrayInclude(stxSentence, "FOREIGN KEY")
+
+              For Each strSentence In stxSentence
+                If InStr(strSentence, "FOREIGN KEY") <> 0 Then
+
+                  'Print strSentence
+                  strSentence = Replace(strSentence, "\tFOREIGN KEY(`", "")
+                  strSentence = Replace(strSentence, "`) REFERENCES ", "~")
+                  strSentence = Replace(strSentence, " ( ", "~")
+                  strSentence = Replace(strSentence, " ),", " )")
+                  strSentence = Replace(strSentence, " )", "")
+                  strSentence = Replace(strSentence, "`", "")
+                  strSentence = Replace(strSentence, " ", "")
+
+                  strFDOrigin = Split(strSentence, "~")[0]
+                  strTBReference = Split(strSentence, "~")[1]
+                  strFDReference = Split(strSentence, "~")[2]
+                  ' Busco los campos de destino posibles
+
+                  tblReference = conDB.Tables[strTBReference]
+                  stxRefFields.Clear
+
+                  If tblReference.Fields.Count > 1 Then
+
+                    For Each fldReference In tblReference.Fields
+
+                      stxRefFields.Add(fldReference.Name)
+
+                    Next
+
+                    If stxRefFields.Count > 1 Then
+                      strFDShow = stxRefFields[1]
+                    Else
+                      strFDShow = strFDReference
+                    Endif
+
+                  Endif
+
+                  stxOrigin.Add(strTBOrigin & "." & strFDOrigin)
+                  stxReference.Add(strTBReference & "." & strFDReference & "." & strFDShow)
+                  stxFDShow.Add(strFDShow)
+                  stxFDShowPK.Add(strFDReference)
+
+                Endif
+              Next
+            Endif
+          Next
+        Endif
+      Endif
+      'Case "postgres"
+      'Case "mysql"
+      'Case "odbc"
+
+  End Select
+  '---------------------------------------------------------------------------------
+
+End

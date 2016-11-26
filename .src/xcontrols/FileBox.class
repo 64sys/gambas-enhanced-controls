@@ -1,12 +1,34 @@
 ' Gambas class file
 
+'
+' Filebox Class
+'
+' Copyright (C) Jorge Carrion.
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+'
+
 Export
 Inherits UserControl
 
 Public Const _Properties As String = "*,Action,Border=True"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "32,4"
-Public Const _Similar As String = "TextBox"
+Public Const _Similar As String = "DirBox,TextBox"
+Public Const _DrawWith As String = "DirBox"
 Public Const _Group As String = "Chooser"
 
 Event Click

@@ -51,18 +51,18 @@ Private $iPulseH As Integer
 Private $bPulseUp As Boolean 'The direction the pulse block is going
 
 Public Sub _new()
-  
+
   $hCanvas = New DrawingArea(Me) As "Canvas"
   Me.Proxy = $hCanvas
-  
+
 End
 
 Public Sub Canvas_Draw()
-  
+
   Dim iHeight As Integer 'The height of the percentage block
   Dim hDim As RectF 'The dimensions of the label
   Dim iSpacing As Integer
-  
+
   If Me.Border Then
     With Paint
       .AntiAlias = False
@@ -73,21 +73,21 @@ Public Sub Canvas_Draw()
     End With
     iSpacing = 2
   Endif
-  
+
   'Defining clip region
   Paint.Rectangle(iSpacing, iSpacing, Paint.W - iSpacing * 2, Paint.H - iSpacing * 2, Me.Roundness)
   Paint.Clip()
-  
+
   If Me.Pulse And Not Me.Design Then
     Paint.FillRect(iSpacing, $iPulseY + iSpacing, $hCanvas.W - iSpacing * 2, $iPulseH - iSpacing * 2, Color.SelectedBackground)
   Else
-    
+
     iHeight = $hCanvas.H * Me.Value
-    
+
     With Paint
       'Drawing the block
       .FillRect(0, .H, .W, - iHeight, Color.SelectedBackground) '&H0043ACE
-      
+
       'Drawing the label
       If Me.Label Then
         'Text with coloured background
@@ -97,7 +97,7 @@ Public Sub Canvas_Draw()
         .Background = Color.SelectedForeground
         .DrawText(Format(Me.Value, "0%"), 0, 0, .W, .H, Align.Center)
         .Restore()
-        
+
         'Text with transparent background
         .Rectangle(0, 0, .W, .H - iHeight)
         .Clip()
@@ -107,19 +107,19 @@ Public Sub Canvas_Draw()
       Endif
     End With
   Endif
-  
+
 End
 
 Public Sub Canvas_Arrange()
-  
+
   $iPulseH = $hCanvas.H / 5
-  
+
 End
 
 Public Sub Timer_Timer()
-  
+
   Dim iStep As Integer = $iPulseH / 4
-  
+
   If $bPulseUp Then
     If $iPulseY - iStep < 0 Then
       $iPulseY = 0
@@ -135,62 +135,62 @@ Public Sub Timer_Timer()
       $iPulseY += iStep
     Endif
   Endif
-  
+
   $hCanvas.Refresh()
-  
+
 End
 
 Private Function Value_Read() As Float
-  
+
   Return $fValue
-  
+
 End
 
 Private Sub Value_Write(Value As Float)
-  
+
   If $bPulse Then Return
   $fValue = Max(0, Min(1, Value))
   $hCanvas.Refresh()
-  
+
 End
 
 Private Function Label_Read() As Boolean
-  
+
   Return $bLabel
-  
+
 End
 
 Private Sub Label_Write(Value As Boolean)
-  
+
   $bLabel = Value
-  
+
 End
 
 Private Function Border_Read() As Boolean
-  
+
   Return $bBorder
-  
+
 End
 
 Private Sub Border_Write(Value As Boolean)
-  
+
   $bBorder = Value
-  
+
 End
 
 Private Function Pulse_Read() As Boolean
-  
+
   Return $bPulse
-  
+
 End
 
 Private Sub Pulse_Write(Value As Boolean)
-  
+
   $bPulse = Value
   $hCanvas.Refresh() 'This will clear the pulse block and draw the progress block when Pulse=False
-  
+
   If Me.Design Then Return
-  
+
   If Me.Pulse Then
     $hTimer = New Timer As "Timer"
     $hTimer.Delay = 50
@@ -198,17 +198,17 @@ Private Sub Pulse_Write(Value As Boolean)
   Else
     $hTimer = Null
   Endif
-  
+
 End
 
 Private Function Roundness_Read() As Integer
-  
+
   Return $iRoundness
-  
+
 End
 
 Private Sub Roundness_Write(Value As Integer)
-  
+
   $iRoundness = Min(Value, 10)
-  
+
 End

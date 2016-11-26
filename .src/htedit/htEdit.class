@@ -1,13 +1,33 @@
 ' Gambas class file
 
+'
+' dbControls
+'
+' Copyright (C) Jorge Carrion.
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor,
+' Boston, MA  02110-1301  USA
+
 Export
 
 Inherits UserControl
 
 Public Const _Properties As String = "*,HTML,Text,Border,ReadOnly,ShowControls=True,Value"
-Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 Public Const _Similar As String = "TextArea"
+Public Const _DrawWith As String = "TextArea"
 
 Property HTML As String ''Texto HTML que contiene el control.
 Property Value As String ''Sinónimo de HTML
@@ -20,77 +40,75 @@ Private $fEditor As FhtEdit
 Public wView As WebView 'Como no es posible exponer todos los métodos y propiedades del webview, exponemos el webview entero.
 
 Public Sub _new()
-    
-    $fEditor = New FhtEdit(Me)
-    wView = $fEditor.hWebView
-    Me.Proxy = wView
-    
-End
 
+  $fEditor = New FhtEdit(Me)
+  wView = $fEditor.hWebView
+  Me.Proxy = wView
+
+End
 
 Private Function Text_Read() As String
 
-    Return wView.Text
+  Return wView.Text
 
 End
 
-
 Private Function HTML_Read() As String
 
-    Return $fEditor.HTML
-    
+  Return $fEditor.HTML
+
 End
 
 Private Sub HTML_Write(Value As String)
 
-    $fEditor.HTML = Value
+  $fEditor.HTML = Value
 
 End
 
 Private Function Border_Read() As Boolean
 
-    Return $fEditor.Border
+  Return $fEditor.Border
 
 End
 
 Private Sub Border_Write(Value As Boolean)
 
-    $fEditor.Border = Value
+  $fEditor.Border = Value
 
 End
 
 Private Function ReadOnly_Read() As Boolean
 
-    Return $fEditor.ReadOnly
-    
+  Return $fEditor.ReadOnly
+
 End
 
 Private Sub ReadOnly_Write(Value As Boolean)
 
-    $fEditor.ReadOnly = Value
+  $fEditor.ReadOnly = Value
 
 End
 
 Private Function ShowControls_Read() As Boolean
 
-    Return $fEditor.ShowControls
+  Return $fEditor.ShowControls
 
 End
 
 Private Sub ShowControls_Write(Value As Boolean)
 
-    $fEditor.ShowControls = Value
+  $fEditor.ShowControls = Value
 
 End
 
 Private Function Value_Read() As String
 
-    Return $fEditor.HTML
+  Return $fEditor.HTML
 
 End
 
 Private Sub Value_Write(Value As String)
 
-    Me.HTML = Value
+  Me.HTML = Value
 
 End

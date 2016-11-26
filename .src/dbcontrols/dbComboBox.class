@@ -1,10 +1,9 @@
 ' Gambas class file
 
 '
-' Controles Extendidos
+' dbControls
 '
-'
-' Copyright (C)
+' Copyright (C) Jorge Carrion.
 '
 ' This program is free software; you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -29,6 +28,7 @@ Export
 Public Const _Properties As String = "*,sqlstring,listfields,fieldkey,conexion"
 Public Const _Group As String = "Chooser"
 Public Const _Similar As String = "ComboBox,ListBox,dbListBox,ListEditor"
+Public Const _DrawWith As String = "ComboBox"
 
 Property sqlstring As String ''Table name of sql sentence. Tabla o consulta sql
 Property fieldkey As String '' Name of field to return - Nombe de Campo a devolver
