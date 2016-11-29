@@ -20,77 +20,75 @@ Private $fEditor As FhtEdit
 Public wView As WebView 'Como no es posible exponer todos los métodos y propiedades del webview, exponemos el webview entero.
 
 Public Sub _new()
-    
-    $fEditor = New FhtEdit(Me)
-    wView = $fEditor.hWebView
-    Me.Proxy = wView
-    
-End
 
+  $fEditor = New FhtEdit(Me)
+  wView = $fEditor.hWebView
+  Me.Proxy = wView
+
+End
 
 Private Function Text_Read() As String
 
-    Return wView.Text
+  Return wView.Text
 
 End
 
-
 Private Function HTML_Read() As String
 
-    Return $fEditor.HTML
-    
+  Return $fEditor.HTML
+
 End
 
 Private Sub HTML_Write(Value As String)
 
-    $fEditor.HTML = Value
+  $fEditor.HTML = Value
 
 End
 
 Private Function Border_Read() As Boolean
 
-    Return $fEditor.Border
+  Return $fEditor.Border
 
 End
 
 Private Sub Border_Write(Value As Boolean)
 
-    $fEditor.Border = Value
+  $fEditor.Border = Value
 
 End
 
 Private Function ReadOnly_Read() As Boolean
 
-    Return $fEditor.ReadOnly
-    
+  Return $fEditor.ReadOnly
+
 End
 
 Private Sub ReadOnly_Write(Value As Boolean)
 
-    $fEditor.ReadOnly = Value
+  $fEditor.ReadOnly = Value
 
 End
 
 Private Function ShowControls_Read() As Boolean
 
-    Return $fEditor.ShowControls
+  Return $fEditor.ShowControls
 
 End
 
 Private Sub ShowControls_Write(Value As Boolean)
 
-    $fEditor.ShowControls = Value
+  $fEditor.ShowControls = Value
 
 End
 
 Private Function Value_Read() As String
 
-    Return $fEditor.HTML
+  Return $fEditor.HTML
 
 End
 
 Private Sub Value_Write(Value As String)
 
-    Me.HTML = Value
+  Me.HTML = Value
 
 End

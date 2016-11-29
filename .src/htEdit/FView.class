@@ -3,7 +3,6 @@
 Property url As String
 Property HTML As String
 
-
 Public Sub btnBack_Click()
 
   WebView1.Back
@@ -18,24 +17,24 @@ End
 
 Private Function url_Read() As String
 
-    Return WebView1.url
+  Return WebView1.url
 
 End
 
 Private Sub url_Write(Value As String)
 
-    WebView1.Url = Value
-    
+  WebView1.Url = Value
+
 End
 
 Private Function HTML_Read() As String
 
-    Return WebView1.HTML
+  Return WebView1.HTML
 
 End
 
 Private Sub HTML_Write(Value As String)
 
-    WebView1.HTML = Value
+  WebView1.HTML = Value
 
 End

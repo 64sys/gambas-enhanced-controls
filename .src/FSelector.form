@@ -13,7 +13,6 @@
     { TextLabel1 TextLabel
       MoveScaled(1,15,37,4)
       Font = Font["Bold"]
-      Foreground = Color.DarkRed
       Text = ("Controles Disponibles")
       Alignment = Align.Center
     }
@@ -24,7 +23,6 @@
     { Label2 Label
       MoveScaled(1,1,20,3)
       Font = Font["Bold"]
-      Foreground = Color.DarkRed
       Text = ("Ver Ejemplos")
       Alignment = Align.Center
     }
@@ -49,7 +47,6 @@
     { Label1 Label
       MoveScaled(1,37,20,3)
       Font = Font["Bold"]
-      Foreground = Color.DarkRed
       Text = ("Enlazar a tu proyecto")
       Alignment = Align.Center
     }

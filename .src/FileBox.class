@@ -18,13 +18,13 @@ Property Border As Boolean
 Private $hButtonBox As ButtonBox
 
 Public Sub _new()
-  
-    $hButtonBox = New ButtonBox(Me) As "Button"
-    Me.Proxy = $hButtonBox
-    $hButtonBox.Picture = Picture["icon:/small/directory"]
-    $hButtonBox.ReadOnly = True
-    $hButtonBox.ClearButton = True
-  
+
+  $hButtonBox = New ButtonBox(Me) As "Button"
+  Me.Proxy = $hButtonBox
+  $hButtonBox.Picture = Picture["icon:/small/directory"]
+  $hButtonBox.ReadOnly = True
+  $hButtonBox.ClearButton = True
+
 End
 
 Private Function Border_Read() As Boolean
@@ -52,12 +52,12 @@ Private Sub Value_Write(Value As String)
 End
 
 Public Sub Button_Click()
-  
-    Dialog.Path = $hButtonBox.Text
-    If Dialog.OpenFile(False) Then Return
-    $hButtonBox.Text = Dialog.Path
-     
-    Raise Click
-    Raise Change
-  
+
+  Dialog.Path = $hButtonBox.Text
+  If Dialog.OpenFile(False) Then Return
+  $hButtonBox.Text = Dialog.Path
+
+  Raise Click
+  Raise Change
+
 End

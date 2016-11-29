@@ -9,16 +9,16 @@ Private $url As String
 Private $ReadOnly As Boolean
 
 Public Sub _new(Optional Value As String)
-  
-    Dim sfile As String
 
-    Me.HTML = value
-    sfile = Temp() & ".html"  
-    File.Save(sfile, Me.HTML)
-    $url = "file://" & sfile
-    hwebView.Editable = True
-    hWebView.url = $url
-   
+  Dim sfile As String
+
+  Me.HTML = value
+  sfile = Temp() & ".html"
+  File.Save(sfile, Me.HTML)
+  $url = "file://" & sfile
+  hwebView.Editable = True
+  hWebView.url = $url
+
 End
 
 Public Sub Form_Open()
@@ -27,40 +27,40 @@ Public Sub Form_Open()
   WebSettings.Fonts.DefaultFontSize = 12
   WebSettings.Fonts.DefaultFixedFontSize = 12
   hWebView.SetFocus()
-  
-End               
 
- Public Sub hWebView_MouseDown()
-   
-    Dim hTest As WebHitTest = hWebView.HitTest(Mouse.X, Mouse.Y)
-    Dim n As Integer
-    Dim s As String
- 
-    If htest.link Then
-        Balloon(hTest.Url, hWebView,, Mouse.X, Mouse.Y)
-        Stop Event
-    Else If htest.Image Then
-        htest.Element.SetFocus()
-        bInsertImg.text = "Actualizar"
-        btnInsertImg.value = True
-        urlImg.Text = htest.Url
-        hWebView.tag = [Mouse.X, Mouse.Y]
-        widthImg.Value = htest.Element.Geometry.Width
-        HeightImg.Value = htest.Element.Geometry.Height
-        s = htest.Element.HTML
-        n = InStr(s, "float: ") 
-        If n > 0 Then
-            s = Left(Mid(s, n + 7), InStr(Mid(s, n + 7), ";") - 1)
-            alignImg.Index = Split(alignImg.Tag, "|").Find(s)
-        Endif
+End
+
+Public Sub hWebView_MouseDown()
+
+  Dim hTest As WebHitTest = hWebView.HitTest(Mouse.X, Mouse.Y)
+  Dim n As Integer
+  Dim s As String
+
+  If htest.link Then
+    Balloon(hTest.Url, hWebView,, Mouse.X, Mouse.Y)
+    Stop Event
+  Else If htest.Image Then
+    htest.Element.SetFocus()
+    bInsertImg.text = "Actualizar"
+    btnInsertImg.value = True
+    urlImg.Text = htest.Url
+    hWebView.tag = [Mouse.X, Mouse.Y]
+    widthImg.Value = htest.Element.Geometry.Width
+    HeightImg.Value = htest.Element.Geometry.Height
+    s = htest.Element.HTML
+    n = InStr(s, "float: ")
+    If n > 0 Then
+      s = Left(Mid(s, n + 7), InStr(Mid(s, n + 7), ";") - 1)
+      alignImg.Index = Split(alignImg.Tag, "|").Find(s)
     Endif
+  Endif
 
- End
+End
 
 Public Sub btnFind_Click()
 
   panFind.Visible = btnFind.Value
-  If btnFind.Value Then 
+  If btnFind.Value Then
     DoFind
     txtFind.SetFocus
   Else
@@ -70,26 +70,26 @@ Public Sub btnFind_Click()
 End
 
 Private Sub DoFind(Optional bBackward As Boolean)
-  
+
   Dim sText As String
-  
+
   sText = Trim(txtFind.Text)
-  If sText And If hWebView.FindText(sText, bBackward, False, True) Then 
-      panFind.Background = &HFFDFDF
+  If sText And If hWebView.FindText(sText, bBackward, False, True) Then
+    panFind.Background = &HFFDFDF
   Else
-      panFind.Background = Color.Default
-      If Not sText Then hWebView.FindText("")
+    panFind.Background = Color.Default
+    If Not sText Then hWebView.FindText("")
   Endif
-  
+
 End
 
 Public Sub hWebView_Error()
-  
-    If hwebView.Url Then 
-        hWebView.Status = "Unable to load: " & hwebView.Url
-        Debug "Error " & hWebView.Status
-    Endif
-  
+
+  If hwebView.Url Then
+    hWebView.Status = "Unable to load: " & hwebView.Url
+    Debug "Error " & hWebView.Status
+  Endif
+
 End
 
 Public Sub txtFind_Change()
@@ -100,12 +100,12 @@ End
 
 Public Sub Form_KeyPress()
 
-  If Key.Control And If Key.Code = Key["F"] Then 
-      btnFind.Value = True
+  If Key.Control And If Key.Code = Key["F"] Then
+    btnFind.Value = True
   Else If Key.Code = Key.Escape Then
-      btnFind.Value = False
+    btnFind.Value = False
   Else If Key.Code = Key.F3 Then
-      DoFind(Key.Shift)
+    DoFind(Key.Shift)
   Endif
 
 End
@@ -136,12 +136,12 @@ End
 
 Public Sub btnAction_Click()
 
-  
   hWebView.Eval(Subst("document.execCommand('&1', false, false)", Last.Tag))
   If hwebView.SelectedText Then
-      hwebView.Eval("document.execCommand('unselect', false, false)")
-      Last.value = False
+    hwebView.Eval("document.execCommand('unselect', false, false)")
+    Last.value = False
   Endif
+
 End
 
 Public Sub btnColor_Click()
@@ -152,26 +152,26 @@ Public Sub btnColor_Click()
 End
 
 Public Sub mnuFont_Show()
-  
+
   Dim sFont As String
   Dim hMenu As Menu
-  
+
   If mnuFont.Children.Count > 1 Then Return
   mnuFont.Children.Clear
   For Each sFont In Fonts
-      hMenu = New Menu(mnuFont) As "mnuSelectFont"
-      hMenu.Text = sFont
+    hMenu = New Menu(mnuFont) As "mnuSelectFont"
+    hMenu.Text = sFont
   Next
-  
+
 End
 
 Public Sub mnuSelectFont_Click()
- 
+
   Dim sFont As String = Last.Text
 
   hWebView.Eval(Subst("document.execCommand('fontname', false, '&1')", sFont))
   hWebView.SetFocus()
-  
+
 End
 
 Public Sub btnBackground_Click()
@@ -195,79 +195,79 @@ End
 Public Sub btnHTML_Click()
 
   If btnHTML.value Then
-      tahtml.text = Me.HTML
-      hWebView.Visible = False
-      tahtml.visible = True
+    tahtml.text = Me.HTML
+    hWebView.Visible = False
+    tahtml.visible = True
   Else
-      Me.HTML = tahtml.Text
-      hWebView.Visible = True
-      tahtml.visible = False
+    Me.HTML = tahtml.Text
+    hWebView.Visible = True
+    tahtml.visible = False
   Endif
-  
+
 End
 
 Public Sub bInsertLink_Click()
 
-    pnImg.Visible = False
-    pnUrl.visible = bInsertLink.Value
-    textLink.Text = hWebView.SelectedText
-    Wait 0.01 
-    urlLink.SetFocus()
+  pnImg.Visible = False
+  pnUrl.visible = bInsertLink.Value
+  textLink.Text = hWebView.SelectedText
+  Wait 0.01
+  urlLink.SetFocus()
 
 End
 
 Public Sub bInsertUrl_Click()
 
-    If Not urlLink.text Then Return
-    hWebView.Eval(Subst("document.execCommand('InsertHTML', false,'&1')", "<a href=\"" & urlLink.text & "\">" & textLink.Text & "</a> "))
-    urlLink.text = "http://"
-    textLink.text = ""
-    pnUrl.Visible = False
-    bInsertLink.Value = False
-    hWebView.SetFocus()
-    
+  If Not urlLink.text Then Return
+  hWebView.Eval(Subst("document.execCommand('InsertHTML', false,'&1')", "<a href=\"" & urlLink.text & "\">" & textLink.Text & "</a> "))
+  urlLink.text = "http://"
+  textLink.text = ""
+  pnUrl.Visible = False
+  bInsertLink.Value = False
+  hWebView.SetFocus()
+
 End
 
 Public Sub bCancelInsertUrl_Click()
 
-   urlLink.text = "http://"
-   textLink.text = ""
-   pnUrl.Visible = False
-   bInsertLink.value = False
+  urlLink.text = "http://"
+  textLink.text = ""
+  pnUrl.Visible = False
+  bInsertLink.value = False
 
 End
 
 Public Sub bInsertImg_Click()
 
-    Dim sHtml, s As String
-    Dim hTest As WebHitTest
+  Dim sHtml, s As String
+  Dim hTest As WebHitTest
 
-    If Not urlImg.Text Then Return
-    If Not alignImg.text Then alignImg.index = 0
-    sHtml = "<div><img style=\""
-    If alignImg.text Then sHtml &= "float: &2; "
-    If widthImg.Value > 0 Then sHtml &= "width: &4px; "
-    If HeightImg.Value > 0 Then sHtml &= "height: &3px; "
-    sHtml &= "margin: &5px; \" src=\"&1\"></div>"
-    sHtml = Subst(sHtml, urlImg.text, Split(alignImg.Tag, "|")[alignImg.Index], HeightImg.value, widthImg.value, marginImg.Text)
-    If bInsertImg.text = "Actualizar" Then
-        hTest = hWebView.HitTest(hWebView.Tag[0], hWebView.Tag[1])
-        s = htest.HTML
-        hWebView.HTML = Replace(hwebView.HTML, s, sHtml)
-        bInsertImg.text = "Insertar"
-    Else
-        hWebView.Eval(Subst("document.execCommand('InsertHTML', false,'&1')", sHtml))
-    Endif
-    urlImg.text = ""
-    alignImg.text = ""
-    HeightImg.text = ""
-    widthImg.text = ""
-    marginImg.text = ""
-    pnImg.Visible = False
-    btnInsertImg.value = False
-    hWebView.SetFocus()
-    hwebView.HTML &= " "
-    
+  If Not urlImg.Text Then Return
+  If Not alignImg.text Then alignImg.index = 0
+  sHtml = "<div><img style=\""
+  If alignImg.text Then sHtml &= "float: &2; "
+  If widthImg.Value > 0 Then sHtml &= "width: &4px; "
+  If HeightImg.Value > 0 Then sHtml &= "height: &3px; "
+  sHtml &= "margin: &5px; \" src=\"&1\"></div>"
+  sHtml = Subst(sHtml, urlImg.text, Split(alignImg.Tag, "|")[alignImg.Index], HeightImg.value, widthImg.value, marginImg.Text)
+  If bInsertImg.text = "Actualizar" Then
+    hTest = hWebView.HitTest(hWebView.Tag[0], hWebView.Tag[1])
+    s = htest.HTML
+    hWebView.HTML = Replace(hwebView.HTML, s, sHtml)
+    bInsertImg.text = "Insertar"
+  Else
+    hWebView.Eval(Subst("document.execCommand('InsertHTML', false,'&1')", sHtml))
+  Endif
+  urlImg.text = ""
+  alignImg.text = ""
+  HeightImg.text = ""
+  widthImg.text = ""
+  marginImg.text = ""
+  pnImg.Visible = False
+  btnInsertImg.value = False
+  hWebView.SetFocus()
+  hwebView.HTML &= " "
+
 End
 
 Public Sub bBuscaImg_Click()
@@ -283,132 +283,129 @@ Public Sub bBuscaImg_Click()
   widthImg.value = img.Width
   SB1.tag = [img.Height, img.width]
   SB1.Value = 100
-  
+
 End
 
 Public Sub SB1_Change()
 
-    Dim nWidth, nHeight As Integer
-    
-    If HeightImg.value = 0 Or widthImg.value = 0 Then Return
-    nWidth = (SB1.Value * SB1.Tag[1]) / 100
-    nHeight = (SB1.Value * SB1.Tag[0]) / 100
-    HeightImg.value = Int(((nwidth * SB1.Tag[0]) / SB1.Tag[1]))
-    widthImg.value = Int(((nheight * SB1.Tag[1]) / SB1.Tag[0]))
+  Dim nWidth, nHeight As Integer
+
+  If HeightImg.value = 0 Or widthImg.value = 0 Then Return
+  nWidth = (SB1.Value * SB1.Tag[1]) / 100
+  nHeight = (SB1.Value * SB1.Tag[0]) / 100
+  HeightImg.value = Int(((nwidth * SB1.Tag[0]) / SB1.Tag[1]))
+  widthImg.value = Int(((nheight * SB1.Tag[1]) / SB1.Tag[0]))
 
 End
 
 Public Sub btnInsertImg_Click()
 
-    pnImg.Visible = btnInsertImg.Value
-    pnUrl.visible = False
-    hwebView.SetFocus()
+  pnImg.Visible = btnInsertImg.Value
+  pnUrl.visible = False
+  hwebView.SetFocus()
 
 End
 
 Public Sub bCancelInsertImg_Click()
 
-    urlImg.text = ""
-    alignImg.text = ""
-    HeightImg.text = ""
-    widthImg.text = ""
-    marginImg.text = ""
-    btnInsertImg.Value = False
-    hWebView.SetFocus()
-    
+  urlImg.text = ""
+  alignImg.text = ""
+  HeightImg.text = ""
+  widthImg.text = ""
+  marginImg.text = ""
+  btnInsertImg.Value = False
+  hWebView.SetFocus()
+
 End
 
 Private Function HTML_Read() As String
 
-    Return hwebView.HTML
+  Return hwebView.HTML
 
 End
 
 Private Sub HTML_Write(Value As String)
 
-    Dim sHtml As String
-    
-    If Not value Or (InStr(LCase(Value), "<html") = 0) Then
-        sHtml = "<!DOCTYPE HTML> <HTML> <HEAD><META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\"><META http-equiv=\"content-language\" content=\"[Language]\" /></HEAD><BODY>[Value]</BODY></HTML> "
-        sHtml = Replace(sHtml, "[Language]", Split(System.Language, "_")[0]) ' Replace(sHtml, "[Language]", Left(System.Language, InStr(System.Language, "_") - 1))
-        sHtml = Replace(sHtml, "[Value]", Value)
-        hwebView.HTML = sHtml
-    Else
-        hwebView.HTML = Value
-    Endif
+  Dim sHtml As String
 
-  
+  If Not value Or (InStr(LCase(Value), "<html") = 0) Then
+    sHtml = "<!DOCTYPE HTML> <HTML> <HEAD><META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\"><META http-equiv=\"content-language\" content=\"[Language]\" /></HEAD><BODY>[Value]</BODY></HTML> "
+    sHtml = Replace(sHtml, "[Language]", Split(System.Language, "_")[0]) ' Replace(sHtml, "[Language]", Left(System.Language, InStr(System.Language, "_") - 1))
+    sHtml = Replace(sHtml, "[Value]", Value)
+    hwebView.HTML = sHtml
+  Else
+    hwebView.HTML = Value
+  Endif
+
 End
 
 Public Sub bVer_Click()
 
   Dim f As New FView
-  
+
   File.Save(Mid($url, 8), Me.HTML)
   f.url = $url
   f.ShowModal()
 
 End
 
-
 Public Sub hWebView_DblClick()
 
-    Stop Event
+  Stop Event
 
 End
 
 Private Function Border_Read() As Boolean
 
-    Return pnBorde.Border 
+  Return pnBorde.Border
 
 End
 
 Private Sub Border_Write(Value As Boolean)
 
-    If Value Then
-        pnBorde.Border = Border.plain   
-    Else
-        pnBorde.border = Border.none
-    Endif
-    ToolBar1.Separator = Value
-    
+  If Value Then
+    pnBorde.Border = Border.plain
+  Else
+    pnBorde.border = Border.none
+  Endif
+  ToolBar1.Separator = Value
+
 End
 
 Private Function ReadOnly_Read() As Boolean
 
-    Return $ReadOnly
+  Return $ReadOnly
 
 End
 
 Private Sub ReadOnly_Write(Value As Boolean)
 
-    $ReadOnly = Value
-    hwebView.Editable = Not $ReadOnly
-  
+  $ReadOnly = Value
+  hwebView.Editable = Not $ReadOnly
+
 End
 
 Public Sub mnStyles_Click()
-    
-    If Last.text = "Predeterminado" Then
-            btnBold.value = False
-            hWebView.Eval("document.execCommand('fontsize', false, '+0')")
-    Else
-        hWebView.Eval(Subst("document.execCommand('fontsize', false, '&1')", Last.tag))
-        btnBold.Value = True
-    Endif
-    hwebView.SetFocus()
-    
-End
 
+  If Last.text = "Predeterminado" Then
+    btnBold.value = False
+    hWebView.Eval("document.execCommand('fontsize', false, '+0')")
+  Else
+    hWebView.Eval(Subst("document.execCommand('fontsize', false, '&1')", Last.tag))
+    btnBold.Value = True
+  Endif
+  hwebView.SetFocus()
+
+End
 
 Private Function ShowControls_Read() As Boolean
 
-    Return ToolBar1.Visible
+  Return ToolBar1.Visible
 
 End
 
 Private Sub ShowControls_Write(Value As Boolean)
 
-    ToolBar1.Visible = Value
+  ToolBar1.Visible = Value
 
 End

@@ -38,7 +38,7 @@
           { Label2 Label
             MoveScaled(0,0,12,4)
             Font = Font["Bold"]
-            Foreground = &H800000&
+            Foreground = Color.TextForeground
             Text = ("Condición")
           }
           { condiciones1 ListBox
@@ -63,7 +63,7 @@
             { Label4 Label
               MoveScaled(1,0,8,4)
               Font = Font["Bold"]
-              Foreground = &H800000&
+              Foreground = Color.SelectedForeground
               Text = ("Valor")
             }
             { valor1 TextBox
@@ -152,7 +152,7 @@
       { Label3 Label
         MoveScaled(3,0,19,4)
         Font = Font["Bold"]
-        Foreground = &H800000&
+        Foreground = Color.TextForeground
         Text = ("Cadena de Filtro")
       }
       { elfiltro TextArea

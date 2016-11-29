@@ -3,165 +3,158 @@
 Private ob As Observer
 
 Public Sub Form_open()
-    
+
   ob = New Observer(dbGridFilter1) As "grid"
   ColorButton1.Value = dbGrid1.forecolor
   ColorButton2.Value = dbGrid1.bgcolor
   ColorButton3.value = dbGrid1.selectedcolor
   cbPosicion.index = dbGridFilter1.posButtons
   dbGridFilter1.menuDefault = True
+
 End
 
-Public Sub grid_Action_Activate(opcion As String) 
-    
- Message("Ejecutando la Opción del Menú: " & opcion)
-    
+Public Sub grid_Action_Activate(opcion As String)
+
+  Message("Ejecutando la Opción del Menú: " & opcion)
+
 End
 
 Public Sub RadioButton1_Click()
 
-    dbGridFilter1.menuDefault = False
-    dbGridFilter1.SubMenu = ""
-    
+  dbGridFilter1.menuDefault = False
+  dbGridFilter1.SubMenu = ""
+
 End
 
 Public Sub RadioButton2_Click()
 
-    dbGridFilter1.SubMenu = ""
-    dbGridFilter1.menuDefault = True
+  dbGridFilter1.SubMenu = ""
+  dbGridFilter1.menuDefault = True
 
 End
 
 Public Sub RadioButton3_Click()
 
-   dbGridFilter1.menuDefault = False
-   dbGridFilter1.submenu = ""
-    dbGridFilter1.menuDefault = True
-   dbGridFilter1.submenu = Me.Menus[0].name
+  dbGridFilter1.menuDefault = False
+  dbGridFilter1.submenu = ""
+  dbGridFilter1.menuDefault = True
+  dbGridFilter1.submenu = Me.Menus[0].name
 
 End
 
 Public Sub RadioButton4_Click()
 
-    dbGridFilter1.menuDefault = False
-    dbGridFilter1.SubMenu = Me.Menus[0].name
-    
+  dbGridFilter1.menuDefault = False
+  dbGridFilter1.SubMenu = Me.Menus[0].name
+
 End
 
 Public Sub dbComboBox1_Click()
 
-    Print "dbCombobox1: El código es " & dbComboBox1.Value
+  Print "dbCombobox1: El código es " & dbComboBox1.Value
 
 End
 
 Public Sub dbListBox1_Click()
 
-     Print "dbListBox1: El código es " & dbListBox1.Value
-
+  Print "dbListBox1: El código es " & dbListBox1.Value
 
 End
 
 Public Sub dbGrid1_click()
 
-     Print "dbGrid1: Has seleccionado " & dbGrid1[dbGrid1.row, dbGrid1.colReturn].text
+  Print "dbGrid1: Has seleccionado " & dbGrid1[dbGrid1.row, dbGrid1.colReturn].text
 
 End
 
 Public Sub dbGridFilter1_Click()
 
-     If Not Mouse.Right Then Print "dbGridFilter1: Has seleccionado " & dbGridFilter1.grid[dbGridFilter1.grid.row, dbGridFilter1.colReturn].text
+  If Not Mouse.Right Then Print "dbGridFilter1: Has seleccionado " & dbGridFilter1.grid[dbGridFilter1.grid.row, dbGridFilter1.colReturn].text
 
 End
 
 Public Sub dbSqlTree1_Click()
 
-    Print "dbSqltree1: Has seleccionado " & dbSqlTree1.Text
+  Print "dbSqltree1: Has seleccionado " & dbSqlTree1.Text
 
 End
 
-
 Public Sub Button1_Click()
 
-    Dim proyecto As String
-    Dim n As Integer
-    
-    n = Message.Question("Para añadir éstos controles a tus proyectos de Gambas tienes tres opciones: Enlazarlos, Copiarlos, o Instalarlos.\n"
-    "Si los enlazas, para modificar o a ñadir algo en ellos, tendrás que hacerlo en éste proyecto. Los cambios se propagarán automáticamente a todos los proyectos enlazados."
-    "\n\nSi los copias, las modificaciones y cambios que les hagas sólo serán visibles en el proyecto donde realices esos cambios."
-    "\n\nUna tercera opción es crear el paquete de instalación de éste proyecto y luego instalarlo en tu ordenador. Podrás entonces añadirlo a tu proyecto como cualquier otro componente de Gambas.", "Enlazar", "Copiar", "Cancelar")
-    If n = 3 Then Return
-    If Dialog.SelectDirectory() Then Return
-    proyecto = Dialog.Path
-    If n = 1 Then
-        Shell "ln -s \"" & Application.path & "/.src/Controles\" \"" & proyecto & "/.src\"" Wait
-        Shell "ln -s \"" & Application.path & "/dbc_iconos\" \"" & proyecto & "\"" Wait
-        Shell "cp -r \"" & Application.path & "/.hidden/control\" \"" & proyecto & "/.hidden/control\"" Wait
-    Else 
-        Shell "cp -r \"" & Application.path & "/.src/Controles\" \"" & proyecto & "/.src\"" Wait
-        Shell "cp -r \"" & Application.path & "/dbc_iconos\" \"" & proyecto &/ "dbc_iconos\"" Wait
-        Shell "cp -r \"" & Application.path & "/.hidden/control\" \"" & proyecto &/ ".hidden/control\"" Wait
-    Endif
-    Message("Terminado. No olvide añadir los componentes \ngb.db\ngb.form.mdi\ngb.gui.qt.webkit\na su proyecto antes de compilarlo.")
+  Dim proyecto As String
+  Dim n As Integer
 
+  n = Message.Question("Para añadir éstos controles a tus proyectos de Gambas tienes tres opciones: Enlazarlos, Copiarlos, o Instalarlos.\n"
+  "Si los enlazas, para modificar o a ñadir algo en ellos, tendrás que hacerlo en éste proyecto. Los cambios se propagarán automáticamente a todos los proyectos enlazados."
+  "\n\nSi los copias, las modificaciones y cambios que les hagas sólo serán visibles en el proyecto donde realices esos cambios."
+  "\n\nUna tercera opción es crear el paquete de instalación de éste proyecto y luego instalarlo en tu ordenador. Podrás entonces añadirlo a tu proyecto como cualquier otro componente de Gambas.", "Enlazar", "Copiar", "Cancelar")
+  If n = 3 Then Return
+  If Dialog.SelectDirectory() Then Return
+  proyecto = Dialog.Path
+  If n = 1 Then
+    Shell "ln -s \"" & Application.path & "/.src/Controles\" \"" & proyecto & "/.src\"" Wait
+    Shell "ln -s \"" & Application.path & "/dbc_iconos\" \"" & proyecto & "\"" Wait
+    Shell "cp -r \"" & Application.path & "/.hidden/control\" \"" & proyecto & "/.hidden/control\"" Wait
+  Else
+    Shell "cp -r \"" & Application.path & "/.src/Controles\" \"" & proyecto & "/.src\"" Wait
+    Shell "cp -r \"" & Application.path & "/dbc_iconos\" \"" & proyecto &/ "dbc_iconos\"" Wait
+    Shell "cp -r \"" & Application.path & "/.hidden/control\" \"" & proyecto &/ ".hidden/control\"" Wait
+  Endif
+  Message("Terminado. No olvide añadir los componentes \ngb.db\ngb.form.mdi\ngb.gui.qt.webkit\na su proyecto antes de compilarlo.")
 
 End
 
 Public Sub ckbutton2_Click()
 
-    dbGridFilter1.showButtons = ckbutton2.Value
+  dbGridFilter1.showButtons = ckbutton2.Value
 
 End
 
 Public Sub ckbutton1_Click()
 
-    dbGridFilter1.showExportMenu = ckbutton1.Value
-    RadioButton2_Click()
-  
+  dbGridFilter1.showExportMenu = ckbutton1.Value
+  RadioButton2_Click()
+
 End
 
 Public Sub ColorButton1_Change()
 
-    dbGridFilter1.forecolor = ColorButton1.Value
-    dbGrid1.forecolor = ColorButton1.Value
-    
+  dbGridFilter1.forecolor = ColorButton1.Value
+  dbGrid1.forecolor = ColorButton1.Value
+
 End
 
 Public Sub ColorButton2_Change()
 
-    dbGridFilter1.bgcolor = ColorButton2.Value
-    dbGrid1.bgcolor = ColorButton2.Value
+  dbGridFilter1.bgcolor = ColorButton2.Value
+  dbGrid1.bgcolor = ColorButton2.Value
 
 End
 
 Public Sub ColorButton3_Change()
 
-    dbGridFilter1.selectedcolor = ColorButton3.Value
-    dbGrid1.selectedcolor = ColorButton3.Value
+  dbGridFilter1.selectedcolor = ColorButton3.Value
+  dbGrid1.selectedcolor = ColorButton3.Value
 
 End
 
 Public Sub CheckBox1_Click()
 
-    
-    dbGrid1.alternate = CheckBox1.Value
-    dbGrid1.SetFocus()
-    dbGridFilter1.alternate = CheckBox1.value
-    dbGridFilter1.SetFocus()
-    
+  dbGrid1.alternate = CheckBox1.Value
+  dbGrid1.SetFocus()
+  dbGridFilter1.alternate = CheckBox1.value
+  dbGridFilter1.SetFocus()
+
 End
-
-
 
 Public Sub CheckBox2_Click()
 
-    htEdit1.ShowControls = CheckBox2.Value
+  htEdit1.ShowControls = CheckBox2.Value
 
 End
 
-
-
 Public Sub cbPosicion_Click()
 
-    dbGridFilter1.posButtons = cbPosicion.Index
+  dbGridFilter1.posButtons = cbPosicion.Index
 
 End

@@ -26,7 +26,7 @@ Public Sub Form_Open()
   Dim n As Integer
   Dim hb As HBox
   Dim ck As CheckBox
-  
+
   controles = New Variant[]
   Controles.Add(["dbComboBox", "Combobox que muestra campos de una consulta SQL y devuelve el Valor especificado", ""])
   Controles.Add(["dbGrid", "Gridview que muestra el resultado de una consulta SQL permitiendo ordenaciones por columnas", ""])
@@ -43,7 +43,7 @@ Public Sub Form_Open()
   Controles.Add(["MData", "", ""])
   Controles.Add(["Msys", "", ""])
   Controles.Add(["MUtility", "", ""])
-  
+
   For n = 0 To Controles.count - 1
     hb = New HBox(panel1)
     hb.height = 28
@@ -52,33 +52,34 @@ Public Sub Form_Open()
     ck.Expand = True
     ck.Text = controles[n][0]
     ck.Tooltip = controles[n][1]
- Next
+  Next
 
 End
+
 Public Sub ToolButton1_Click()
 
   Dim dbcontroles As String[]
   Dim ckb As Object
-  
+
   dbcontroles = ["dbComboBox", "dbListBox", "dbGrid", "dbGridFilter", "htEdit", "FileBox", "dbSqlTree"] 'los que aparecen en el ejemplo
   For Each ckb In Me.Controls
-    If ckb Is CheckBox Then 
+    If ckb Is CheckBox Then
       ckb.value = (dbcontroles.Find(ckb.text) > -1)
     Endif
   Next
-  
+
   Connections["provincias"].host = Application.Path
   If Not Connections["provincias"].Opened Then Connections["provincias"].Open
-  
+
   FDBControls.Show()
 
 End
 
 Public Sub ToolButton2_Click()
-  
+
   Dim dbcontroles As String[]
   Dim ckb As Object
-  
+
   dbcontroles = ["ButtonSquare", "TextList", "TextBoxExplain", "ProgressbarVertical", "ProgressBarText", "htEdit"] 'los que aparecen en el ejemplo"
   For Each ckb In Me.Controls
     If ckb Is CheckBox Then
@@ -90,10 +91,10 @@ Public Sub ToolButton2_Click()
 End
 
 Public Sub ToolButton3_Click()
-  
+
   Dim dbcontroles As String[]
   Dim ckb As Object
-  
+
   dbcontroles = ["ProgressBarText"] 'los que aparecen en el ejemplo"
   For Each ckb In Me.Controls
     If ckb Is CheckBox Then
@@ -126,7 +127,7 @@ Public Sub btoLink_Click()
         Next
         origen = IIf(IsDir(Application.path &/ ".src" &/ ctrl.text), Application.Path &/ ".src" &/ ctrl.text, Application.path &/ ".src" &/ ctrl.text & ".class")
         Shell "ln -s \"" & origen & "\" \"" & proyecto & "/.src\"" Wait 'enlazamos el control
-        If Exist(Application.path &/ ctrl.text & "_stuff") Then 
+        If Exist(Application.path &/ ctrl.text & "_stuff") Then
           Shell "ln -s \"" & Application.path &/ ctrl.text & "_stuff\" \"" & proyecto & "\"" Wait 'enlazamos la carpeta de recursos del control si es que existe
         Endif
       Endif
@@ -136,11 +137,9 @@ Public Sub btoLink_Click()
 
 End
 
-
-
 Public Sub btoCopy_Click()
 
-    Dim proyecto, origen, requeridos As String
+  Dim proyecto, origen, requeridos As String
   Dim n As Integer
   Dim ctrl As Object
 
@@ -160,13 +159,12 @@ Public Sub btoCopy_Click()
         Next
         origen = IIf(IsDir(Application.path &/ ".src" &/ ctrl.text), Application.Path &/ ".src" &/ ctrl.text, Application.path &/ ".src" &/ ctrl.text & ".class")
         Shell "cp -r \"" & origen & "\" \"" & proyecto & "/.src\"" Wait 'copiamos
-        If Exist(Application.path &/ ctrl.text & "_stuff") Then 
+        If Exist(Application.path &/ ctrl.text & "_stuff") Then
           Shell "cp -r \"" & Application.path &/ ctrl.text & "_stuff\" \"" & proyecto & "\"" Wait 'enlazamos la carpeta de recursos del control si es que existe
         Endif
       Endif
     Endif
   Next
   Message("Terminado. " & IIf(requeridos, "No olvide añadir los componentes " & requeridos & " a su proyecto antes de compilarlo.", ""))
-
 
 End

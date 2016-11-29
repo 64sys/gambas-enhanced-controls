@@ -35,7 +35,6 @@
       Arrangement = Arrange.Vertical
       { Label5 Label
         MoveScaled(1,0,27,3)
-        Foreground = Color.DarkRed
         Text = ("dbGrid")
       }
       { dbGrid1 dbGrid
@@ -79,7 +78,6 @@
       }
       { Label6 Label
         MoveScaled(0,30,27,3)
-        Foreground = Color.DarkRed
         Text = ("dbGridFilter")
       }
       { dbGridFilter1 dbGridFilter
@@ -109,7 +107,7 @@
         Border = Border.Plain
         { Label1 Label
           MoveScaled(1,0,49,4)
-          Foreground = Color.DarkRed
+          Foreground = Color.TextForeground
           Text = ("Opciones de Manejo del menú contextual del dbGridFilter")
           Alignment = Align.Center
         }
@@ -173,28 +171,23 @@
         }
         { Label7 Label
           MoveScaled(0,0,27,3)
-          Foreground = Color.DarkRed
           Text = ("dbCombobox1")
         }
         { Label8 Label
           MoveScaled(31,0,27,3)
-          Foreground = Color.DarkRed
           Text = ("Filebox")
         }
         { Label9 Label
           MoveScaled(1,9,27,3)
-          Foreground = Color.DarkRed
           Text = ("dbListBox")
         }
         { Label10 Label
           MoveScaled(30,9,27,3)
-          Foreground = Color.DarkRed
           Text = ("dbSqlTree")
         }
       }
       { Label11 Label
         MoveScaled(1,38,27,3)
-        Foreground = Color.DarkRed
         Text = ("dbGridFilter")
       }
       { htEdit1 htEdit
