@@ -1,30 +1,10 @@
 ' Gambas class file
 
-'
-' dbControls
-'
-' Copyright (C) Jorge Carrion.
-'
-' This program is free software; you can redistribute it and/or modify
-' it under the terms of the GNU General Public License as published by
-' the Free Software Foundation; either version 2 of the License, or
-' (at your option) any later version.
-'
-' This program is distributed in the hope that it will be useful,
-' but WITHOUT ANY WARRANTY; without even the implied warranty of
-' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-' GNU General Public License for more details.
-'
-' You should have received a copy of the GNU General Public License
-' along with this program; if not, write to the Free Software
-' Foundation, Inc., 51 Franklin St, Fifth Floor,
-' Boston, MA  02110-1301  USA
-
 Inherits UserControl
 
 Export
 
-Public Const _Properties As String = "*,conexion,sqlstring,colReturn,widths,title,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=-1,selectedcolor{Color}=-1,mode,subMenu{Menu},menuDefault=-1,showButtons=-1,showExportMenu=-1,posButtons{Align.Bottom;Right}=Bottom"
+Public Const _Properties As String = "*,conexion{Connection},sqlstring,colReturn,widths,title,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=-1,selectedcolor{Color}=-1,mode,subMenu{Menu},menuDefault=-1,showButtons=-1,showExportMenu=-1,posButtons{Align.Bottom;Right}=Bottom"
 Public Const _Group As String = "Chooser"
 Public Const _Similar As String = "GridView"
 Public Const _drawWith As String = "TableView"
@@ -33,7 +13,7 @@ Event Click()
 Event DblClick()
 Event Action_Activate(opcion As String)
 
-Property conexion As String ''nombre de la Conexión a la BD
+Property conexion As Connection ''Conexión a la Base de Datos, debe ser una de las registradas en el IDE
 Property sqlstring As String ''Nombre de tabla o sentencia SQL
 Property colReturn As Integer ''Número de columna, empezando por 0 cuyo valor queremos devolver
 Property widths As String[] ''Anchos de las columnas si las queremos fijas
@@ -48,7 +28,7 @@ Property menuDefault As Boolean ''Si cierto aparecerá el menú por defecto. Si 
 Property grid As DbGrid
 Property showButtons As Boolean ''Especifica si la botonera es visible o no
 Property posButtons As Integer ''Posición de la Botonera 0=debajo, 1=encima,2=Izquierda,3=derecha
-Property showExportMenu As Boolean ''Especifica si la opción de exportar los datos a CSV en el menú por defecto es visible o no.
+Property showExportMenu As Boolean ''Especifica si la opción de exportar los datos a CSV en el menú por defecto es visible o no. 
 Property Read value As String[] ''Array con los valores de las filas seleccionadas en la columna <colReturn>
 Property Read pnBotones As Panel '' panel para añadir botones al control
 Property Read isShift As Boolean
@@ -59,53 +39,54 @@ Private $Grid As DbGrid
 Private obs As Observer
 Private $menu As String
 
+
 Public Sub _new()
-
-  $fdbGridFilter = New FdbGridFilter(Me)
-  'fdbGridFilter.verDefault = True
-  $fdbGridFilter.Show
-  $Grid = $fdbGridFilter.grid
-  $Grid.Header = GridView.Both
-  $Grid.ScrollBar = Scroll.Both
-  $Grid.Mode = Select.Multiple
-  ' Me.bgcolor = Color.Lighter(Color.LightBackground)
-  ' Me.forecolor = Color.Foreground
-  ' Me.selectedcolor = Color.SelectedBackground
-  obs = New Observer($Grid) As "Grid"
-
+    
+    $fdbGridFilter = New FdbGridFilter(Me)
+    'fdbGridFilter.verDefault = True
+    $fdbGridFilter.Show
+    $Grid = $fdbGridFilter.grid 
+    $Grid.Header = GridView.Both
+    $Grid.ScrollBar = Scroll.Both
+    $Grid.Mode = Select.Multiple
+    ' Me.bgcolor = Color.Lighter(Color.LightBackground)
+    ' Me.forecolor = Color.Foreground 
+    ' Me.selectedcolor = Color.SelectedBackground
+    obs = New Observer($Grid) As "Grid" 
+       
 End
 
 Public Sub populate(Optional Force As Boolean = False)
-
+ 
   Dim n As Integer
-
+  
   n = Max(0, $grid.Row)
-  $grid.populate(force)
-  $grid.MoveTo(n, 0)
-
+  $grid.populate(force)  
+  $grid.MoveTo(n, 0) 
+      
 End
 
-Public Sub subMenus(opcion As String)
+Public Sub subMenus(opcion As String) 
 
-  Raise Action_Activate(opcion)
-
+  Raise Action_Activate(opcion)  
+    
 End
 
 Public Sub Grid_Click()
+    
+   Raise Click()  
+    
+End
 
-  Raise Click()
+Private Function conexion_Read() As Connection
+
+    Return $grid.conexion
 
 End
 
-Private Function conexion_Read() As String
+Private Sub conexion_Write(Value As Connection)
 
-  Return $grid.conexion
-
-End
-
-Private Sub conexion_Write(Value As String)
-
-  $grid.Conexion = Value
+    $grid.Conexion = Value
 
 End
 
@@ -117,227 +98,230 @@ End
 
 Private Sub sqlstring_Write(Value As String)
 
-  $grid.sqlstring = Value
-
+    $grid.sqlstring = Value
+    
 End
 
 Private Function value_Read() As String[]
 
-  Return $grid.value
+    Return $grid.value
 
 End
 
 Private Function colReturn_Read() As Integer
 
-  Return $grid.colReturn
+    Return $grid.colReturn
 
 End
 
 Private Sub colReturn_Write(Value As Integer)
 
-  $Grid.colReturn = Value
+    $Grid.colReturn = Value
 
 End
 
 Private Function widths_Read() As String[]
 
-  Dim ar As New String[]
-  Dim n As Integer
-
-  For Each n In $Grid.widths
-    ar.Add(Str(n))
-  Next
-  Return ar
+    Dim ar As New String[]
+    Dim n As Integer
+    
+    For Each n In $Grid.widths
+        ar.Add(Str(n))
+    Next
+    Return ar
 
 End
 
 Private Sub widths_Write(Value As String[])
 
-  Dim aint As New Integer[]
-  Dim s As String
-
-  For Each s In value
-    aint.Add(Val(s))
-  Next
-  $grid.widths = aint
+    Dim aint As New Integer[]
+    Dim s As String
+    
+    For Each s In value
+        aint.Add(Val(s))
+    Next
+    $grid.widths = aint
 
 End
 
 Private Function titles_Read() As String[]
 
-  Return $Grid.titles
+    Return $Grid.titles
 
 End
 
 Private Sub titles_Write(Value As String[])
 
-  $Grid.titles = Value
+    $Grid.titles = Value
 
 End
 
+
 Private Function bgcolor_Read() As Integer
 
-  Return $grid.bgcolor
+    Return $grid.bgcolor
 
 End
 
 Private Sub bgcolor_Write(Value As Integer)
 
-  $Grid.bgcolor = Value
+    $Grid.bgcolor = Value
 
 End
 
 Private Function forecolor_Read() As Integer
 
-  Return $Grid.forecolor
+    Return $Grid.forecolor
 
 End
 
 Private Sub forecolor_Write(Value As Integer)
 
-  $grid.forecolor = Value
+    $grid.forecolor = Value
 
 End
 
 Private Function alternate_Read() As Boolean
 
-  Return $grid.alternate
+    Return $grid.alternate
 
 End
 
 Private Sub alternate_Write(Value As Boolean)
 
-  $Grid.alternate = Value
+    $Grid.alternate = Value
 
 End
 
 Private Function selectedcolor_Read() As Integer
 
-  Return $Grid.selectedcolor
+    Return $Grid.selectedcolor
 
 End
 
 Private Sub selectedcolor_Write(Value As Integer)
 
-  $Grid.selectedcolor = Value
+    $Grid.selectedcolor = Value
 
 End
 
 Private Function pnBotones_Read() As Panel
 
-  Return $fdbGridFilter.pnBotones
+    Return $fdbGridFilter.pnBotones
 
 End
 
 Private Function subMenu_Read() As String
 
-  Return $Menu
+    Return $Menu
 
 End
 
 Private Sub subMenu_Write(Value As String)
 
-  Dim n As Integer
-  Dim f As Object
-
-  $menu = Value
-  If Value = "" Then
-    $fdbGridFilter.subMenu = Null
-  Else
-    f = Me
-    Do
-      f = f.parent
-    Loop Until f Is Form
-    For n = 0 To f.Menus.Count - 1
-      If f.Menus[n].name = $menu Then
-        $fdbGridFilter.subMenu = f.Menus[n]
-        Break
-      Endif
-    Next
-  Endif
+    Dim n As Integer
+    Dim f As Object
+    
+    $menu = Value
+    If Value = "" Then 
+        $fdbGridFilter.subMenu = Null
+    Else
+        f = Me
+        Do 
+            f = f.parent
+        Loop Until f Is Form
+        For n = 0 To f.Menus.Count - 1  
+            If f.Menus[n].name = $menu Then 
+                $fdbGridFilter.subMenu = f.Menus[n]
+                Break
+            Endif
+        Next
+    Endif
 
 End
 
+
+
 Private Function mode_Read() As Integer
 
-  Return $grid.Mode
+    Return $grid.Mode
 
 End
 
 Private Sub mode_Write(Value As Integer)
 
-  $grid.Mode = Value
+    $grid.Mode = Value
 
 End
 
 Private Function isShift_Read() As Boolean
 
-  Return $Grid.isShift
+    Return $Grid.isShift
 
 End
 
 Private Function isControl_Read() As Boolean
 
-  Return $Grid.isControl
+    Return $Grid.isControl
 
 End
 
 Private Function grid_Read() As DbGrid
 
-  Return $grid
+    Return $grid
 
 End
 
 Private Sub grid_Write(Value As DbGrid)
 
-  $grid = Value
+    $grid = Value
 
 End
 
 Private Function menuDefault_Read() As Boolean
 
-  Return $fdbGridFilter.verDefault
+    Return $fdbGridFilter.verDefault
 
 End
 
 Private Sub menuDefault_Write(Value As Boolean)
 
-  $fdbGridFilter.verDefault = Value
+    $fdbGridFilter.verDefault = Value
 
 End
 
 Private Function showButtons_Read() As Boolean
 
-  Return $fdbGridFilter.pnBots.Visible
+    Return $fdbGridFilter.pnBots.Visible
 
 End
 
 Private Sub showButtons_Write(Value As Boolean)
 
-  $fdbGridFilter.pnBots.Visible = Value
+    $fdbGridFilter.pnBots.Visible = Value
 
 End
 
 Private Function showExportMenu_Read() As Boolean
 
-  Return $fdbGridFilter.Menus[0].Children[4].Visible
+    Return $fdbGridFilter.Menus[0].Children[4].Visible
 
 End
 
 Private Sub showExportMenu_Write(Value As Boolean)
 
-  $fdbGridFilter.Menus[0].Children[5].Visible = Value
+    $fdbGridFilter.Menus[0].Children[5].Visible = Value
 
 End
 
 Private Function posButtons_Read() As Integer
 
-  Return $fdbGridFilter.posButtons
+    Return $fdbGridFilter.posButtons
 
 End
 
 Private Sub posButtons_Write(Value As Integer)
 
-  $fdbGridFilter.posButtons = Value
+    $fdbGridFilter.posButtons = Value
 
 End

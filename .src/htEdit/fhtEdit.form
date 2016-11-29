@@ -212,12 +212,14 @@
         MoveScaled(70,0,4,4)
         Tag = "insertOrderedList"
         ToolTip = ("Lista Ordenada")
+        Picture = Picture["htEdit_stuff/list-ordered.png"]
       }
       { btnUnordered ToolButton btnAction
         Name = "btnUnordered"
         MoveScaled(74,0,4,4)
         Tag = "insertUnorderedList"
         ToolTip = ("Lista Desordenada")
+        Picture = Picture["htEdit_stuff/list-unordered.png"]
       }
       { pnSeparator5 Panel
         MoveScaled(78,1,0,3)
@@ -240,6 +242,7 @@
       { btnStyles MenuButton
         MoveScaled(88,0,6,4)
         ToolTip = ("Estilos de Cabeceras")
+        Picture = Picture["htEdit_stuff/styles.png"]
         Border = False
         Menu = "mnStyles"
         MenuOnly = True

@@ -1,0 +1,362 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,conexion{Connection},sqlString,fieldkey,icons,Border=-1"
+Public Const _Group As String = "Chooser"
+Public Const _Similar As String = "TreeView,ListView,ColumnView"
+
+Event {Click}
+
+Property sqlString As String ''cadena sql con la consulta a la base de datos
+Property fieldkey As String  ''campo clave que se devolverá 
+Property conexion As Connection ''conexion a base de datos, debe ser una de las bases registradas de connections
+Property separator As String ''separador interno de la clave del treview
+Property icons As String[] ''Colección que contiene el par nombre del campo - icono a mostrar(png). Puede ser de los compilados en el proyecto o del stock
+Property border As Boolean ''Borde plano alrededor del control
+Property Read keys As Variant ''Array de claves primarias (fieldkey) seleccionada
+Property Read filter As String ''Colección de valores seleccionados
+Property Read {Text} As String  ''Texto del elemento seleccionado
+Property Read PreviousText As String ''Texto del Padre del elemento actual
+Property Read Field As String  ''Nombre del campo que corresponde al elemento seleccionado
+Property Read PreviousField As String ''Nombre del campo del padre del elemento actual
+
+Public arbol As TreeView
+Private $fieldkey As String
+Private $sqlstring As String
+Private $icons As String[]
+Private $r As Result
+Private $conexion As Connection
+Private $campos As String[]
+Private $sep As String
+Private $keys As Variant
+Private $filter As String
+Private $colSql As New Collection
+
+
+
+Public Sub _new()
+  
+  arbol = New TreeView(Me) As "Arbol"
+  $campos = New String[]
+  Me.Proxy = arbol
+  $sep = "|"
+  $icons = New String[]
+  $keys = New String[]
+  Me.Border = True
+End
+
+Public Sub Arbol_Click()
+
+  Dim ar As String[]
+  Dim n As Integer
+  Dim filtro, campos, s As String
+  Dim r As Result
+
+  ar = Split(Left(arbol.key, -1), $sep)
+  If arbol.Current.Count > 0 Then Return 'Si current.count > 0 es que no estamos al final de la rama
+  $r.MoveFirst
+  For n = 0 To ar.Count - 1
+      Select Case $r.Fields[n].type
+        Case gb.string 
+          s = "'" & ar[n] & "'"
+        Case gb.Date
+          s = "'" & IIf(Len(ar[n]) < 11, Format(CDate(ar[n]), "yyyy/mm/dd"), Format(CDate(ar[n]), "yyyy/mm/dd hh:nn:ss")) & "'" 
+        Case Else
+          s = ar[n]
+      End Select    
+      ar[n] = $campos[n] & "=" & s 
+  Next
+  filtro = ar.Join(" And ")
+  campos = Subst(arbol.key, $sep, ", ")
+  $filter = $colSql[" where "] & " and " & filtro
+  s = Subst("select " & $fieldkey & " From " & $colSql[" from "] & " where " & $filter)
+  ar = New String[]
+  Try r = $conexion.Exec(s) 'el Try porque hay consultas (las que llevan funciones y demás) que no son susceptibles de clave primaria ni filtro
+  If Error Then 
+    $colSql[" where "] = "1"
+    $filter = "1"
+    Return
+  Endif
+  While r.Available
+    ar.Add(r[$fieldkey])
+    r.MoveNext
+  Wend
+  $keys = ar
+  Raise click()
+
+End 
+
+Public Function populate()
+  
+    If Not isOk() Then Return
+    rellenaArbol()
+
+End
+
+Private Sub rellenaArbol()
+
+    Dim campo As ResultField
+    Dim padre, clave, claveanterior, texto, camponame As String
+    Dim icono As Picture
+    Dim n As Integer
+    
+    $campos = New String[]
+    arbol.Clear
+    $r = $conexion.Exec($sqlstring)
+    While $icons.Count < $r.Fields.Count
+      $icons.Add("")
+    Wend
+    For Each campo In $r.Fields
+       $campos.Add(campo.name)
+    Next
+    While $r.Available
+        n = 0
+        padre = ""
+        clave = ""
+        claveanterior = ""
+        For Each campo In $r.Fields
+            texto = $r[campo.name]
+            clave &= texto & $sep 
+            padre = claveanterior
+            camponame = IIf(InStr(campo.name, ".") > 1, Mid(campo.name, RInStr(campo.name, ".") + 1), campo.name)
+            If Exist($icons[n] & ".png") Then
+              icono = Picture.Load($icons[n] & ".png")
+            Else 
+              icono = Stock[$icons[n]]
+            Endif
+            If Not arbol.Exist(clave) Then
+                arbol.Add(clave, texto, icono, padre)
+            Endif
+            claveanterior = clave
+            n += 1
+        Next
+        $r.MoveNext
+    Wend
+End
+
+Private Function fieldkey_Read() As String
+
+  Return $fieldkey
+
+End
+
+Private Sub fieldkey_Write(Value As String)
+
+  $fieldkey = Value
+  
+End
+
+Private Function sqlString_Read() As String
+
+  Return $sqlstring
+
+
+End
+
+Private Sub sqlString_Write(Value As String)
+
+     Dim arSqlwords As String[]
+  
+    $sqlstring = Value
+    Value = LCase(value)
+    arSqlwords = ["select ", " from ", " where ", " order by ", " group by ", " limit "]
+    If Left(LCase(Value), 7) <> "select " Then
+        Value = "select * from `" & Value & "`"
+        value = Replace(value, "``", "`")
+    Else
+        If Left(LCase(Value), 16) = "select distinct " Then
+            arSqlwords[0] = "select distinct "
+        Endif
+    Endif 
+    $colSql = strSplit(Value, arSqlwords)
+    If $colSql[" where "] < " " Then
+        $colSql[" where "] = "1"
+    Endif
+    populate
+End
+
+Public Sub strSplit(cadena As String, asep As String[]) As Collection
+
+    Dim cad As String
+    Dim n, i, nsince, nhowmany As Integer
+    Dim cReturn As New Collection
+    Dim lowSep As New String[]
+    
+    cad = LCase(cadena)
+    For n = 0 To asep.Count - 1
+        lowSep.Add(LCase(asep[n]))
+    Next
+    For n = 0 To asep.Count - 1
+        nsince = InStr(cad, lowSep[n]) 
+        If nsince > 0 Then
+           nsince += Len(asep[n])   
+            If n < asep.count Then
+                For i = n + 1 To asep.count - 1
+                    If InStr(cad, lowsep[i])
+                        nhowmany = (InStr(cad, lowsep[i])) - nsince
+                        Break
+                    Endif
+                Next
+                If nhowmany = 0 Then
+                   nhowmany = Len(cad) - nsince + 1    
+                Endif
+            Endif
+            cReturn.Add(Mid(cadena, nsince, nhowmany), asep[n])
+        Else
+            cReturn.Add("", asep[n])
+        Endif
+        nhowmany = 0
+    Next 
+    Return cReturn
+    
+End
+
+Private Function Conexion_Read() As Connection
+
+  Return $conexion
+
+End
+
+Private Sub Conexion_Write(Value As Connection)
+
+  $conexion = Value
+  populate()
+
+End
+
+Private Function separator_Read() As String
+
+  Return $sep
+
+End
+
+Private Sub separator_Write(Value As String)
+
+  $sep = Value
+
+End
+
+Private Function icons_Read() As String[]
+
+  Return $icons
+
+End
+
+Private Sub icons_Write(Value As String[])
+
+    Dim icono As Picture
+    Dim clave, texto, claveanterior, padre As String
+    Dim n As Integer
+    
+    $icons = Value
+    If IsNull($r) Then Return
+    $r.MoveFirst
+    While $r.Available
+        n = 0
+        padre = ""
+        clave = ""
+        For n = 0 To Min($icons.count - 1, $r.Fields.count - 1)
+            texto = $r[$r.Fields[n].name]
+            clave &= texto & $sep 
+            If Exist($icons[n] & ".png") Then
+              icono = Picture.Load($icons[n] & ".png")
+            Else 
+              icono = Stock[$icons[n]]
+            Endif
+            arbol[clave].Picture = icono
+            claveanterior = clave
+        Next
+        $r.MoveNext
+    Wend
+
+End
+
+Private Function keys_Read() As Variant
+
+  Return $keys
+
+End
+
+Private Function filter_Read() As String
+
+  Return Mid($filter, 6)
+  
+End
+
+Private Function Text_Read() As String
+
+  Return arbol.Current.Text
+
+End
+
+Private Function Field_Read() As String
+
+  Dim campo As String
+  Dim ar As String[]
+  
+  ar = Split(arbol.Current.ParentKey, "|")
+  If ar.count = 0 Then
+    campo = $campos[0]
+  Else
+    campo = $campos[ar.Count - 1]
+  Endif
+  Return campo
+ 
+End
+
+Private Function PreviousField_Read() As String
+
+  Dim campo As String
+  Dim ar As String[]
+  
+  ar = Split(arbol.Current.ParentKey, "|")
+  If ar.count < 2 Then
+    campo = ""
+  Else
+    campo = $campos[ar.Count - 2]
+  Endif
+  Return campo
+
+End
+
+Private Function PreviousText_Read() As String
+
+  Dim campo As String
+  Dim ar As String[]
+  
+  ar = Split(arbol.Current.ParentKey, "|")
+  If ar.count < 2 Then
+    campo = ""
+  Else
+    campo = ar[ar.Count - 2]
+  Endif
+  Return campo
+
+End
+
+Private Function isOk() As Boolean
+    
+  If Not $conexion Or Not $sqlstring Then Return False
+  If Not $conexion.opened Then 
+        Try $conexion.Open
+        If Error Then Return False
+    Endif  
+  Return True
+      
+End
+
+
+Private Function border_Read() As Boolean
+
+   Return arbol.Border
+
+End
+
+Private Sub border_Write(Value As Boolean)
+
+    arbol.Border = Value
+
+End

@@ -42,7 +42,7 @@
         MoveScaled(1,4,59,19)
         ToolTip = ("Pulsa en las cabeceras de las columnas para Ordenar")
         Expand = True
-        Conexion = "provincias"
+        Conexion = Connections["provincias"]
         sqlString = "select * from provincias"
       }
       { HBox1 HBox
@@ -86,7 +86,7 @@
         MoveScaled(0,33,59,26)
         ToolTip = ("Botón derecho para Menú Contextual")
         Expand = True
-        conexion = "provincias"
+        conexion = Connections["provincias"]
         sqlstring = "Select provincias.Codigo, provincias.Provincia, comunidades.comunidad from provincias,comunidades where provincias.comunidad=comunidades.codigo"
         colReturn = 1
         widths = ["50", "120"]
@@ -149,7 +149,7 @@
           sqlstring = "Select Provincia,Codigo from provincias"
           listfields = ["Provincia"]
           fieldkey = "Codigo"
-          conexion = "provincias"
+          conexion = Connections["provincias"]
         }
         { dbListBox1 dbListBox
           MoveScaled(1,12,27,22)
@@ -157,12 +157,12 @@
           sqlstring = "Select Provincia,Codigo from provincias"
           listfields = ["Provincia"]
           fieldkey = "Codigo"
-          conexion = "provincias"
+          conexion = Connections["provincias"]
         }
         { dbSqlTree1 dbSqlTree
           MoveScaled(30,12,26,22)
           ToolTip = ("Click para ver Valor Seleccionado")
-          conexion = "provincias"
+          conexion = Connections["provincias"]
           sqlString = "select comunidades.comunidad,provincias.Provincia from comunidades,provincias where comunidades.codigo=provincias.comunidad"
           fieldkey = "Provincia"
           icons = ["sun", "home"]

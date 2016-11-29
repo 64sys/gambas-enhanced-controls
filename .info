@@ -91,11 +91,7 @@ s
 _Similar
 C
 s
-"DirBox,TextBox"
-_DrawWith
-C
-s
-"DirBox"
+"TextBox"
 _Group
 C
 s
@@ -455,7 +451,7 @@ C
 _Properties
 C
 s
-"*,sqlstring,listfields,fieldkey,conexion"
+"*,sqlstring,listfields,fieldkey,conexion{Connection},value"
 _Group
 C
 s
@@ -464,10 +460,6 @@ _Similar
 C
 s
 "ComboBox,ListBox,dbListBox,ListEditor"
-_DrawWith
-C
-s
-"ComboBox"
 sqlstring
 p
 s
@@ -488,7 +480,7 @@ v
 'Fieldkey's value for the selected line - Valor de fieldkey de la línea elegida
 conexion
 p
-s
+Connection
 
 listkeys
 r
@@ -512,7 +504,7 @@ C
 _Properties
 C
 s
-"*,Conexion,sqlString,colReturn,widths,titles,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=T,selectedcolor{Color}=-1"
+"*,Conexion{Connection},sqlString,colReturn,widths,titles,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=T,selectedcolor{Color}=-1"
 _Group
 C
 s
@@ -527,7 +519,7 @@ s
 "GridView"
 conexion
 p
-s
+Connection
 
 sqlString
 p
@@ -570,7 +562,7 @@ isShift
 r
 b
 
-'Indica si se tenía mayúscula pulsada mientras se disparaba un evento
+'Indica si se tenía mayúscula pulsada mientras se disparaba un evento 
 colReturn
 p
 i
@@ -629,7 +621,7 @@ C
 _Properties
 C
 s
-"*,conexion,sqlstring,colReturn,widths,title,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=-1,selectedcolor{Color}=-1,mode,subMenu{Menu},menuDefault=-1,showButtons=-1,showExportMenu=-1,posButtons{Align.Bottom;Right}=Bottom"
+"*,conexion{Connection},sqlstring,colReturn,widths,title,bgcolor{Color}=-1,forecolor{Color}=-1,alternate=-1,selectedcolor{Color}=-1,mode,subMenu{Menu},menuDefault=-1,showButtons=-1,showExportMenu=-1,posButtons{Align.Bottom;Right}=Bottom"
 _Group
 C
 s
@@ -656,7 +648,7 @@ s
 (opcion)s
 conexion
 p
-s
+Connection
 
 sqlstring
 p
@@ -757,7 +749,7 @@ C
 _Properties
 C
 s
-"*,sqlstring,listfields,fieldkey,conexion,value"
+"*,sqlstring,listfields,fieldkey,conexion{Connection},value"
 _Group
 C
 s
@@ -766,18 +758,16 @@ _Similar
 C
 s
 "ListBox,ComboBox,dbComboBox,ListEditor"
-_DrawWith
-C
-s
-"ListBox"
 sqlstring
 p
 s
 
+'Table name of sql sentence. Tabla o consulta sql
 fieldkey
 p
 s
 
+'name of field to return - Nombe de Campo a devolver
 listfields
 p
 String[]
@@ -786,9 +776,10 @@ value
 p
 v
 
+'fieldkey's value for the selected line - valore de fieldkey de las líneas elegidas
 Conexion
 p
-s
+Connection
 
 listkeys
 r
@@ -812,7 +803,7 @@ C
 _Properties
 C
 s
-"*,conexion,sqlString,fieldkey,icons"
+"*,conexion{Connection},sqlString,fieldkey,icons,Border=-1"
 _Group
 C
 s
@@ -821,10 +812,6 @@ _Similar
 C
 s
 "TreeView,ListView,ColumnView"
-_DrawWith
-C
-s
-"TreeView"
 :Click
 :
 
@@ -839,7 +826,7 @@ s
 
 conexion
 p
-s
+Connection
 
 separator
 p
@@ -848,6 +835,10 @@ s
 icons
 p
 String[]
+
+border
+p
+b
 
 keys
 r
@@ -900,15 +891,15 @@ _Properties
 C
 s
 "*,HTML,Text,Border,ReadOnly,ShowControls=True,Value"
+_DrawWith
+C
+s
+"-"
 _Group
 C
 s
 "View"
 _Similar
-C
-s
-"TextArea"
-_DrawWith
 C
 s
 "TextArea"

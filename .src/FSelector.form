@@ -1,51 +1,71 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,57,16)
+  MoveScaled(0,0,71,59)
+  Expand = True
   Arrangement = Arrange.Horizontal
-  Padding = 1
-  { Panel1 Panel
-    MoveScaled(0,0,43,15)
+  Margin = True
+  Padding = 5
+  { Panel1 ScrollView
+    MoveScaled(1,0,44,53)
     Expand = True
     Arrangement = Arrange.Vertical
-    { Panel2 Panel
-      MoveScaled(0,0,39,5)
-      Expand = True
-      Arrangement = Arrange.Horizontal
-      { ToolButton1 ToolButton
-        MoveScaled(0,0,27,5)
-        Expand = True
-        Picture = Picture["icon:/32/tools"]
-      }
-    }
-    { Panel3 Panel
-      MoveScaled(0,5,39,5)
-      Expand = True
-      Arrangement = Arrange.Horizontal
-      { ToolButton2 ToolButton
-        MoveScaled(0,0,27,5)
-        Expand = True
-        Picture = Picture["icon:/32/component"]
-      }
-    }
-    { Panel4 Panel
-      MoveScaled(0,10,39,5)
-      Expand = True
-      Arrangement = Arrange.Horizontal
-      { ToolButton3 ToolButton
-        MoveScaled(0,0,27,5)
-        Expand = True
-        Picture = Picture["icon:/32/component"]
-      }
+    { TextLabel1 TextLabel
+      MoveScaled(1,15,37,4)
+      Font = Font["Bold"]
+      Foreground = Color.DarkRed
+      Text = ("Controles Disponibles")
+      Alignment = Align.Center
     }
   }
   { Panel5 Panel
-    MoveScaled(46,0,11,15)
-    Arrangement = Arrange.Fill
-    { btoLink Button
-      MoveScaled(-3,2,16,4)
+    MoveScaled(46,0,23,57)
+    Arrangement = Arrange.Vertical
+    { Label2 Label
+      MoveScaled(1,1,20,3)
+      Font = Font["Bold"]
+      Foreground = Color.DarkRed
+      Text = ("Ver Ejemplos")
+      Alignment = Align.Center
+    }
+    { ToolButton1 ToolButton
+      MoveScaled(2,5,19,9)
       Expand = True
-      Text = ("Link")
+      Text = ("DBControles")
+      Picture = Picture["icon:/48/tools"]
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(1,16,20,9)
+      Expand = True
+      Text = ("XControles")
+      Picture = Picture["icon:/48/component"]
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(1,26,20,9)
+      Expand = True
+      Text = ("ProgressBar")
+      Picture = Picture["icon:/48/component"]
+    }
+    { Label1 Label
+      MoveScaled(1,37,20,3)
+      Font = Font["Bold"]
+      Foreground = Color.DarkRed
+      Text = ("Enlazar a tu proyecto")
+      Alignment = Align.Center
+    }
+    { btoLink ToolButton
+      MoveScaled(3,41,17,6)
+      ToolTip = ("Enlazar los seleccioandos con tu proyecto")
+      Expand = True
+      Text = ("Enlazar")
+      Picture = Picture["icon:/48/link"]
+    }
+    { btoCopy ToolButton
+      MoveScaled(3,48,17,6)
+      ToolTip = ("Enlazar los seleccioandos con tu proyecto")
+      Expand = True
+      Text = ("Copiar")
+      Picture = Picture["icon:/48/copy"]
     }
   }
 }

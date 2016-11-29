@@ -2,7 +2,7 @@
 # Compiled with Gambas 3.9.1
 Startup=FSelector
 Icon=tools.png
-Version=0.0.4
+Version=0.0.5
 Component=gb.image
 Component=gb.gui.qt
 Component=gb.form
@@ -15,5 +15,7 @@ Description="Gambas enhanced controls"
 Authors="Jorge Carrion, Tobias Boege, Julio Sánchez Berro, Roinnel Bernard, Diedier18, Martín Belmonte and others."
 TabSize=2
 Language=en_US
+Type=Component
+SourcePath=/home/jorge/Escritorio
 Vendor=tincho
 Packager=1

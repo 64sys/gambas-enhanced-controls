@@ -9,17 +9,14 @@
   { Action mFiltrar
     Text = "Filtrar por este valor"
     Shortcut = ""
-    Picture = "dbc_iconos/stock_autofilter.png"
   }
   { Action mFiltro
     Text = "Filtro Avanzado"
     Shortcut = ""
-    Picture = "dbc_iconos/stock_advanced-filter.png"
   }
   { Action mNofiltrar
     Text = "Eliminar Filtro"
     Shortcut = ""
-    Picture = "dbc_iconos/stock_delete-autofilter.png"
   }
   { Action mOrdenar
     Text = "Ordenar"
@@ -29,7 +26,6 @@
   { Action mVerFiltro
     Text = "Ver Filtros Activos"
     Shortcut = ""
-    Picture = "dbc_iconos/verfiltro.png"
   }
 }
 

@@ -1,0 +1,7 @@
+[Component]
+Key=gambas-enhanced-controls
+Version=0.0.5
+State=2
+Authors=Jorge Carrion, Tobias Boege, Julio Sánchez Berro, Roinnel Bernard, Diedier18, Martín Belmonte and others.
+Needs=Form,EventLoop,ImageIO
+Requires=gb.db,gb.form.mdi,gb.gui.qt,gb.gui.qt.webkit

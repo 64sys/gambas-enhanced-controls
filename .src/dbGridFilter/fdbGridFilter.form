@@ -8,22 +8,18 @@
     { mFiltrar Menu
       Action = "mFiltrar"
       Text = ("Filtrar por este valor")
-      Picture = Picture["dbc_iconos/stock_autofilter.png"]
     }
     { mFiltro Menu
       Action = "mFiltro"
       Text = ("Filtro Avanzado")
-      Picture = Picture["dbc_iconos/stock_advanced-filter.png"]
     }
     { mNofiltrar Menu
       Action = "mNofiltrar"
       Text = ("Eliminar Filtro")
-      Picture = Picture["dbc_iconos/stock_delete-autofilter.png"]
     }
     { mVerFiltro Menu
       Action = "mVerFiltro"
       Text = ("Ver Filtros Activos")
-      Picture = Picture["dbc_iconos/verfiltro.png"]
     }
     { mOrdenar Menu
       Action = "mOrdenar"
@@ -50,26 +46,26 @@
     #Public = True
     Arrangement = Arrange.Horizontal
     { Label1 Label
-      MoveScaled(2,0,7,4)
+      MoveScaled(0,0,7,4)
       Visible = False
       AutoResize = True
       Text = ("Filtrar: ")
       Alignment = Align.Right
     }
     { bAutofiltro ToolButton
-      MoveScaled(7,0,4,4)
+      MoveScaled(8,0,4,4)
       ToolTip = ("Filtrar por la celda seleccionada")
-      Picture = Picture["dbc_iconos/stock_autofilter.png"]
+      Picture = Picture["dbGridFilter_stuff/stock_autofilter.png"]
     }
     { bavanzado ToolButton
       MoveScaled(12,0,4,4)
       ToolTip = ("Filtro Avanzado")
-      Picture = Picture["dbc_iconos/stock_advanced-filter.png"]
+      Picture = Picture["dbGridFilter_stuff/stock_advanced-filter.png"]
     }
     { bTodos ToolButton
       MoveScaled(16,0,4,4)
       ToolTip = ("Limpiar Filtros y Ordenaciones")
-      Picture = Picture["dbc_iconos/stock_delete-autofilter.png"]
+      Picture = Picture["dbGridFilter_stuff/stock_delete-autofilter.png"]
     }
     { buscar ComboBox
       MoveScaled(21,0,25,4)
@@ -84,7 +80,7 @@
     { bVerfiltro ToolButton
       MoveScaled(52,0,4,4)
       ToolTip = ("Ver Filtro actual")
-      Picture = Picture["dbc_iconos/verfiltro.png"]
+      Picture = Picture["dbGridFilter_stuff/verfiltro.png"]
     }
   }
 }
@@ -100,17 +96,14 @@
   { Action mFiltrar
     Text = "Filtrar por este valor"
     Shortcut = ""
-    Picture = "dbc_iconos/stock_autofilter.png"
   }
   { Action mFiltro
     Text = "Filtro Avanzado"
     Shortcut = ""
-    Picture = "dbc_iconos/stock_advanced-filter.png"
   }
   { Action mNofiltrar
     Text = "Eliminar Filtro"
     Shortcut = ""
-    Picture = "dbc_iconos/stock_delete-autofilter.png"
   }
   { Action mOrdenar
     Text = "Ordenar"
@@ -120,6 +113,5 @@
   { Action mVerFiltro
     Text = "Ver Filtros Activos"
     Shortcut = ""
-    Picture = "dbc_iconos/verfiltro.png"
   }
 }
