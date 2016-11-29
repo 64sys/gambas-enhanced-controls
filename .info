@@ -91,7 +91,11 @@ s
 _Similar
 C
 s
-"TextBox"
+"DirBox,TextBox"
+_DrawWith
+C
+s
+"DirBox"
 _Group
 C
 s
@@ -562,7 +566,7 @@ isShift
 r
 b
 
-'Indica si se tenía mayúscula pulsada mientras se disparaba un evento 
+'Indica si se tenía mayúscula pulsada mientras se disparaba un evento
 colReturn
 p
 i

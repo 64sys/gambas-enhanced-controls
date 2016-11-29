@@ -20,6 +20,7 @@
 ' Boston, MA  02110-1301  USA
 '
 Private Controles As Variant[]
+Private bolModules As Boolean ' #### CAmbie acá ####
 
 Public Sub Form_Open()
 
@@ -53,6 +54,8 @@ Public Sub Form_Open()
     ck.Text = controles[n][0]
     ck.Tooltip = controles[n][1]
   Next
+
+  bolModules = False ' #### CAmbie acá ####
 
 End
 
@@ -105,11 +108,42 @@ Public Sub ToolButton3_Click()
 
 End
 
+' #### CAmbie acá ####
+Public Sub ToolButton4_Click()
+
+  Dim dbcontroles As String[]
+  Dim ckb As Object
+
+  Select bolModules
+    Case False
+      bolModules = True
+    Case True
+      bolModules = False
+  End Select
+
+  dbcontroles = ["MData", "Msys", "MUtility"]
+  For Each ckb In Me.Controls
+    If ckb Is CheckBox Then
+
+      Select bolModules
+        Case True
+          ckb.value = (dbcontroles.Find(ckb.text) > -1)
+        Case False
+          ckb.value = (dbcontroles.Find(ckb.text) < -1)
+      End Select
+
+    Endif
+  Next
+
+End
+
 Public Sub btoLink_Click()
 
   Dim proyecto, origen, requeridos As String
   Dim n As Integer
   Dim ctrl As Object
+  Dim strExt As String  ' #### CAmbie acá ####
+  Dim strDir As String  ' #### CAmbie acá ####
 
   n = Message.Question("Si enlazas los controles a tu proyecto, para modificar o añadir algo en ellos, tendrás que hacerlo en éste proyecto. Los cambios se propagarán automáticamente a todos los proyectos enlazados.", "Enlazar", "Cancelar")
   If n = 2 Then Return
@@ -118,14 +152,25 @@ Public Sub btoLink_Click()
   If Not Exist(proyecto &/ ".hidden/control") Then Mkdir proyecto &/ ".hidden/control"
   For Each ctrl In Me.Controls
     If ctrl Is CheckBox Then
+
+      Select ctrl.Text                         ' #### CAmbie acá ####
+        Case "MData", "Msys", "MUtility"       ' #### CAmbie acá ####
+          strExt = ".module"                   ' #### CAmbie acá ####
+          strDir = "xutilities"                ' #### CAmbie acá ####
+        Case Else                              ' #### CAmbie acá ####
+          strExt = ".class"                    ' #### CAmbie acá ####
+          strDir = ""                ' #### CAmbie acá ####
+      End Select                               ' #### CAmbie acá ####
+
       If ctrl.Value Then
+
         For n = 0 To controles.Count - 1
           If controles[n][0] = ctrl.text And controles[n][2] Then  'miramos si los elegidos tienen componentes requeridos
             requeridos &= controles[n][2] & ","
             Break
           Endif
         Next
-        origen = IIf(IsDir(Application.path &/ ".src" &/ ctrl.text), Application.Path &/ ".src" &/ ctrl.text, Application.path &/ ".src" &/ ctrl.text & ".class")
+        origen = IIf(IsDir(Application.path &/ ".src" &/ ctrl.text), Application.Path &/ ".src" &/ ctrl.text, Application.path &/ ".src" &/ strDir &/ ctrl.text & strExt) ' #### CAmbie acá ####
         Shell "ln -s \"" & origen & "\" \"" & proyecto & "/.src\"" Wait 'enlazamos el control
         If Exist(Application.path &/ ctrl.text & "_stuff") Then
           Shell "ln -s \"" & Application.path &/ ctrl.text & "_stuff\" \"" & proyecto & "\"" Wait 'enlazamos la carpeta de recursos del control si es que existe
@@ -142,6 +187,8 @@ Public Sub btoCopy_Click()
   Dim proyecto, origen, requeridos As String
   Dim n As Integer
   Dim ctrl As Object
+  Dim strExt As String  ' #### CAmbie acá ####
+  Dim strDir As String  ' #### CAmbie acá ####
 
   n = Message.Question("Si Copias los controles a tu proyecto, los cambios que hagas en ellos sólo afectarán a tu proyecto y los cambios que se hagan a dbControles NO serán propagados al mismo", "Enlazar", "Cancelar")
   If n = 2 Then Return
@@ -150,6 +197,16 @@ Public Sub btoCopy_Click()
   If Not Exist(proyecto &/ ".hidden/control") Then Mkdir proyecto &/ ".hidden/control"
   For Each ctrl In Me.Controls
     If ctrl Is CheckBox Then
+
+      Select ctrl.Text                         ' #### CAmbie acá ####
+        Case "MData", "Msys", "MUtility"       ' #### CAmbie acá ####
+          strExt = ".module"                     ' #### CAmbie acá ####
+          strDir = "xutilities"                ' #### CAmbie acá ####
+        Case Else                              ' #### CAmbie acá ####
+          strExt = ".class"                    ' #### CAmbie acá ####
+          strDir = ""                          ' #### CAmbie acá ####
+      End Select                               ' #### CAmbie acá ####
+
       If ctrl.Value Then
         For n = 0 To controles.Count - 1
           If controles[n][0] = ctrl.text And controles[n][2] Then  'miramos si los elegidos tienen componentes requeridos
@@ -157,7 +214,7 @@ Public Sub btoCopy_Click()
             Break
           Endif
         Next
-        origen = IIf(IsDir(Application.path &/ ".src" &/ ctrl.text), Application.Path &/ ".src" &/ ctrl.text, Application.path &/ ".src" &/ ctrl.text & ".class")
+        origen = IIf(IsDir(Application.path &/ ".src" &/ ctrl.text), Application.Path &/ ".src" &/ ctrl.text, Application.path &/ ".src" &/ strDir &/ ctrl.text & strExt) ' #### CAmbie acá ####
         Shell "cp -r \"" & origen & "\" \"" & proyecto & "/.src\"" Wait 'copiamos
         If Exist(Application.path &/ ctrl.text & "_stuff") Then
           Shell "cp -r \"" & Application.path &/ ctrl.text & "_stuff\" \"" & proyecto & "\"" Wait 'enlazamos la carpeta de recursos del control si es que existe

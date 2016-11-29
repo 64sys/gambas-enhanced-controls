@@ -2,7 +2,7 @@
 # Compiled with Gambas 3.9.1
 Startup=FSelector
 Icon=tools.png
-Version=0.0.5
+Version=0.0.6
 Component=gb.image
 Component=gb.gui.qt
 Component=gb.form

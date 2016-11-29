@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,71,59)
+  MoveScaled(0,0,71,77)
   Expand = True
   Arrangement = Arrange.Horizontal
   Margin = True
   Padding = 5
   { Panel1 ScrollView
-    MoveScaled(1,0,44,53)
+    MoveScaled(1,0,44,76)
     Expand = True
     Arrangement = Arrange.Vertical
     { TextLabel1 TextLabel
@@ -18,7 +18,7 @@
     }
   }
   { Panel5 Panel
-    MoveScaled(46,0,23,57)
+    MoveScaled(46,0,23,76)
     Arrangement = Arrange.Vertical
     { Label2 Label
       MoveScaled(1,1,20,3)
@@ -44,21 +44,27 @@
       Text = ("ProgressBar")
       Picture = Picture["icon:/48/component"]
     }
+    { ToolButton4 ToolButton
+      MoveScaled(1,37,20,9)
+      Expand = True
+      Text = ("Módulos utiles")
+      Picture = Picture["icon:/48/lamp"]
+    }
     { Label1 Label
-      MoveScaled(1,37,20,3)
+      MoveScaled(1,53,20,3)
       Font = Font["Bold"]
       Text = ("Enlazar a tu proyecto")
       Alignment = Align.Center
     }
     { btoLink ToolButton
-      MoveScaled(3,41,17,6)
+      MoveScaled(3,57,17,6)
       ToolTip = ("Enlazar los seleccioandos con tu proyecto")
       Expand = True
       Text = ("Enlazar")
       Picture = Picture["icon:/48/link"]
     }
     { btoCopy ToolButton
-      MoveScaled(3,48,17,6)
+      MoveScaled(3,64,17,6)
       ToolTip = ("Enlazar los seleccioandos con tu proyecto")
       Expand = True
       Text = ("Copiar")

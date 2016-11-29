@@ -1,0 +1,20 @@
+# Gambas Action File 3.0
+
+{ Actions
+  { Action mEditar
+    Text = "Editar Registro"
+    Shortcut = ""
+    Picture = "icon:/22/edit"
+  }
+  { Action mEliminar
+    Text = "Eliminar Registro"
+    Shortcut = ""
+    Picture = "icon:/22/delete"
+  }
+  { Action mNuevo
+    Text = "Nuevo Registro"
+    Shortcut = ""
+    Picture = "icon:/22/add"
+  }
+}
+
