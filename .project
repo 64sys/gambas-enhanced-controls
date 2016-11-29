@@ -1,5 +1,6 @@
 # Gambas Project File 3.0
 # Compiled with Gambas 3.9.1
+Title=Gambas enhanced controls
 Startup=FSelector
 Icon=tools.png
 Version=0.0.6

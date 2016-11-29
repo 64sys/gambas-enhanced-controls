@@ -21,6 +21,7 @@
 '
 Private Controles As Variant[]
 Private bolModules As Boolean ' #### CAmbie acá ####
+Private bolXcontrols As Boolean ' #### CAmbie acá ####
 
 Public Sub Form_Open()
 
@@ -56,6 +57,7 @@ Public Sub Form_Open()
   Next
 
   bolModules = False ' #### CAmbie acá ####
+  bolXcontrols = False ' #### CAmbie acá ####
 
 End
 
@@ -83,10 +85,24 @@ Public Sub ToolButton2_Click()
   Dim dbcontroles As String[]
   Dim ckb As Object
 
-  dbcontroles = ["ButtonSquare", "TextList", "TextBoxExplain", "ProgressbarVertical", "ProgressBarText", "htEdit"] 'los que aparecen en el ejemplo"
+  Select bolXcontrols                                       ' #### CAmbie acá ####
+    Case False                                              ' #### CAmbie acá ####
+      bolXcontrols = True                                   ' #### CAmbie acá ####
+    Case True                                               ' #### CAmbie acá ####
+      bolXcontrols = False                                  ' #### CAmbie acá ####
+  End Select                                                ' #### CAmbie acá ####
+
+  dbcontroles = ["ButtonSquare", "TextList", "TextBoxExplain", "ProgressBarText"] 'los que aparecen en el formulerio FXControls  #### CAmbie acá ####
   For Each ckb In Me.Controls
     If ckb Is CheckBox Then
-      ckb.value = (dbcontroles.Find(ckb.text) > -1)
+
+      Select bolXcontrols                             ' #### CAmbie acá ####
+        Case True                                           ' #### CAmbie acá ####
+          ckb.value = (dbcontroles.Find(ckb.text) > -1)     ' #### CAmbie acá ####
+        Case False                                          ' #### CAmbie acá ####
+          ckb.value = (dbcontroles.Find(ckb.text) < -1)     ' #### CAmbie acá ####
+      End Select                                            ' #### CAmbie acá ####
+      'ckb.value = (dbcontroles.Find(ckb.text) > -1)        ' #### CAmbie acá ####
     Endif
   Next
   FXControls.Show()
@@ -159,7 +175,7 @@ Public Sub btoLink_Click()
           strDir = "xutilities"                ' #### CAmbie acá ####
         Case Else                              ' #### CAmbie acá ####
           strExt = ".class"                    ' #### CAmbie acá ####
-          strDir = ""                ' #### CAmbie acá ####
+          strDir = ""                          ' #### CAmbie acá ####
       End Select                               ' #### CAmbie acá ####
 
       If ctrl.Value Then

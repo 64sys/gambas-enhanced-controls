@@ -20,15 +20,10 @@ Geometry=[201,94,224,280]
 Path="top40.gambas"
 
 [OpenFile]
-Count=7
-File[1]=".src/xutilities/MData.module:0.2"
-File[2]=".src/xutilities/Msys.module:0.14"
-File[3]=".src/xutilities/MUtility.module:0.1"
-Active=7
-File[4]=".src/FSelector.class:46.189"
-File[5]=".src/FSelector.form"
-File[6]=".src/xcontrols/TextList.class:0.271"
-File[7]=".src/xcontrols/ProgressbarVertical.class:15.47"
+Count=2
+File[1]=".src/FSelector.form"
+File[2]=".src/FSelector.class:59.88"
+Active=2
 
 [Watches]
 Count=0
