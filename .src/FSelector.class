@@ -21,7 +21,7 @@
 '
 Private Controles As Variant[]
 Private bolModules As Boolean ' #### CAmbie acá ####
-Private bolXcontrols As Boolean ' #### CAmbie acá ####
+Private bolXcontrols As Boolean ' #### CAmbie acá #### shordi dice:NO ENTIENDO LA EXISTENCIA DE ESTA VARIABLE
 
 Public Sub Form_Open()
 
@@ -85,7 +85,7 @@ Public Sub ToolButton2_Click()
   Dim dbcontroles As String[]
   Dim ckb As Object
 
-  Select bolXcontrols                                       ' #### CAmbie acá ####
+  Select bolXcontrols                                       ' #### CAmbie acá #### 
     Case False                                              ' #### CAmbie acá ####
       bolXcontrols = True                                   ' #### CAmbie acá ####
     Case True                                               ' #### CAmbie acá ####
@@ -102,7 +102,7 @@ Public Sub ToolButton2_Click()
         Case False                                          ' #### CAmbie acá ####
           ckb.value = (dbcontroles.Find(ckb.text) < -1)     ' #### CAmbie acá ####
       End Select                                            ' #### CAmbie acá ####
-      'ckb.value = (dbcontroles.Find(ckb.text) > -1)        ' #### CAmbie acá ####
+      'ckb.value = (dbcontroles.Find(ckb.text) > -1)        ' #### CAmbie acá #### shordi dice:las seis líneas anteriores hacen lo missmo que ésta. No entiendo el desglose
     Endif
   Next
   FXControls.Show()

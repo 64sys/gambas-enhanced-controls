@@ -18,6 +18,6 @@
     MoveScaled(14,27,23,5)
   }
   { htEdit1 htEdit
-    MoveScaled(1,61,71,24)
+    MoveScaled(-1,39,71,40)
   }
 }
