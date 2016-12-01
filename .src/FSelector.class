@@ -21,7 +21,6 @@
 '
 Private Controles As Variant[]
 Private bolModules As Boolean ' #### CAmbie acá ####
-Private bolXcontrols As Boolean ' #### CAmbie acá #### shordi dice:NO ENTIENDO LA EXISTENCIA DE ESTA VARIABLE
 
 Public Sub Form_Open()
 
@@ -57,7 +56,6 @@ Public Sub Form_Open()
   Next
 
   bolModules = False ' #### CAmbie acá ####
-  bolXcontrols = False ' #### CAmbie acá ####
 
 End
 
@@ -85,24 +83,10 @@ Public Sub ToolButton2_Click()
   Dim dbcontroles As String[]
   Dim ckb As Object
 
-  Select bolXcontrols                                       ' #### CAmbie acá #### 
-    Case False                                              ' #### CAmbie acá ####
-      bolXcontrols = True                                   ' #### CAmbie acá ####
-    Case True                                               ' #### CAmbie acá ####
-      bolXcontrols = False                                  ' #### CAmbie acá ####
-  End Select                                                ' #### CAmbie acá ####
-
   dbcontroles = ["ButtonSquare", "TextList", "TextBoxExplain", "ProgressBarText"] 'los que aparecen en el formulerio FXControls  #### CAmbie acá ####
   For Each ckb In Me.Controls
     If ckb Is CheckBox Then
-
-      Select bolXcontrols                             ' #### CAmbie acá ####
-        Case True                                           ' #### CAmbie acá ####
-          ckb.value = (dbcontroles.Find(ckb.text) > -1)     ' #### CAmbie acá ####
-        Case False                                          ' #### CAmbie acá ####
-          ckb.value = (dbcontroles.Find(ckb.text) < -1)     ' #### CAmbie acá ####
-      End Select                                            ' #### CAmbie acá ####
-      'ckb.value = (dbcontroles.Find(ckb.text) > -1)        ' #### CAmbie acá #### shordi dice:las seis líneas anteriores hacen lo missmo que ésta. No entiendo el desglose
+      ckb.value = (dbcontroles.Find(ckb.text) > -1)
     Endif
   Next
   FXControls.Show()
@@ -140,14 +124,14 @@ Public Sub ToolButton4_Click()
   dbcontroles = ["MData", "Msys", "MUtility"]
   For Each ckb In Me.Controls
     If ckb Is CheckBox Then
-
-      Select bolModules
-        Case True
-          ckb.value = (dbcontroles.Find(ckb.text) > -1)
-        Case False
-          ckb.value = (dbcontroles.Find(ckb.text) < -1)
-      End Select
-
+      If dbcontroles.Find(ckb.text) <> -1 Then
+        Select bolModules
+          Case True
+            ckb.value = True
+          Case False
+            ckb.value = False
+        End Select
+      Endif
     Endif
   Next
 
