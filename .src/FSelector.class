@@ -20,7 +20,6 @@
 ' Boston, MA  02110-1301  USA
 '
 Private Controles As Variant[]
-Private bolModules As Boolean ' #### CAmbie acá ####
 
 Public Sub Form_Open()
 
@@ -55,83 +54,44 @@ Public Sub Form_Open()
     ck.Tooltip = controles[n][1]
   Next
 
-  bolModules = False ' #### CAmbie acá ####
-
 End
 
 Public Sub ToolButton1_Click()
 
-  Dim dbcontroles As String[]
-  Dim ckb As Object
-
-  dbcontroles = ["dbComboBox", "dbListBox", "dbGrid", "dbGridFilter", "htEdit", "FileBox", "dbSqlTree"] 'los que aparecen en el ejemplo
-  For Each ckb In Me.Controls
-    If ckb Is CheckBox Then
-      ckb.value = (dbcontroles.Find(ckb.text) > -1)
-    Endif
-  Next
-
+  chequear(["dbComboBox", "dbListBox", "dbGrid", "dbGridFilter", "htEdit", "FileBox", "dbSqlTree"])
   Connections["provincias"].host = Application.Path
   If Not Connections["provincias"].Opened Then Connections["provincias"].Open
-
   FDBControls.Show()
 
 End
 
 Public Sub ToolButton2_Click()
 
-  Dim dbcontroles As String[]
-  Dim ckb As Object
-
-  dbcontroles = ["ButtonSquare", "TextList", "TextBoxExplain", "ProgressBarText"] 'los que aparecen en el formulerio FXControls  #### CAmbie acá ####
-  For Each ckb In Me.Controls
-    If ckb Is CheckBox Then
-      ckb.value = (dbcontroles.Find(ckb.text) > -1)
-    Endif
-  Next
+  chequear(["ButtonSquare", "TextList", "TextBoxExplain", "ProgressBarText"])
   FXControls.Show()
 
 End
 
 Public Sub ToolButton3_Click()
 
-  Dim dbcontroles As String[]
-  Dim ckb As Object
-
-  dbcontroles = ["ProgressBarText"] 'los que aparecen en el ejemplo"
-  For Each ckb In Me.Controls
-    If ckb Is CheckBox Then
-      ckb.value = (dbcontroles.Find(ckb.text) > -1)
-    Endif
-  Next
+  chequear(["ProgressBarText"])
   FProgbar.Show()
 
 End
 
-' #### CAmbie acá ####
 Public Sub ToolButton4_Click()
 
-  Dim dbcontroles As String[]
+  chequear(["MData", "Msys", "MUtility"])
+
+End
+
+Private Sub chequear(aTexts As String[])
+
   Dim ckb As Object
-
-  Select bolModules
-    Case False
-      bolModules = True
-    Case True
-      bolModules = False
-  End Select
-
-  dbcontroles = ["MData", "Msys", "MUtility"]
+   
   For Each ckb In Me.Controls
     If ckb Is CheckBox Then
-      If dbcontroles.Find(ckb.text) <> -1 Then
-        Select bolModules
-          Case True
-            ckb.value = True
-          Case False
-            ckb.value = False
-        End Select
-      Endif
+        ckb.value = (aTexts.Find(ckb.text) > -1)
     Endif
   Next
 
@@ -142,28 +102,25 @@ Public Sub btoLink_Click()
   Dim proyecto, origen, requeridos As String
   Dim n As Integer
   Dim ctrl As Object
-  Dim strExt As String  ' #### CAmbie acá ####
-  Dim strDir As String  ' #### CAmbie acá ####
+  Dim strExt As String 
+  Dim strDir As String 
 
   n = Message.Question("Si enlazas los controles a tu proyecto, para modificar o añadir algo en ellos, tendrás que hacerlo en éste proyecto. Los cambios se propagarán automáticamente a todos los proyectos enlazados.", "Enlazar", "Cancelar")
   If n = 2 Then Return
   If Dialog.SelectDirectory() Then Return
   proyecto = Dialog.Path
-  If Not Exist(proyecto &/ ".hidden/control") Then Mkdir proyecto &/ ".hidden/control"
+  If Not Exist(proyecto &/ ".hidden/control") Then Shell "mkdir -p " & proyecto &/ ".hidden/control"
   For Each ctrl In Me.Controls
     If ctrl Is CheckBox Then
-
-      Select ctrl.Text                         ' #### CAmbie acá ####
-        Case "MData", "Msys", "MUtility"       ' #### CAmbie acá ####
-          strExt = ".module"                   ' #### CAmbie acá ####
-          strDir = "xutilities"                ' #### CAmbie acá ####
-        Case Else                              ' #### CAmbie acá ####
-          strExt = ".class"                    ' #### CAmbie acá ####
-          strDir = ""                          ' #### CAmbie acá ####
-      End Select                               ' #### CAmbie acá ####
-
+      If Left(LCase(ctrl.Text), 1) = "m" Then
+        strExt = ".module"                  
+        strDir = "xutilities"               
+      Else                           
+        strExt = ".class"            
+        strDir = ""        
+      End If
       If ctrl.Value Then
-
+        Try Copy Application.path &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" To proyecto &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" 'copiamos el icono del control
         For n = 0 To controles.Count - 1
           If controles[n][0] = ctrl.text And controles[n][2] Then  'miramos si los elegidos tienen componentes requeridos
             requeridos &= controles[n][2] & ","
@@ -187,28 +144,26 @@ Public Sub btoCopy_Click()
   Dim proyecto, origen, requeridos As String
   Dim n As Integer
   Dim ctrl As Object
-  Dim strExt As String  ' #### CAmbie acá ####
-  Dim strDir As String  ' #### CAmbie acá ####
+  Dim strExt As String  
+  Dim strDir As String 
 
   n = Message.Question("Si Copias los controles a tu proyecto, los cambios que hagas en ellos sólo afectarán a tu proyecto y los cambios que se hagan a dbControles NO serán propagados al mismo", "Enlazar", "Cancelar")
   If n = 2 Then Return
   If Dialog.SelectDirectory() Then Return
   proyecto = Dialog.Path
-  If Not Exist(proyecto &/ ".hidden/control") Then Mkdir proyecto &/ ".hidden/control"
+  If Not Exist(proyecto &/ ".hidden/control") Then Shell "mkdir -p " & proyecto &/ ".hidden/control"
   For Each ctrl In Me.Controls
     If ctrl Is CheckBox Then
-
-      Select ctrl.Text                         ' #### CAmbie acá ####
-        Case "MData", "Msys", "MUtility"       ' #### CAmbie acá ####
-          strExt = ".module"                     ' #### CAmbie acá ####
-          strDir = "xutilities"                ' #### CAmbie acá ####
-        Case Else                              ' #### CAmbie acá ####
-          strExt = ".class"                    ' #### CAmbie acá ####
-          strDir = ""                          ' #### CAmbie acá ####
-      End Select                               ' #### CAmbie acá ####
-
+      If Left(LCase(ctrl.Text), 1) = "m" Then
+        strExt = ".module"                  
+        strDir = "xutilities"               
+      Else                           
+        strExt = ".class"            
+        strDir = ""        
+      End If
       If ctrl.Value Then
-        For n = 0 To controles.Count - 1
+         Try Copy Application.path &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" To proyecto &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" 'copiamos el icono del control
+         For n = 0 To controles.Count - 1
           If controles[n][0] = ctrl.text And controles[n][2] Then  'miramos si los elegidos tienen componentes requeridos
             requeridos &= controles[n][2] & ","
             Break

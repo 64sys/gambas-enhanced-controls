@@ -22,7 +22,7 @@ Path="top40.gambas"
 [OpenFile]
 Count=5
 File[1]=".src/FSelector.form"
-File[2]=".src/FSelector.class:0.21"
+File[2]=".src/FSelector.class:29.109"
 Active=2
 File[3]=".src/fDBControls.form"
 File[4]=".src/FXControls.form"
