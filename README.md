@@ -1,3 +1,5 @@
+![]tools.png
+
 # GEC
 Gambas enhanced controls.
 This is a collection of enhanced controls developed by some menbers of forum www.gambas-es.org.
@@ -65,95 +67,64 @@ Select a file by pressing the db button
 [Tincho]
 
 #### ArrangePath
-input: strPathRaw As String
-Return: String
+Devuelve una ruta sin los saltos del línea ni caracteres problemáticos requiere come parametro de entrada una ruta.
 
 #### ArrayExclude
-(stxList As String[], strFind As String) As String[]
+Quita de la lista los textos que tengan la cadena de texto pasada como parametro.
 
 #### ArrayInclude
-(stxList As String[], strFind As String) As String[]
+Quita de la lista los textos que NO tengan la cadena de texto pasada como parametro.
 
 #### Capital
-(strInput As String) As String
+Devuelve un texto con la primera letra en mayusculas y todas las siguientes en minúsculas.
 
 #### Chek4SQL
-(strInput As String) As String
+Devuelve un texto apto para consulatas SQL, quita los saltos del línea y los caracteres no compatibles con sentencias SQL.
 
 #### ConvertPath
-(txt As String) As String
+Devuelve una ruta con los caracteres hexadecimales decodificados en las URI's que se le pase.
 
 #### CRC32
-(stInputPath As String, Optional strCase As String) As String
 Obtencion del crc32 de un archivo del que se pasa como parametro la ruta completa, como parametro opcional strCase puede ser U o L que parara todo a Ucase o Lcase.
 
 #### DirChooser
-(Optional stInputPath As String) As String
-
-#### ExifTool
-(strPath As String) As String[]
+Selecciona la ruta de un directorio mediante una caja de dialogo.
 
 #### FileChooser
-(Optional strInputPath As String, Optional strFilter As String) As String
 Selecciona la ruta completa de un archivo, con el nombre y las extensión. Como opcional se puede pasar un directorio que es a donde se dirigira el filechooser cuando se abra.
 
+#### FileExif
+Devuelve una matriz con los datos extraídos por el programa de la terminal ExifTool.
+
 #### FileInfo
-(strFilePath As String) As String[]
+Devuelve una matriz con datos del archivo que se le pasa como ruta.
 
 #### FileNospace
-(stxParam As String[], Optional strDelim As String, Optional strExt As String) As String
-Devuelve un texto, nombre de arcivo concatenando todos los fragmentos que se le pase y pone todo en minusculas quita los caracteres fuera del rango 97-122 de ascci
-
-#### FileTemplate
-(strFileSeed As String, strFileProduct As String, stxTag As String[], stxDat As String[])
-Toma un archivo template xml y le reemplaza los tags por valores. el metodo sirve para hacer cualquier tipo dedocumento en pdf basandose claro esta en un archivo.dia
+Devuelve un texto, nombre de arcivo concatenando todos los fragmentos que se le pase y pone todo en minusculas quita los caracteres fuera del rango 97-122 de ascci.
 
 #### FileVersion
-(strInputPath As String) As String
-Devuelve la version del archivo que se le pase
+Devuelve un texto con la versión del archivo que se le pasa como ruta. Usa el comando file de la terminal.
 
 #### HMStoSeconds
-(strTime As String) As Integer
-
-#### ImageStatTemp
-(strPath As String) As String[]
-Devuelve datos de la imagen que se le pase. de momento solo Ancho y Alto.
+Devuelve el tiempo en segundos de una cadena que se le pase con el formato HH:MM:SS HORAS:MINUTOS:SEGUNDOS.
 
 #### ListDeldup
-(stxInput As String[]) As String[]
+Elimina elementos duplicados de una lista, requiere una String[] y devuelve una String[].
 
 #### MkConfXml
-(strXmlPath As String) As Integer
-Creacion de archivo de configuracion inicial xml
+Creacion de archivo de configuracion inicial xml.
 
 #### MouseButton
-(intKey As Integer) As String
 Funcion que retorna el nombre en ingés del boton del ratón que se ha presionado.
 
 #### NamingCon
-() As String[]
-Devuelve una lista de nombres de controles y su abreviación de tres caracteres
-
-#### Timestamp
-(datTime As Date) As String
-Retorna una cadena de texto con el tiempo en formato "yyyymmddhhnnss"
-
-#### TypeVar
-(intType As Integer) As String
-Función que devuelve el tipo de variable como una palabra. Como parametro de entrada requiere un numero entero.
-
-#### Werun
-(strProc1 As String) As Integer
-Devuelve si el programa se ejecuta desde el ide o no
-
-#### Notify
-(strTitle As String, strBody As String)
-Envia una notificacion al escritorio
+Devuelve una lista de nombres de controles y su abreviación de tres caracteres.
 
 #### ScanFolder
-(strDir As String, Optional strExt As String) As String[]
 Escanea una carpeta que se pasa como parametro en busca de archivos se puede filtrar con una lista de extensiones separadas por comas.
 
-#### SendEmail
-(stxAddreses As String[], stxNames As String[], Optional strMode As String, Optional strSubject As String, Optional strBody As String, Optional strAttachment As String)
-Prepara los datos de un email y abre el programa por defecto para presentarlo.
+#### Timestamp
+Retorna una cadena de texto con el tiempo en formato "yyyymmddhhnnss".
+
+#### WhereRun
+Devuelve si el programa gambas se esta ejecutando desde el IDE o desde un .gambas.

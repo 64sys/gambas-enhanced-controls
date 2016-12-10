@@ -1,0 +1,31 @@
+# Gambas Action File 3.0
+
+{ Actions
+  { Action mExportar
+    Text = "Exportar como CSV"
+    Shortcut = ""
+    Picture = "icon:/22/save-as"
+  }
+  { Action mFiltrar
+    Text = "Filtrar por este valor"
+    Shortcut = ""
+  }
+  { Action mFiltro
+    Text = "Filtro Avanzado"
+    Shortcut = ""
+  }
+  { Action mNofiltrar
+    Text = "Eliminar Filtro"
+    Shortcut = ""
+  }
+  { Action mOrdenar
+    Text = "Ordenar"
+    Shortcut = ""
+    Picture = "icon:/22/sort-ascent"
+  }
+  { Action mVerFiltro
+    Text = "Ver Filtros Activos"
+    Shortcut = ""
+  }
+}
+

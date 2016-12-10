@@ -88,10 +88,10 @@ End
 Private Sub chequear(aTexts As String[])
 
   Dim ckb As Object
-   
+
   For Each ckb In Me.Controls
     If ckb Is CheckBox Then
-        ckb.value = (aTexts.Find(ckb.text) > -1)
+      ckb.value = (aTexts.Find(ckb.text) > -1)
     Endif
   Next
 
@@ -102,8 +102,8 @@ Public Sub btoLink_Click()
   Dim proyecto, origen, requeridos As String
   Dim n As Integer
   Dim ctrl As Object
-  Dim strExt As String 
-  Dim strDir As String 
+  Dim strExt As String
+  Dim strDir As String
 
   n = Message.Question("Si enlazas los controles a tu proyecto, para modificar o añadir algo en ellos, tendrás que hacerlo en éste proyecto. Los cambios se propagarán automáticamente a todos los proyectos enlazados.", "Enlazar", "Cancelar")
   If n = 2 Then Return
@@ -113,11 +113,11 @@ Public Sub btoLink_Click()
   For Each ctrl In Me.Controls
     If ctrl Is CheckBox Then
       If Left(LCase(ctrl.Text), 1) = "m" Then
-        strExt = ".module"                  
-        strDir = "xutilities"               
-      Else                           
-        strExt = ".class"            
-        strDir = ""        
+        strExt = ".module"
+        strDir = "xutilities"
+      Else
+        strExt = ".class"
+        strDir = ""
       End If
       If ctrl.Value Then
         Try Copy Application.path &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" To proyecto &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" 'copiamos el icono del control
@@ -144,8 +144,8 @@ Public Sub btoCopy_Click()
   Dim proyecto, origen, requeridos As String
   Dim n As Integer
   Dim ctrl As Object
-  Dim strExt As String  
-  Dim strDir As String 
+  Dim strExt As String
+  Dim strDir As String
 
   n = Message.Question("Si Copias los controles a tu proyecto, los cambios que hagas en ellos sólo afectarán a tu proyecto y los cambios que se hagan a dbControles NO serán propagados al mismo", "Enlazar", "Cancelar")
   If n = 2 Then Return
@@ -155,15 +155,15 @@ Public Sub btoCopy_Click()
   For Each ctrl In Me.Controls
     If ctrl Is CheckBox Then
       If Left(LCase(ctrl.Text), 1) = "m" Then
-        strExt = ".module"                  
-        strDir = "xutilities"               
-      Else                           
-        strExt = ".class"            
-        strDir = ""        
+        strExt = ".module"
+        strDir = "xutilities"
+      Else
+        strExt = ".class"
+        strDir = ""
       End If
       If ctrl.Value Then
-         Try Copy Application.path &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" To proyecto &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" 'copiamos el icono del control
-         For n = 0 To controles.Count - 1
+        Try Copy Application.path &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" To proyecto &/ ".hidden/control" &/ LCase(ctrl.text) & ".png" 'copiamos el icono del control
+        For n = 0 To controles.Count - 1
           If controles[n][0] = ctrl.text And controles[n][2] Then  'miramos si los elegidos tienen componentes requeridos
             requeridos &= controles[n][2] & ","
             Break

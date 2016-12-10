@@ -20,8 +20,7 @@
 ' Boston, MA  02110-1301  USA
 '
 
-Public Function DirChooser(Optional stInputPath As String) As String
-  'Selecciona la ruta de un directorio
+Public Function DirChooser(Optional stInputPath As String) As String  ''Selecciona la ruta de un directorio mediante una caja de dialogo.
 
   Dim stDirPath As String
 
@@ -77,10 +76,9 @@ Public Function FileChooser(Optional strInputPath As String, Optional strFilter 
 
 End
 
-Public Function FileNospace(stxParam As String[], Optional strDelim As String, Optional strExt As String) As String ''Devuelve un texto, nombre de arcivo concatenando todos los fragmentos que se le pase y pone todo en minusculas quita los caracteres fuera del rango 97-122 de ascci
+Public Function FileNospace(stxParam As String[], Optional strDelim As String, Optional strExt As String) As String ''Devuelve un texto, nombre de arcivo concatenando todos los fragmentos que se le pase y pone todo en minusculas quita los caracteres fuera del rango 97-122 de ascci.
 
   Dim intPar As Integer
-  '  Dim strOutput As String
   Dim strTemp As String
   Dim intLeter As Integer
   Dim strLeter As String
@@ -132,8 +130,7 @@ Public Function FileNospace(stxParam As String[], Optional strDelim As String, O
 
 End
 
-Public Function FileVersion(strInputPath As String) As String
-  ' Obtencion de la version del archivo
+Public Function FileVersion(strInputPath As String) As String ''Devuelve un texto con la versión del archivo que se le pasa como ruta. Usa el comando file de la terminal.
 
   Dim strVersion As String
 
@@ -149,7 +146,7 @@ Public Function FileVersion(strInputPath As String) As String
 
 End
 
-Public Function Chek4SQL(strInput As String) As String
+Public Function Chek4SQL(strInput As String) As String ''Devuelve un texto apto para consulatas SQL, quita los saltos del línea y los caracteres no compatibles con sentencias SQL.
 
   Dim strOutput As String
 
@@ -163,7 +160,7 @@ Public Function Chek4SQL(strInput As String) As String
 
 End
 
-Public Function ArrangePath(strPathRaw As String) As String
+Public Function ArrangePath(strPathRaw As String) As String ''Devuelve una ruta sin los saltos del línea ni caracteres problemáticos
 
   Dim strPath As String
 
@@ -194,7 +191,7 @@ Public Function CRC32(stInputPath As String, Optional strCase As String) As Stri
 
 End
 
-Public Function ExifTool(strPath As String) As String[]
+Public Function FileExif(strPath As String) As String[] '' Devuelve una matriz con los datos extraídos por el programa de la terminal ExifTool.
 
   Dim strExifRaw As String
   Dim stxExifRaw As New String[]
@@ -322,13 +319,13 @@ Public Function ExifTool(strPath As String) As String[]
 
 End
 
-Public Function Timestamp(datTime As Date) As String '' Retorna una cadena de texto con el tiempo en formato "yyyymmddhhnnss"
+Public Function Timestamp(datTime As Date) As String '' Retorna una cadena de texto con el tiempo en formato "yyyymmddhhnnss".
 
   Return Format(datTime, "yyyymmddhhnnss")
 
 End
 
-Public Function Capital(strInput As String) As String
+Public Function Capital(strInput As String) As String ''Devuelve un texto con la primera letra en mayusculas y todas las siguientes en minúsculas.
 
   Dim strOutput As String
 
@@ -366,8 +363,7 @@ Public Function MouseButton(intKey As Integer) As String '' Funcion que retorna 
 
 End
 
-Public Function ArrayInclude(stxList As String[], strFind As String) As String[]
-  ''Quita de la lista los textos que no tengan la cadena de texto pasada como parametro
+Public Function ArrayInclude(stxList As String[], strFind As String) As String[] ''Quita de la lista los textos que no tengan la cadena de texto pasada como parametro
 
   Dim strItem As String
   Dim stxAuxiliar As New String[]
@@ -387,11 +383,9 @@ Public Function ArrayInclude(stxList As String[], strFind As String) As String[]
 
 End
 
-Public Function ArrayExclude(stxList As String[], strFind As String) As String[]
-  ''Quita de la lista los textos que tengan la cadena de texto pasada como parametro
+Public Function ArrayExclude(stxList As String[], strFind As String) As String[] ''Quita de la lista los textos que tengan la cadena de texto pasada como parametro
 
   Dim strItem As String
-  '  Dim intItem As Integer
   Dim stxAuxiliar As New String[]
 
   stxAuxiliar.Clear
@@ -409,7 +403,7 @@ Public Function ArrayExclude(stxList As String[], strFind As String) As String[]
 
 End
 
-Public Function FileInfo(strFilePath As String) As String[]
+Public Function FileInfo(strFilePath As String) As String[] ''Devuelve una matriz con datos del archivo que se le pasa como ruta.
 
   Dim stxFileMeta As New String[]
   Dim stxExif As New String[]
@@ -456,20 +450,20 @@ Public Function FileInfo(strFilePath As String) As String[]
     strFileVersion = Replace(strFileVersion, ":", ".")
     stxFileMeta.Add("FileVersion:" & strFileVersion)
 
-    Select Lower(strFileExt)
-      Case "mp3", "ogg", "flac"
-
-        stxExif = Mutility.ExifTool(strFilePath)
-
-        For intF = 0 To stxExif.Max
-
-          stxFileMeta.Add(stxExif[intF])
-
-        Next
-
-      Case Else
-
-    End Select
+    ' Select Lower(strFileExt)
+    '   Case "mp3", "ogg", "flac"
+    '
+    '     stxExif = Mutility.ExifTool(strFilePath)
+    '
+    '     For intF = 0 To stxExif.Max
+    '
+    '       stxFileMeta.Add(stxExif[intF])
+    '
+    '     Next
+    '
+    '   Case Else
+    '
+    ' End Select
 
   Endif
 
@@ -477,11 +471,8 @@ Public Function FileInfo(strFilePath As String) As String[]
 
 End
 
-Public Function ConvertPath(txt As String) As String
-  ''' Función de jguardon en gambas-es
-  ''' Descodifica los caracteres hexadecimales en las URI's recorriendo la cadena dada
-  ''' Params: txt la URI a descodificar
-  ''' Return: la URI descodificada
+Public Function ConvertPath(txt As String) As String '' Devuelve una ruta con los caracteres hexadecimales decodificados en las URI's que se le pase.
+  ' Función de jguardon en gambas-es
 
   Dim txt_len As Integer
   Dim i As Integer
@@ -519,7 +510,7 @@ Public Function ConvertPath(txt As String) As String
 
 End
 
-Public Function NamingCon() As String[] '' Devuelve una lista de nombres de controles y su abreviación de tres caracteres
+Public Function NamingCon() As String[] '' Devuelve una lista de nombres de controles y su abreviación de tres caracteres.
 
   Dim stxNCon As New String[]
 
@@ -632,10 +623,9 @@ Public Function NamingCon() As String[] '' Devuelve una lista de nombres de cont
 
 End
 
-Public Function HMStoSeconds(strTime As String) As Integer
+Public Function HMStoSeconds(strTime As String) As Integer '' Devuelve el tiempo en segundos de una cadena que se le pase con el formato HH:MM:SS HORAS:MINUTOS:SEGUNDOS.
 
   Dim stxTime As New String[]
-  'Dim intZ As Integer
   Dim intTime As Integer
 
   stxTime = Split(strTime, ":")
@@ -646,7 +636,7 @@ Public Function HMStoSeconds(strTime As String) As Integer
 
 End
 
-Public Function MkConfXml(strXmlPath As String) As Integer '' Creacion de archivo de configuracion inicial xml
+Public Function MkConfXml(strXmlPath As String) As Integer '' Creacion de archivo de configuracion inicial xml.
 
   Dim writer As New XmlWriter
   Dim stxParameters As New String[]
@@ -688,7 +678,7 @@ Public Function MkConfXml(strXmlPath As String) As Integer '' Creacion de archiv
 
 End
 
-Public Function ListDeldup(stxInput As String[]) As String[]
+Public Function ListDeldup(stxInput As String[]) As String[] '' Elimina elementos duplicados de una lista, requiere una String[] y devuelve una String[].
 
   Dim strTmp As String
   Dim stxOut As New String[]
@@ -705,7 +695,7 @@ Public Function ListDeldup(stxInput As String[]) As String[]
 
 End
 
-Public Function Werun(strProc1 As String) As Integer '' Devuelve si el programa se ejecuta desde el ide o no
+Public Function WhereRun(strProc1 As String) As Integer '' Devuelve si el programa gambas se esta ejecutando desde el IDE o desde un .gambas.
 
   Dim strProcRaw1 As String
   Dim strPProc As String
