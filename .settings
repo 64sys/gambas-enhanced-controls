@@ -20,13 +20,9 @@ Geometry=[201,94,224,280]
 Path="top40.gambas"
 
 [OpenFile]
-Count=5
-File[1]=".src/FSelector.form"
-File[2]=".src/FSelector.class:29.109"
-Active=2
-File[3]=".src/fDBControls.form"
-File[4]=".src/FXControls.form"
-File[5]=".src/FXControls.class:0.21"
+Count=1
+Active=1
+File[1]=".src/xutilities/MUtility.module:0.764"
 
 [Watches]
 Count=0

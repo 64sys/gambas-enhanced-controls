@@ -738,7 +738,7 @@ Public Function WhereRun(strProc1 As String) As Integer '' Devuelve si el progra
 
 End
 
-Public Sub ScanFolder(strDir As String, Optional strExt As String) As String[] '' Escanea una carpeta que se pasa como parametro en busca de archivos se puede filtrar con una lista de extensiones separadas por comas.
+Public Sub ScanFolder(strDir As String, Optional strExt As String) As String[] '' Escanea una carpeta que se pasa como parametro en busca de archivos se puede filtrar con una lista de extensiones separadas por dos puntos ":".
 
   Dim stxFiles As New String[]
   Dim stxExt As New String[]
@@ -757,11 +757,11 @@ Public Sub ScanFolder(strDir As String, Optional strExt As String) As String[] '
       stxFiles = RDir(strDir)
 
     Else
-      If InStr(strExt, ",") <> 0 Then
+      If InStr(strExt, ":") <> 0 Then
 
         strExt = String.LCase(strExt)
 
-        stxExt = Split(strExt, ",")
+        stxExt = Split(strExt, ":")
 
         If stxExt.Count > 1 Then
 
