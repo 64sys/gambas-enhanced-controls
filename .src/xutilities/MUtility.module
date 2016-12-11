@@ -394,6 +394,16 @@ Public Function Timestamp(datTime As Date) As String '' Retorna una cadena de te
 
 End
 
+Public Function TypeVar(intType As Integer) As String '' Función que devuelve el tipo de variable como una palabra. Como parametro de entrada requiere un numero entero.
+
+  Dim vrxType As String[]
+
+  vrxType = ["Null", "Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date", "String", "Variant", "Object", "Pointer", "Function", "Class"]
+
+  Return vrxType[intType]
+
+End
+
 Public Function Capital(strInput As String) As String ''Devuelve un texto con la primera letra en mayusculas y todas las siguientes en minúsculas.
 
   Dim strOutput As String

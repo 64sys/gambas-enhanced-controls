@@ -135,5 +135,8 @@ Escanea una carpeta que se pasa como parametro en busca de archivos se puede fil
 #### Timestamp
 Retorna una cadena de texto con el tiempo en formato "yyyymmddhhnnss".
 
+#### TypeVar
+Función que devuelve el tipo de variable como una palabra. Como parametro de entrada requiere un numero entero.
+
 #### WhereRun
 Devuelve si el programa gambas se esta ejecutando desde el IDE o desde un .gambas.
