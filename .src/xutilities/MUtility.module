@@ -40,7 +40,7 @@ Public Function DirChooser(Optional stInputPath As String) As String  ''Seleccio
 
 End
 
-Public Function FileChooser(Optional strInputPath As String, Optional strFilter As String) As String ''Selecciona la ruta completa de un archivo, con el nombre y las extensión. Como opcional se puede pasar un directorio que es a donde se dirigira el filechooser cuando se abra.
+Public Function FileChooser(Optional strInputPath As String, Optional strFilter As String) As String ''Selecciona la ruta completa de un archivo, con el nombre y las extensiones. Como opcional se puede pasar un directorio que es a donde se dirigira el filechooser cuando se abra.
 
   Dim strFilepath, strExtension, strFilterA, strFilterB As String
   Dim stxExtensions As New String[]
@@ -52,7 +52,7 @@ Public Function FileChooser(Optional strInputPath As String, Optional strFilter 
   Dialog.Title = ("Seleccionar archivo")
 
   If strFilter <> "" Then
-    stxExtensions = Split(strFilter, ",")
+    stxExtensions = Split(strFilter, ":")
 
     strFilterB &= ("Filtro por:")
     For Each strExtension In stxExtensions
