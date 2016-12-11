@@ -20,12 +20,11 @@ Geometry=[201,94,224,280]
 Path="gec.gambas"
 
 [OpenFile]
-Count=4
-Active=4
-File[1]=".src/xutilities/MUtility.module:3.408"
-File[2]="README.md:0.0"
-File[3]=".src/ProgressbarVertical.class:1.62"
-File[4]=".src/TextList.class:0.271"
+Count=3
+Active=1
+File[1]=".src/xutilities/MUtility.module:7.118"
+File[2]="README.md:238.99"
+File[3]=".src/TextList.class:0.271"
 
 [Watches]
 Count=0

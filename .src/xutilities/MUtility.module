@@ -76,6 +76,75 @@ Public Function FileChooser(Optional strInputPath As String, Optional strFilter 
 
 End
 
+Public Function FilesNew(strDirectory As String, Optional stxFilesOpt As String[], Optional strFilterOpt As String) As String[] '' Devuelve una lista de archivos de un directorio que se pasa como parametro. Opcionalmente se puede pasar como parametro una lista de archivos existentes los cuales seran omitidos de la lista de salida si es que son encontrados y un filtro de extensiones de archivo de l estilo mp3:ods:txt
+
+  Dim stxFiles As New String[]
+  Dim intFile As Integer
+  Dim stxFilesNew As New String[] ' Archivos del directorio que existen en BBDD
+
+  stxFiles = MUtility.ScanFolder(strDirectory, strFilterOpt)
+
+  'Para cada archivo verificar si este existe en la base de datos
+  If stxFilesOpt.Count > 0 Then
+    For intFile = 0 To stxFiles.Max
+      If stxFilesOpt.Find(stxFiles[intFile]) = -1 Then
+        stxFilesNew.Add(stxFiles[intFile])
+      Endif
+    Next
+  Else ' Todos los archivos que se encuentren seran nuevos
+    stxFilesNew = stxFiles
+  Endif
+
+  Return stxFilesNew
+
+End
+
+Public Function FilesExist(strDirectory As String, Optional stxFilesOpt As String[], Optional strFilterOpt As String) As String[] '' Devuelve una lista de archivos de un directorio que coinciden con los de la lista que se le pasa como parametro, es decir verifica que existen. Opcionalmente se le puede pasar un parametro de filtro de extensiones para acotar la busqueda.
+
+  Dim stxFiles As New String[]
+  Dim intFile As Integer
+  Dim stxFilesExist As New String[] ' Archivos del directorio que existen en BBDD
+
+  stxFiles = MUtility.ScanFolder(strDirectory, strFilterOpt)
+
+  'Para cada archivo verificar si este existe en la base de datos
+  If stxFilesOpt.Count > 0 Then
+    For intFile = 0 To stxFiles.Max
+      If stxFilesOpt.Find(stxFiles[intFile]) > -1 Then
+        stxFilesExist.Add(stxFiles[intFile])
+      Endif
+    Next
+  Else
+    stxFilesExist.Clear
+  Endif
+
+  Return stxFilesExist
+
+End
+
+Public Function FilesNone(strDirectory As String, Optional stxFilesOpt As String[], Optional strFilterOpt As String) As String[] '' Devuelve una lista de archivos que no existen en el directorio, es necesario parar una lista de archivos para contrastar.
+
+  Dim stxFiles As New String[]
+  Dim intFile As Integer
+  Dim stxFilesNone As New String[] ' Archivos del directorio que existen en BBDD
+
+  stxFiles = MUtility.ScanFolder(strDirectory, strFilterOpt)
+
+  'Para cada archivo verificar si este existe en la base de datos
+  If stxFilesOpt.Count > 0 Then
+    For intFile = 0 To stxFilesOpt.Max
+      If stxFiles.Find(stxFilesOpt[intFile]) = -1 Then
+        stxFilesNone.Add(stxFilesOpt[intFile])
+      Endif
+    Next
+  Else
+    stxFilesNone.Clear
+  Endif
+
+  Return stxFilesNone
+
+End
+
 Public Function FileNospace(stxParam As String[], Optional strDelim As String, Optional strExt As String) As String ''Devuelve un texto, nombre de arcivo concatenando todos los fragmentos que se le pase y pone todo en minusculas quita los caracteres fuera del rango 97-122 de ascci.
 
   Dim intPar As Integer

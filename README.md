@@ -93,6 +93,15 @@ Selecciona la ruta de un directorio mediante una caja de dialogo.
 #### FileChooser
 Selecciona la ruta completa de un archivo, con el nombre y las extensión. Como opcional se puede pasar un directorio que es a donde se dirigira el filechooser cuando se abra.
 
+#### FilesNew
+Devuelve una lista de archivos de un directorio que se pasa como parametro. Opcionalmente se puede pasar como parametro una lista de archivos existentes los cuales seran omitidos de la lista de salida si es que son encontrados y un filtro de extensiones de archivo de l estilo mp3:ods:txt
+
+#### FilesExist
+Devuelve una lista de archivos de un directorio que coinciden con los de la lista que se le pasa como parametro, es decir verifica que existen. Opcionalmente se le puede pasar un parametro de filtro de extensiones para acotar la busqueda.
+
+#### FilesNone
+Devuelve una lista de archivos que no existen en el directorio, es necesario parar una lista de archivos para contrastar.
+
 #### FileExif
 Devuelve una matriz con los datos extraídos por el programa de la terminal ExifTool.
 
