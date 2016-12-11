@@ -406,8 +406,8 @@ End
 Public Function FileInfo(strFilePath As String) As String[] ''Devuelve una matriz con datos del archivo que se le pasa como ruta.
 
   Dim stxFileMeta As New String[]
-  Dim stxExif As New String[]
-  Dim intF As Integer
+  'Dim stxExif As New String[]
+  'Dim intF As Integer
   Dim strFileDir As String
   Dim strFileName As String
   Dim strFileExt As String

@@ -17,13 +17,15 @@ Geometry=[201,94,224,280]
 Geometry=[201,94,224,280]
 
 [Executable]
-Path="top40.gambas"
+Path="gec.gambas"
 
 [OpenFile]
-Count=2
-Active=1
-File[1]=".src/xutilities/MUtility.module:39.60"
+Count=4
+Active=4
+File[1]=".src/xutilities/MUtility.module:3.408"
 File[2]="README.md:0.0"
+File[3]=".src/ProgressbarVertical.class:1.62"
+File[4]=".src/TextList.class:0.271"
 
 [Watches]
 Count=0

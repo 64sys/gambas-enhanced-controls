@@ -60,7 +60,7 @@ End
 Public Sub Canvas_Draw()
 
   Dim iHeight As Integer 'The height of the percentage block
-  Dim hDim As RectF 'The dimensions of the label
+  '  Dim hDim As RectF 'The dimensions of the label
   Dim iSpacing As Integer
 
   If Me.Border Then
