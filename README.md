@@ -114,6 +114,9 @@ Devuelve un texto, nombre de arcivo concatenando todos los fragmentos que se le 
 #### FileVersion
 Devuelve un texto con la versión del archivo que se le pasa como ruta. Usa el comando file de la terminal.
 
+#### GetForeignKey
+Devuelve la clave del registro referenciado en otra tabla
+ 
 #### HMStoSeconds
 Devuelve el tiempo en segundos de una cadena que se le pase con el formato HH:MM:SS HORAS:MINUTOS:SEGUNDOS.
 

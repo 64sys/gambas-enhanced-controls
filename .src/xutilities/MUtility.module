@@ -215,6 +215,63 @@ Public Function FileVersion(strInputPath As String) As String ''Devuelve un text
 
 End
 
+Public Function GetForeignKey(strValue As String, conRef As Connection, strTable As String, strFieldKey As String, strFieldName As String) As Integer '' Devuelve la clave del registro referenciado en otra tabla
+
+  Dim intKey As Integer
+  Dim strSQLForeign As String
+  Dim resFeoreign As Result
+  Dim stxForeignKey As New String[]
+  Dim stxForeignName As New String[]
+
+  Dim intKey2 As Integer
+  Dim strSQLForeign2 As String
+  Dim resFeoreign2 As Result
+  Dim intCounter As Integer
+  Dim resInsert As Result
+
+  intKey = -1
+  intCounter = 0
+
+  Repeat
+
+    stxForeignKey.Clear
+    stxForeignName.Clear
+
+    strSQLForeign = "select " & strFieldKey & ", " & strFieldName & " from " & strTable
+
+    resFeoreign = conRef.Exec(strSQLForeign)
+
+    While resFeoreign.Available
+
+      stxForeignKey.Add(resFeoreign[strFieldKey])
+      stxForeignName.Add(resFeoreign[strFieldName])
+
+      If strValue = resFeoreign[strFieldName] Then
+        intKey = resFeoreign[strFieldKey]
+        Break
+      Endif
+
+      resFeoreign.MoveNext
+
+    Wend
+
+    If intKey = -1 Then ' Quiere decir que ese nombre no esta en la tabla de referencia, entonces hay que insertarlo
+
+      resInsert = conRef.Create(strTable)
+
+      'resInsert!strFieldKey = ' Como es autoinclemental no pongo el campo id
+      resInsert[strFieldName] = strValue
+
+      resInsert.update
+
+    Endif
+
+  Until intKey <> -1
+
+  Return intKey
+
+End
+
 Public Function Chek4SQL(strInput As String) As String ''Devuelve un texto apto para consulatas SQL, quita los saltos del línea y los caracteres no compatibles con sentencias SQL.
 
   Dim strOutput As String
