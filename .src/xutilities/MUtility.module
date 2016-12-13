@@ -223,9 +223,9 @@ Public Function GetForeignKey(strValue As String, conRef As Connection, strTable
   Dim stxForeignKey As New String[]
   Dim stxForeignName As New String[]
 
-  Dim intKey2 As Integer
-  Dim strSQLForeign2 As String
-  Dim resFeoreign2 As Result
+  '  Dim intKey2 As Integer
+  '  Dim strSQLForeign2 As String
+  '  Dim resFeoreign2 As Result
   Dim intCounter As Integer
   Dim resInsert As Result
 
@@ -831,46 +831,19 @@ Public Function ListDeldup(stxInput As String[]) As String[] '' Elimina elemento
 
 End
 
-Public Function WhereRun(strProc1 As String) As Integer '' Devuelve si el programa gambas se esta ejecutando desde el IDE o desde un .gambas.
+Public Function WhereRun() As Integer
 
-  Dim strProcRaw1 As String
-  Dim strPProc As String
-  Dim strProcRaw2 As String
-  Dim intMode As Integer
+  Dim strProcess As String
+  Dim intRun As Integer
 
-  ' Averiguar el PPID
-  strProcRaw1 = ""
-  Shell "ps -ef | grep " & strProc1 & " | grep gbx3" To strProcRaw1
-  strProcRaw1 = Replace(strProcRaw1, "\t", "|")
-  strProcRaw1 = Replace(strProcRaw1, " ", "|")
-  strProcRaw1 = Replace(strProcRaw1, "||", "|")
-  strProcRaw1 = Replace(strProcRaw1, "||", "|")
-  strProcRaw1 = Replace(strProcRaw1, "||", "|")
-
-  'Shell "ps -ef | grep " & strProc1 & " | grep gbx3 | cut -d ''-f2" To strPProc
-
-  If strProcRaw1 <> "" Then
-    strPProc = Split(strProcRaw1, "|")[2]
-    'Averiguar el nombre del programa padre
-    Shell "ps -ef | grep " & strPProc & " | grep gbr3" To strProcRaw2
-    strProcRaw2 = Replace(strProcRaw2, "  ", " ")
-    strProcRaw2 = Replace(strProcRaw2, "\t", "|")
-    strProcRaw2 = Replace(strProcRaw2, " ", "|")
-    strProcRaw2 = Replace(strProcRaw2, "||", "|")
-    strProcRaw2 = Replace(strProcRaw2, "||", "|")
-    strProcRaw2 = Replace(strProcRaw2, "||", "|")
-
-    If strProcRaw2 <> "" Then
-      If Split(strProcRaw2, "|")[1] = strPProc Then
-        intMode = 1 ' Se esta ejecutando desde el IDE
-      Else
-        intMode = 0 ' Se esta ejecutando desde un paquete
-      Endif
-    Endif
-
+  Shell "ps -p " & Application.id To strProcess
+  If InStr(strProcess, "gbx3") > 0 Then
+    intRun = 1
+  Else
+    intRun = 0
   Endif
 
-  Return intMode
+  Return intRun
 
 End
 

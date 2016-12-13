@@ -3,7 +3,7 @@
 Title=Gambas enhanced controls
 Startup=FSelector
 Icon=tools.png
-Version=0.0.9
+Version=0.0.10
 Component=gb.image
 Component=gb.gui.qt
 Component=gb.form
